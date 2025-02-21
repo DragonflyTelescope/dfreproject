@@ -1,0 +1,998 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>reproject &mdash; reprojection  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="utils" href="../utils/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            reprojection
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../solution_methodology.html">Astronomical Image Reprojection</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../utils/index.html">utils</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">reproject</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#reproject.EPSILON"><code class="docutils literal notranslate"><span class="pre">EPSILON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reproject.WCSHeader"><code class="docutils literal notranslate"><span class="pre">WCSHeader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reproject.Reproject"><code class="docutils literal notranslate"><span class="pre">Reproject</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reproject.calculate_reprojection"><code class="docutils literal notranslate"><span class="pre">calculate_reprojection()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">reprojection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">reproject</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/autoapi/reproject/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-reproject">
+<span id="reproject"></span><h1>reproject<a class="headerlink" href="#module-reproject" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reproject.EPSILON" title="reproject.EPSILON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EPSILON</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reproject.WCSHeader" title="reproject.WCSHeader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WCSHeader</span></code></a></p></td>
+<td><p>A dataclass containing World Coordinate System (WCS) parameters with SIP distortion coefficients.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reproject.Reproject" title="reproject.Reproject"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reproject</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reproject.calculate_reprojection" title="reproject.calculate_reprojection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_reprojection</span></code></a>(source_hdu, target_hdu[, ...])</p></td>
+<td><p>Reproject an astronomical image from a source WCS to a target WCS.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="reproject.EPSILON">
+<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">EPSILON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-10</span></em><a class="reference internal" href="../../_modules/reproject.html#EPSILON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.EPSILON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="reproject.WCSHeader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">WCSHeader</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader" title="Link to this definition"></a></dt>
+<dd><p>A dataclass containing World Coordinate System (WCS) parameters with SIP distortion coefficients.</p>
+<p>This class encapsulates all the necessary parameters for defining a WCS transformation
+with Simple Imaging Polynomial (SIP) distortion representation. It supports conversion
+between pixel coordinates and world coordinates (RA/Dec) while accounting for optical
+distortions in astronomical images.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.DEC_0">
+<span class="sig-name descname"><span class="pre">DEC_0</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.DEC_0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.DEC_0" title="Link to this definition"></a></dt>
+<dd><p>Reference declination in degrees (CRVAL2 in FITS standard).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.RA_0">
+<span class="sig-name descname"><span class="pre">RA_0</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.RA_0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.RA_0" title="Link to this definition"></a></dt>
+<dd><p>Reference right ascension in degrees (CRVAL1 in FITS standard).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.CRPIX1">
+<span class="sig-name descname"><span class="pre">CRPIX1</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.CRPIX1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.CRPIX1" title="Link to this definition"></a></dt>
+<dd><p>X coordinate of reference pixel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.CRPIX2">
+<span class="sig-name descname"><span class="pre">CRPIX2</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.CRPIX2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.CRPIX2" title="Link to this definition"></a></dt>
+<dd><p>Y coordinate of reference pixel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.CDELT1">
+<span class="sig-name descname"><span class="pre">CDELT1</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.CDELT1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.CDELT1" title="Link to this definition"></a></dt>
+<dd><p>Increment along axis 1 at reference point in degrees/pixel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.CDELT2">
+<span class="sig-name descname"><span class="pre">CDELT2</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.CDELT2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.CDELT2" title="Link to this definition"></a></dt>
+<dd><p>Increment along axis 2 at reference point in degrees/pixel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.A_ORDER">
+<span class="sig-name descname"><span class="pre">A_ORDER</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.A_ORDER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.A_ORDER" title="Link to this definition"></a></dt>
+<dd><p>Order of the forward SIP polynomial A for distortion correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.B_ORDER">
+<span class="sig-name descname"><span class="pre">B_ORDER</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.B_ORDER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.B_ORDER" title="Link to this definition"></a></dt>
+<dd><p>Order of the forward SIP polynomial B for distortion correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.AP_ORDER">
+<span class="sig-name descname"><span class="pre">AP_ORDER</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.AP_ORDER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.AP_ORDER" title="Link to this definition"></a></dt>
+<dd><p>Order of the inverse SIP polynomial AP for distortion correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.BP_ORDER">
+<span class="sig-name descname"><span class="pre">BP_ORDER</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.BP_ORDER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.BP_ORDER" title="Link to this definition"></a></dt>
+<dd><p>Order of the inverse SIP polynomial BP for distortion correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.A">
+<span class="sig-name descname"><span class="pre">A</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.A"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.A" title="Link to this definition"></a></dt>
+<dd><p>SIP polynomial A coefficients in the format [A_0_2, A_0_3, A_1_1, A_1_2, A_2_0, A_2_1, A_3_0].
+These coefficients describe distortion in the x-direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.B">
+<span class="sig-name descname"><span class="pre">B</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.B"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.B" title="Link to this definition"></a></dt>
+<dd><p>SIP polynomial B coefficients in the format [B_0_2, B_0_3, B_1_1, B_1_2, B_2_0, B_2_1, B_3_0].
+These coefficients describe distortion in the y-direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.AP">
+<span class="sig-name descname"><span class="pre">AP</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.AP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.AP" title="Link to this definition"></a></dt>
+<dd><p>Inverse SIP polynomial AP coefficients in the format
+[AP_0_0, AP_0_1, AP_0_2, AP_0_3, AP_1_0, AP_1_1, AP_1_2, AP_2_0, AP_2_1, AP_3_0].
+Used for converting world coordinates back to pixel coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.BP">
+<span class="sig-name descname"><span class="pre">BP</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.BP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.BP" title="Link to this definition"></a></dt>
+<dd><p>Inverse SIP polynomial BP coefficients in the format
+[BP_0_0, BP_0_1, BP_0_2, BP_0_3, BP_1_0, BP_1_1, BP_1_2, BP_2_0, BP_2_1, BP_3_0].
+Used for converting world coordinates back to pixel coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.WCSHeader.PC_Matrix">
+<span class="sig-name descname"><span class="pre">PC_Matrix</span></span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.PC_Matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.PC_Matrix" title="Link to this definition"></a></dt>
+<dd><p>Projection transformation matrix as a 2x2 tensor: [[PC1_1, PC1_2], [PC2_1, PC2_2]].
+Describes the rotation and scaling between intermediate world coordinates and pixel coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The SIP convention (Simple Imaging Polynomial) is described in:
+Shupe, D. L., et al. 2005, “The SIP Convention for Representing Distortion in FITS Image Headers”</p>
+<p>This implementation uses PyTorch tensors to enable GPU acceleration and automatic
+differentiation for the coordinate transformations.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a WCS header from components</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wcs_info</span> <span class="o">=</span> <span class="n">WCSHeader</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">DEC_0</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">30.0</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">RA_0</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">150.0</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">CRPIX1</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">512.0</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">CRPIX2</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">512.0</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">CDELT1</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="o">-</span><span class="mf">0.001</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">CDELT2</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">0.001</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">A_ORDER</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">B_ORDER</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">AP_ORDER</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">BP_ORDER</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">A</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mf">2e-8</span><span class="p">,</span> <span class="mf">3e-7</span><span class="p">,</span> <span class="mf">5e-9</span><span class="p">,</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mf">7e-10</span><span class="p">,</span> <span class="mf">4e-11</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">B</span><span class="o">=</span><span class="p">[</span><span class="mf">2e-5</span><span class="p">,</span> <span class="mf">3e-8</span><span class="p">,</span> <span class="mf">2e-7</span><span class="p">,</span> <span class="mf">6e-9</span><span class="p">,</span> <span class="mf">5e-7</span><span class="p">,</span> <span class="mf">8e-10</span><span class="p">,</span> <span class="mf">5e-11</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">AP</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e-5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2e-8</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3e-7</span><span class="p">,</span> <span class="o">-</span><span class="mf">5e-9</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e-6</span><span class="p">,</span> <span class="o">-</span><span class="mf">7e-10</span><span class="p">,</span> <span class="o">-</span><span class="mf">4e-11</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">BP</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2e-5</span><span class="p">,</span> <span class="o">-</span><span class="mf">3e-8</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2e-7</span><span class="p">,</span> <span class="o">-</span><span class="mf">6e-9</span><span class="p">,</span> <span class="o">-</span><span class="mf">5e-7</span><span class="p">,</span> <span class="o">-</span><span class="mf">8e-10</span><span class="p">,</span> <span class="o">-</span><span class="mf">5e-11</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">PC_Matrix</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">DEC_0</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.tensor</span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.DEC_0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">RA_0</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.tensor</span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.RA_0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">CRPIX1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.tensor</span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.CRPIX1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">CRPIX2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.tensor</span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.CRPIX2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">CDELT1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.tensor</span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.CDELT1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">CDELT2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.tensor</span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.CDELT2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">A_ORDER</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.A_ORDER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">B_ORDER</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.B_ORDER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">AP_ORDER</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.AP_ORDER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">BP_ORDER</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.BP_ORDER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">A</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.A"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">B</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.B"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">AP</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.AP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">BP</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.BP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">PC_Matrix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.tensor</span></em><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.PC_Matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id14" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reproject.WCSHeader.from_header">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/headers.html#astropy.io.fits.Header" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.Header</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.from_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.from_header" title="Link to this definition"></a></dt>
+<dd><p>Create a WCSHeader instance from an Astropy FITS header.</p>
+<p>This class method extracts World Coordinate System (WCS) information from a FITS header,
+including SIP distortion coefficients if present, and converts them to PyTorch tensors
+for use in the WCSHeader class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>header</strong> (<a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/headers.html#astropy.io.fits.Header" title="(in Astropy v7.0)"><em>astropy.io.fits.Header</em></a>) – An Astropy FITS header object containing WCS information. At minimum, the header
+should contain the basic WCS keywords (CRVAL1/2, CRPIX1/2, CDELT1/2). If SIP
+distortion is present, it will extract the polynomial coefficients.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new instance of WCSHeader initialized with the WCS information from the header.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#reproject.WCSHeader" title="reproject.WCSHeader">WCSHeader</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method:
+- Extracts basic WCS parameters (reference coordinates, pixel scales)
+- Handles SIP distortion polynomials (A, B, AP, BP coefficients)
+- Sets default values for missing parameters
+- Converts all numeric values to PyTorch tensors with float32 precision</p>
+<p>The method is tolerant of missing SIP parameters and will default to an identity
+transformation if SIP coefficients are not present in the header.</p>
+<p>The PC matrix (rotation/scaling matrix) defaults to the identity matrix if not specified.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">reprojection</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCSHeader</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Open a FITS file and read its header</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hdul</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;image.fits&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">header</span> <span class="o">=</span> <span class="n">hdul</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a WCSHeader instance from the FITS header</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wcs_header</span> <span class="o">=</span> <span class="n">WCSHeader</span><span class="o">.</span><span class="n">from_header</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Now you can use the wcs_header for coordinate transformations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># or pass it to reprojection functions</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – If the header is missing required WCS keywords (CRVAL1/2, CRPIX1/2, CDELT1/2)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reproject.WCSHeader.inverse_PC_Matrix">
+<span class="sig-name descname"><span class="pre">inverse_PC_Matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.inverse_PC_Matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.inverse_PC_Matrix" title="Link to this definition"></a></dt>
+<dd><p>Calculate the inverse of the PC matrix for coordinate transformations.</p>
+<p>The PC (Projection Coordinate) matrix defines the linear transformation
+between pixel coordinates and intermediate world coordinates. The inverse
+of this matrix is needed when converting from world coordinates back to
+pixel coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A 2x2 tensor containing the inverse of the PC matrix.
+This matrix has the same dtype as the original PC_Matrix.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method uses PyTorch’s linear algebra module to compute the matrix inverse.
+The PC matrix is typically well-conditioned in WCS, so numerical stability
+issues are rare.</p>
+<p>If the PC matrix is the identity matrix (the default when SIP distortion
+is not present), its inverse is also the identity matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reproject.WCSHeader.SIP_polynomial_A">
+<span class="sig-name descname"><span class="pre">SIP_polynomial_A</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.SIP_polynomial_A"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.SIP_polynomial_A" title="Link to this definition"></a></dt>
+<dd><p>Evaluate the SIP distortion polynomial A at the given intermediate coordinates.</p>
+<p>The Simple Imaging Polynomial (SIP) convention uses polynomial functions to model
+optical distortion in astronomical images. This method calculates the x-direction
+distortion correction using the A polynomial coefficients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>torch.Tensor</em>) – Intermediate pixel x-coordinates relative to the reference pixel.
+Can be a scalar, vector, or multi-dimensional tensor.</p></li>
+<li><p><strong>v</strong> (<em>torch.Tensor</em>) – Intermediate pixel y-coordinates relative to the reference pixel.
+Must have the same shape as <cite>u</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The evaluated A polynomial values with the same shape as the input coordinates.
+These values represent the x-direction distortion correction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Currently supports polynomial orders 2 and 3. For unsupported orders or
+when coefficients are missing, returns zeros (no distortion correction).</p>
+<p>The SIP convention is described in Shupe et al. (2005) and defines the
+distortion as:</p>
+<p>x = u + A(u,v)</p>
+<p>where u,v are the undistorted intermediate pixel coordinates and x is the
+distorted coordinate.</p>
+<p>For order 2, the polynomial is:
+A(u,v) = A_0_2 * v² + A_1_1 * u*v + A_2_0 * u²</p>
+<p>For order 3, the polynomial adds higher-order terms:
+A(u,v) = A_0_2 * v² + A_0_3 * v³ + A_1_1 * u*v + A_1_2 * u*v² +</p>
+<blockquote>
+<div><p>A_2_0 * u² + A_2_1 * u²*v + A_3_0 * u³</p>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create coordinate grids centered at the reference pixel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u_grid</span><span class="p">,</span> <span class="n">v_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Calculate SIP distortion correction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correction_x</span> <span class="o">=</span> <span class="n">WCSHeader</span><span class="o">.</span><span class="n">SIP_polynomial_A</span><span class="p">(</span><span class="n">u_grid</span><span class="p">,</span> <span class="n">v_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_B" title="reproject.WCSHeader.SIP_polynomial_B"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_B</span></code></a></dt><dd><p>Evaluate the B polynomial for y-direction distortion</p>
+</dd>
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_AP" title="reproject.WCSHeader.SIP_polynomial_AP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_AP</span></code></a></dt><dd><p>Evaluate the inverse A polynomial</p>
+</dd>
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_BP" title="reproject.WCSHeader.SIP_polynomial_BP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_BP</span></code></a></dt><dd><p>Evaluate the inverse B polynomial</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reproject.WCSHeader.SIP_polynomial_B">
+<span class="sig-name descname"><span class="pre">SIP_polynomial_B</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.SIP_polynomial_B"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.SIP_polynomial_B" title="Link to this definition"></a></dt>
+<dd><p>Evaluate the SIP distortion polynomial B at the given intermediate coordinates.</p>
+<p>The Simple Imaging Polynomial (SIP) convention uses polynomial functions to model
+optical distortion in astronomical images. This method calculates the y-direction
+distortion correction using the B polynomial coefficients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>torch.Tensor</em>) – Intermediate pixel x-coordinates relative to the reference pixel.
+Can be a scalar, vector, or multi-dimensional tensor.</p></li>
+<li><p><strong>v</strong> (<em>torch.Tensor</em>) – Intermediate pixel y-coordinates relative to the reference pixel.
+Must have the same shape as <cite>u</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The evaluated B polynomial values with the same shape as the input coordinates.
+These values represent the y-direction distortion correction.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Currently supports polynomial orders 2 and 3. For unsupported orders or
+when coefficients are missing, returns zeros (no distortion correction).</p>
+<p>The SIP convention is described in Shupe et al. (2005) and defines the
+distortion as:</p>
+<p>y = v + B(u,v)</p>
+<p>where u,v are the undistorted intermediate pixel coordinates and y is the
+distorted coordinate.</p>
+<p>For order 2, the polynomial is:
+B(u,v) = B_0_2 * v² + B_1_1 * u*v + B_2_0 * u²</p>
+<p>For order 3, the polynomial adds higher-order terms:
+B(u,v) = B_0_2 * v² + B_0_3 * v³ + B_1_1 * u*v + B_1_2 * u*v² +</p>
+<blockquote>
+<div><p>B_2_0 * u² + B_2_1 * u²*v + B_3_0 * u³</p>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create coordinate grids centered at the reference pixel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u_grid</span><span class="p">,</span> <span class="n">v_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Calculate SIP distortion correction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correction_y</span> <span class="o">=</span> <span class="n">WCSHeader</span><span class="o">.</span><span class="n">SIP_polynomial_B</span><span class="p">(</span><span class="n">u_grid</span><span class="p">,</span> <span class="n">v_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_A" title="reproject.WCSHeader.SIP_polynomial_A"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_A</span></code></a></dt><dd><p>Evaluate the A polynomial for x-direction distortion</p>
+</dd>
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_AP" title="reproject.WCSHeader.SIP_polynomial_AP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_AP</span></code></a></dt><dd><p>Evaluate the inverse A polynomial</p>
+</dd>
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_BP" title="reproject.WCSHeader.SIP_polynomial_BP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_BP</span></code></a></dt><dd><p>Evaluate the inverse B polynomial</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reproject.WCSHeader.SIP_polynomial_AP">
+<span class="sig-name descname"><span class="pre">SIP_polynomial_AP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.SIP_polynomial_AP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.SIP_polynomial_AP" title="Link to this definition"></a></dt>
+<dd><p>Evaluate the inverse SIP distortion polynomial AP at the given coordinates.</p>
+<p>The AP polynomial is used in the inverse transformation from distorted pixel
+coordinates back to undistorted intermediate coordinates. This is essential
+for converting world coordinates (RA/Dec) to pixel coordinates in the presence
+of optical distortion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>torch.Tensor</em>) – Distorted pixel x-coordinates relative to the reference pixel.
+Can be a scalar, vector, or multi-dimensional tensor.</p></li>
+<li><p><strong>v</strong> (<em>torch.Tensor</em>) – Distorted pixel y-coordinates relative to the reference pixel.
+Must have the same shape as <cite>u</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The evaluated AP polynomial values with the same shape as the input coordinates.
+These values represent the x-direction correction for the inverse transformation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Currently supports polynomial orders 2 and 3. For unsupported orders or
+when coefficients are missing, returns zeros (no correction).</p>
+<p>The inverse SIP convention defines the transformation as:</p>
+<p>u′ = u + AP(u,v)</p>
+<p>where u,v are the distorted pixel coordinates and u′ is the undistorted
+intermediate coordinate.</p>
+<p>For order 2, the polynomial is:
+AP(u,v) = AP_0_0 + AP_0_1*v + AP_0_2*v² + AP_1_0*u + AP_1_1*u*v + AP_2_0*u²</p>
+<p>For order 3, the polynomial adds higher-order terms:
+AP(u,v) = AP_0_0 + AP_0_1*v + AP_0_2*v² + AP_0_3*v³ +</p>
+<blockquote>
+<div><p>AP_1_0*u + AP_1_1*u*v + AP_1_2*u*v² +
+AP_2_0*u² + AP_2_1*u²*v + AP_3_0*u³</p>
+</div></blockquote>
+<p>Note that unlike the forward polynomials (A, B), the inverse polynomials include
+constant (AP_0_0) and first-order terms to account for all distortion effects.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create coordinate grids for distorted pixel coordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u_grid</span><span class="p">,</span> <span class="n">v_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Calculate inverse distortion correction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correction_x</span> <span class="o">=</span> <span class="n">wcs_header</span><span class="o">.</span><span class="n">SIP_polynomial_AP</span><span class="p">(</span><span class="n">u_grid</span><span class="p">,</span> <span class="n">v_grid</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Apply correction to get undistorted coordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u_corrected</span> <span class="o">=</span> <span class="n">u_grid</span> <span class="o">+</span> <span class="n">correction_x</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_BP" title="reproject.WCSHeader.SIP_polynomial_BP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_BP</span></code></a></dt><dd><p>Evaluate the inverse B polynomial for y-direction correction</p>
+</dd>
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_A" title="reproject.WCSHeader.SIP_polynomial_A"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_A</span></code></a></dt><dd><p>Evaluate the forward A polynomial</p>
+</dd>
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_B" title="reproject.WCSHeader.SIP_polynomial_B"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_B</span></code></a></dt><dd><p>Evaluate the forward B polynomial</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reproject.WCSHeader.SIP_polynomial_BP">
+<span class="sig-name descname"><span class="pre">SIP_polynomial_BP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#WCSHeader.SIP_polynomial_BP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.WCSHeader.SIP_polynomial_BP" title="Link to this definition"></a></dt>
+<dd><p>Evaluate the inverse SIP distortion polynomial BP at the given coordinates.</p>
+<p>The BP polynomial is used in the inverse transformation from distorted pixel
+coordinates back to undistorted intermediate coordinates. This is essential
+for converting world coordinates (RA/Dec) to pixel coordinates in the presence
+of optical distortion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>torch.Tensor</em>) – Distorted pixel x-coordinates relative to the reference pixel.
+Can be a scalar, vector, or multi-dimensional tensor.</p></li>
+<li><p><strong>v</strong> (<em>torch.Tensor</em>) – Distorted pixel y-coordinates relative to the reference pixel.
+Must have the same shape as <cite>u</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The evaluated BP polynomial values with the same shape as the input coordinates.
+These values represent the y-direction correction for the inverse transformation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Currently supports polynomial orders 2 and 3. For unsupported orders or
+when coefficients are missing, returns zeros (no correction).</p>
+<p>The inverse SIP convention defines the transformation as:</p>
+<p>v′ = v + BP(u,v)</p>
+<p>where u,v are the distorted pixel coordinates and v′ is the undistorted
+intermediate coordinate.</p>
+<p>For order 2, the polynomial is:
+BP(u,v) = BP_0_0 + BP_0_1*v + BP_0_2*v² + BP_1_0*u + BP_1_1*u*v + BP_2_0*u²</p>
+<p>For order 3, the polynomial adds higher-order terms:
+BP(u,v) = BP_0_0 + BP_0_1*v + BP_0_2*v² + BP_0_3*v³ +</p>
+<blockquote>
+<div><p>BP_1_0*u + BP_1_1*u*v + BP_1_2*u*v² +
+BP_2_0*u² + BP_2_1*u²*v + BP_3_0*u³</p>
+</div></blockquote>
+<p>Note that unlike the forward polynomials (A, B), the inverse polynomials include
+constant (BP_0_0) and first-order terms to account for all distortion effects.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create coordinate grids for distorted pixel coordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u_grid</span><span class="p">,</span> <span class="n">v_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Calculate inverse distortion correction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correction_y</span> <span class="o">=</span> <span class="n">wcs_header</span><span class="o">.</span><span class="n">SIP_polynomial_BP</span><span class="p">(</span><span class="n">u_grid</span><span class="p">,</span> <span class="n">v_grid</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Apply correction to get undistorted coordinates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v_corrected</span> <span class="o">=</span> <span class="n">v_grid</span> <span class="o">+</span> <span class="n">correction_y</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_AP" title="reproject.WCSHeader.SIP_polynomial_AP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_AP</span></code></a></dt><dd><p>Evaluate the inverse A polynomial for x-direction correction</p>
+</dd>
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_A" title="reproject.WCSHeader.SIP_polynomial_A"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_A</span></code></a></dt><dd><p>Evaluate the forward A polynomial</p>
+</dd>
+<dt><a class="reference internal" href="#reproject.WCSHeader.SIP_polynomial_B" title="reproject.WCSHeader.SIP_polynomial_B"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SIP_polynomial_B</span></code></a></dt><dd><p>Evaluate the forward B polynomial</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="reproject.Reproject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">Reproject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_wcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#reproject.WCSHeader" title="reproject.WCSHeader"><span class="pre">WCSHeader</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_wcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#reproject.WCSHeader" title="reproject.WCSHeader"><span class="pre">WCSHeader</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#Reproject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.Reproject.target_wcs">
+<span class="sig-name descname"><span class="pre">target_wcs</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.target_wcs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.target_wcs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.Reproject.source_wcs">
+<span class="sig-name descname"><span class="pre">source_wcs</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.source_wcs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.source_wcs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.Reproject.target_image">
+<span class="sig-name descname"><span class="pre">target_image</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.target_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.target_image" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.Reproject.source_image">
+<span class="sig-name descname"><span class="pre">source_image</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.source_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.source_image" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reproject.Reproject.target_grid">
+<span class="sig-name descname"><span class="pre">target_grid</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.target_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.target_grid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reproject.Reproject.calculate_skyCoords">
+<span class="sig-name descname"><span class="pre">calculate_skyCoords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#Reproject.calculate_skyCoords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.calculate_skyCoords" title="Link to this definition"></a></dt>
+<dd><p>Calculate sky coordinates (RA/Dec) for each pixel in the target image.</p>
+<p>This method transforms pixel coordinates from the target image frame to celestial
+coordinates (Right Ascension and Declination) using the full WCS transformation
+pipeline including SIP distortion corrections. The transformation follows these steps:</p>
+<ol class="arabic simple">
+<li><p>Convert pixel coordinates to offsets from the reference pixel</p></li>
+<li><p>Apply SIP distortion correction</p></li>
+<li><p>Apply the PC matrix transformation</p></li>
+<li><p>Scale by the pixel scale (CDELT)</p></li>
+<li><p>Project the intermediate coordinates onto the celestial sphere using
+gnomonic (tangent plane) projection</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>A tuple containing (ra, dec) where:
+- ra: Right Ascension in radians for each pixel in the target image
+- dec: Declination in radians for each pixel in the target image</p>
+<p>Both tensors have the same shape as the target image.</p>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a> of torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This implementation follows the FITS WCS standard for gnomonic (TAN) projection
+with SIP distortion corrections. The algorithm:</p>
+<ol class="arabic simple">
+<li><p>Computes intermediate pixel coordinates (u,v) as offsets from the reference pixel</p></li>
+<li><p>Applies SIP distortion polynomials to get (x’,y’)</p></li>
+<li><p>Applies the PC matrix transformation to get intermediate world coordinates</p></li>
+<li><p>Scales by CDELT to get projection plane coordinates</p></li>
+<li><p>Computes the spherical coordinates using the gnomonic projection equations</p></li>
+</ol>
+<p>The output coordinates are in radians to facilitate further calculations.
+To convert to degrees, use torch.rad2deg().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reproject.Reproject.calculate_sourceCoords">
+<span class="sig-name descname"><span class="pre">calculate_sourceCoords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#Reproject.calculate_sourceCoords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.calculate_sourceCoords" title="Link to this definition"></a></dt>
+<dd><p>Calculate source image pixel coordinates corresponding to each target image pixel.</p>
+<p>This method completes the coordinate mapping chain by transforming target image
+pixels to sky coordinates and then to source image pixel coordinates. This is
+the fundamental operation for image reprojection, as it determines which source
+pixels should be sampled to create each target pixel. The transformation follows:</p>
+<ol class="arabic simple">
+<li><p>Calculate sky coordinates (RA/Dec) for each target pixel</p></li>
+<li><p>Convert these celestial coordinates to intermediate world coordinates in the source frame</p></li>
+<li><p>Apply the inverse PC matrix transformation</p></li>
+<li><p>Apply inverse SIP distortion correction</p></li>
+<li><p>Add reference pixel offsets to get final source pixel coordinates</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>A tuple containing (x, y) where:
+- x: Source image x-coordinates (columns) for each pixel in the target image
+- y: Source image y-coordinates (rows) for each pixel in the target image</p>
+<p>Both tensors have the same shape as the target image.</p>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a> of torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This implementation handles the full FITS WCS transformation with SIP distortion,
+calculating where in the source image each target pixel should sample from.</p>
+<p>The method includes special handling for the RA wrap-around issue, ensuring
+that coordinates spanning the 0h/24h boundary are correctly processed.</p>
+<p>A small epsilon value is used to ensure numerical stability when computing
+coordinates near the poles.</p>
+<p>The output pixel coordinates can be used directly with grid sampling functions
+to perform the actual reprojection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reproject.Reproject.interpolate_source_image">
+<span class="sig-name descname"><span class="pre">interpolate_source_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bilinear'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#Reproject.interpolate_source_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.interpolate_source_image" title="Link to this definition"></a></dt>
+<dd><p>Interpolate the source image at the calculated source coordinates.</p>
+<p>This method performs the actual pixel resampling needed for reprojection.
+It uses the coordinate mapping from target to source image (calculated by
+calculate_sourceCoords) to sample pixel values from the source image
+using the requested interpolation method. This is the final step in the
+reprojection process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>interpolation_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>default 'bilinear'</em>) – <p>The interpolation mode to use when sampling the source image.
+Options include:
+- ‘nearest’ : Nearest neighbor interpolation (no interpolation)
+- ‘bilinear’ : Bilinear interpolation (default)
+- ‘bicubic’ : Bicubic interpolation</p>
+<p>These correspond to the modes available in torch.nn.functional.grid_sample.</p>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reprojected image with the same shape as the target image.
+Pixel values are interpolated from the source image according to
+the WCS transformation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This implementation uses PyTorch’s grid_sample function which requires
+coordinates to be normalized to the range [-1, 1]. The method handles
+this normalization internally.</p>
+<p>Areas in the target image that map outside the source image boundaries
+will be filled with zeros (using ‘zeros’ padding_mode).</p>
+<p>The interpolation is performed with align_corners=True, which means
+that the extreme values (-1 and 1) are considered to refer to the
+centers of the corner pixels, as is standard in astronomical image
+processing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reproject.calculate_reprojection">
+<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">calculate_reprojection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#calculate_reprojection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.calculate_reprojection" title="Link to this definition"></a></dt>
+<dd><p>Reproject an astronomical image from a source WCS to a target WCS.</p>
+<p>This high-level function provides a convenient interface for image reprojection,
+handling all the necessary steps: WCS extraction, tensor creation, and interpolation.
+It converts FITS HDU objects to the internal representation, performs the reprojection,
+and returns the resulting image as a PyTorch tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_hdu</strong> (<em>fits.PrimaryHDU</em>) – The source image HDU containing the image data to be reprojected and
+its associated WCS information in the header.</p></li>
+<li><p><strong>target_hdu</strong> (<em>fits.PrimaryHDU</em>) – The target image HDU providing the output grid and WCS information. The
+shape of target_hdu.data defines the dimensions of the output image.</p></li>
+<li><p><strong>interpolation_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>default 'nearest'</em>) – The interpolation method to use when resampling the source image.
+Options:
+- ‘nearest’ : Nearest neighbor interpolation (fastest, default)
+- ‘bilinear’ : Bilinear interpolation (good balance of speed/quality)
+- ‘bicubic’ : Bicubic interpolation (highest quality, slowest)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reprojected image as a PyTorch tensor with the same shape as
+target_hdu.data. The tensor is on the same device as the computation
+(GPU if available, otherwise CPU).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function automatically:
+- Detects and uses GPU acceleration if available
+- Handles byte order conversion for tensor creation
+- Converts data to float32 for processing
+- Creates WCSHeader objects from FITS headers</p>
+<p>To save the result as a FITS file, you will need to convert the tensor
+back to a NumPy array and create a new FITS HDU with the target WCS header.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astroreproject</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_reprojection</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Open source and target images</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;source_image.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;target_grid.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Perform reprojection with bilinear interpolation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reprojected</span> <span class="o">=</span> <span class="n">calculate_reprojection</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">source_hdu</span><span class="o">=</span><span class="n">source_hdu</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">target_hdu</span><span class="o">=</span><span class="n">target_hdu</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">interpolation_mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Convert back to NumPy and save as FITS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reprojected_np</span> <span class="o">=</span> <span class="n">reprojected</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">reprojected_np</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">target_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output_hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="s1">&#39;reprojected_image.fits&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../utils/index.html" class="btn btn-neutral float-left" title="utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Carter Rhea.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

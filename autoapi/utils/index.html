@@ -1,0 +1,244 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils &mdash; reprojection  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="reproject" href="../reproject/index.html" />
+    <link rel="prev" title="API Reference" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            reprojection
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../solution_methodology.html">Astronomical Image Reprojection</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.plot_wcs_comparison"><code class="docutils literal notranslate"><span class="pre">plot_wcs_comparison()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#utils.compare_images"><code class="docutils literal notranslate"><span class="pre">compare_images()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reproject/index.html">reproject</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">reprojection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">utils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/autoapi/utils/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-utils">
+<span id="utils"></span><h1>utils<a class="headerlink" href="#module-utils" title="Link to this heading"></a></h1>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.plot_wcs_comparison" title="utils.plot_wcs_comparison"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_wcs_comparison</span></code></a>(source_hdu, target_hdu)</p></td>
+<td><p>Create a visual comparison of two astronomical images with different WCS (World Coordinate System) projections.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.compare_images" title="utils.compare_images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare_images</span></code></a>(source_hdu, reprojected_source)</p></td>
+<td><p>Create a side-by-side comparison of original and reprojected astronomical images.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.plot_wcs_comparison">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">plot_wcs_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils.html#plot_wcs_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.plot_wcs_comparison" title="Link to this definition"></a></dt>
+<dd><p>Create a visual comparison of two astronomical images with different WCS (World Coordinate System) projections.</p>
+<p>This function generates a three-panel figure that shows:
+1. The source image with coordinate grid
+2. The target image with coordinate grid
+3. An overlay of both WCS grids to visualize the coordinate transformation</p>
+<p>The visualization helps to understand the differences between two WCS projections
+and the transformations required for reprojection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_hdu</strong> (<em>fits.PrimaryHDU</em>) – The source image HDU containing both the image data and WCS information
+in its header. This is the “before” image.</p></li>
+<li><p><strong>target_hdu</strong> (<em>fits.PrimaryHDU</em>) – The target image HDU containing both the image data and WCS information
+in its header. This is the “after” image or the reference frame.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value but displays a matplotlib figure
+with the three-panel comparison.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function uses:
+- WCS from astropy for coordinate handling
+- simple_norm from astropy.visualization for image normalization
+- A preset RA/Dec grid covering 149.8-150.3 degrees in RA and 29.8-30.3 degrees in Dec
+- The ‘lipari’ colormap from cmc
+- Asinh scaling for better visualization of astronomical data</p>
+<p>The third panel shows how the same celestial coordinates map to different
+pixel positions in the two images, which is useful for understanding the
+distortions introduced by different projections.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load source and target images</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;original_image.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;reprojected_image.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create the comparison plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot_wcs_comparison</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">WCS</span></code></dt><dd><p>Astropy World Coordinate System class</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.compare_images">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">compare_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_hdu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reprojected_source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils.html#compare_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.compare_images" title="Link to this definition"></a></dt>
+<dd><p>Create a side-by-side comparison of original and reprojected astronomical images.</p>
+<p>This function generates a two-panel figure displaying the original source image
+alongside its reprojected version for visual comparison. The images are displayed
+with the same normalization to facilitate direct comparison of features and flux.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_hdu</strong> (<em>fits.PrimaryHDU</em><em> or </em><em>fits.ImageHDU</em>) – The original source image HDU containing image data. This represents the
+input image before reprojection.</p></li>
+<li><p><strong>reprojected_source</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a><em> or </em><em>torch.Tensor</em>) – The reprojected version of the source image. Can be either a NumPy array
+or a PyTorch tensor (which will be converted to NumPy for plotting).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure object containing the side-by-side comparison plot.
+This allows for further customization or saving the figure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function:
+- Automatically converts PyTorch tensors to NumPy arrays if needed
+- Uses ZScale normalization from astropy for optimal visualization of astronomical data
+- Applies the same normalization to both images for fair comparison
+- Shows image dimensions in the subplot titles
+- Uses the ‘lipari’ colormap which is effective for astronomical imagery
+- Displays images with ‘lower’ origin, following astronomical convention</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">reprojection</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_reprojection</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load source image</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;source_image.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get reprojected image (example with some target WCS)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reprojected_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">calculate_reprojection</span><span class="p">(</span><span class="n">source_hdu</span><span class="p">,</span> <span class="n">target_wcs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compare the original and reprojected images</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">compare_images</span><span class="p">(</span><span class="n">source_hdu</span><span class="p">,</span> <span class="n">reprojected_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;comparison.png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../reproject/index.html" class="btn btn-neutral float-right" title="reproject" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Carter Rhea.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
