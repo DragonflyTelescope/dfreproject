@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astronomical Coordinate Transformations &mdash; reprojection  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Welcome to reprojection’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            reprojection
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Astronomical Coordinate Transformations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-wcs-variables">Key WCS Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#calculate-skycoords">calculate_skyCoords</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#calculate_skyCoords"><code class="docutils literal notranslate"><span class="pre">calculate_skyCoords()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#calculate-sourcecoords">calculate_sourceCoords</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#calculate_sourceCoords"><code class="docutils literal notranslate"><span class="pre">calculate_sourceCoords()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">reprojection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Astronomical Coordinate Transformations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/methodology.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="astronomical-coordinate-transformations">
+<h1>Astronomical Coordinate Transformations<a class="headerlink" href="#astronomical-coordinate-transformations" title="Link to this heading"></a></h1>
+<p>This module provides PyTorch-based implementations of astronomical coordinate transformations using the World Coordinate System (WCS) standard. These functions allow conversion between pixel coordinates and sky coordinates (RA/Dec) with support for the Tangential (TAN) projection and SIP distortion corrections.</p>
+<section id="key-wcs-variables">
+<h2>Key WCS Variables<a class="headerlink" href="#key-wcs-variables" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>CRPIX1, CRPIX2</strong>: Reference pixel coordinates (1-based in FITS convention)</p></li>
+<li><p><strong>CRVAL1, CRVAL2</strong>: Reference point sky coordinates (RA, Dec) in degrees</p></li>
+<li><p><strong>PC_matrix</strong>: Transformation matrix that encodes rotation</p></li>
+<li><p><strong>CDELT</strong>: Pixel scale factors (degrees per pixel)</p></li>
+<li><p><strong>CD_matrix</strong>: Combined transformation matrix (PC_matrix * CDELT)</p></li>
+<li><p><strong>SIP coefficients</strong>: Parameters for the Simple Imaging Polynomial distortion correction</p></li>
+</ul>
+</section>
+<section id="calculate-skycoords">
+<h2>calculate_skyCoords<a class="headerlink" href="#calculate-skycoords" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="calculate_skyCoords">
+<span class="sig-name descname"><span class="pre">calculate_skyCoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#calculate_skyCoords" title="Link to this definition"></a></dt>
+<dd><p>Convert pixel coordinates in the target image to sky coordinates (RA, Dec).</p>
+<p>This function implements the forward transformation from pixel space to sky coordinates
+following the same logic as the Astropy WCS implementation, but using PyTorch for
+GPU acceleration and batch processing.</p>
+<p>Takes optional pixel coordinates (x, y) as input and returns a tuple of (RA, Dec) coordinates in degrees.</p>
+<p><strong>Key Steps:</strong></p>
+<ol class="arabic">
+<li><p><strong>Preprocessing</strong>: Compute pixel offsets from the reference pixel (CRPIX)</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}u = x - (CRPIX1 - 1)\\v = y - (CRPIX2 - 1)\end{aligned}\end{align} \]</div>
+<p>where <span class="math notranslate nohighlight">\(x, y\)</span> are input pixel coordinates and <span class="math notranslate nohighlight">\(CRPIX1, CRPIX2\)</span> are reference pixel coordinates.</p>
+</li>
+<li><p><strong>SIP Correction</strong>: Apply SIP distortion correction if present</p>
+<div class="math notranslate nohighlight">
+\[(u', v') = \text{apply_sip_distortion}(u, v)\]</div>
+<p>where <span class="math notranslate nohighlight">\(u', v'\)</span> are the distorted coordinates after applying the SIP polynomial.</p>
+</li>
+<li><p><strong>Linear Transformation</strong>: Apply the CD matrix (rotation and scaling)</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}CD\_matrix = PC\_matrix \cdot CDELT\\\begin{split}\begin{bmatrix} x_{scaled} \\ y_{scaled} \end{bmatrix} = CD\_matrix \cdot \begin{bmatrix} u' \\ v' \end{bmatrix}\end{split}\end{aligned}\end{align} \]</div>
+<p>where <span class="math notranslate nohighlight">\(PC\_matrix\)</span> is the coordinate rotation matrix, <span class="math notranslate nohighlight">\(CDELT\)</span> contains pixel scale factors,
+and <span class="math notranslate nohighlight">\(x_{scaled}, y_{scaled}\)</span> are intermediate coordinates in a standard plane.</p>
+</li>
+<li><p><strong>Tangential Projection</strong>: Convert to angular coordinates using the TAN projection</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}r = \sqrt{x_{scaled}^2 + y_{scaled}^2}\\\phi = \tan^{-1}(-x_{scaled}, y_{scaled}) \cdot \frac{180}{\pi}\\\theta = \tan^{-1}(r_0, r) \cdot \frac{180}{\pi}\end{aligned}\end{align} \]</div>
+<p>where <span class="math notranslate nohighlight">\(r_0 = \frac{180}{\pi}\)</span> is the radius scaling factor, <span class="math notranslate nohighlight">\(\phi\)</span> is the native longitude
+and <span class="math notranslate nohighlight">\(\theta\)</span> is the native latitude in the celestial coordinate system.</p>
+</li>
+<li><p><strong>Sky Coordinates Conversion</strong>: Transform to world coordinates (RA, Dec)</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\sin(dec) = \sin(\theta) \cdot \sin(dec_0) + \cos(\theta) \cdot \cos(dec_0) \cdot \cos(\phi)\\dec = \sin^{-1}(\sin(dec))\\ra = ra_0 + \tan^{-1}(-\cos(\theta) \cdot \sin(\phi), \sin(\theta) \cdot \cos(dec_0) - \cos(\theta) \cdot \sin(dec_0) \cdot \cos(\phi))\end{aligned}\end{align} \]</div>
+<p>where <span class="math notranslate nohighlight">\(ra_0, dec_0\)</span> are the reference point sky coordinates (CRVAL1, CRVAL2), and <span class="math notranslate nohighlight">\(ra, dec\)</span>
+are the final right ascension and declination in degrees.</p>
+</li>
+</ol>
+<p>The implementation faithfully reproduces the WCSLib computation steps for the TAN projection,
+including precise handling of trigonometric functions and coordinate transformations.</p>
+</dd></dl>
+
+</section>
+<section id="calculate-sourcecoords">
+<h2>calculate_sourceCoords<a class="headerlink" href="#calculate-sourcecoords" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="calculate_sourceCoords">
+<span class="sig-name descname"><span class="pre">calculate_sourceCoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#calculate_sourceCoords" title="Link to this definition"></a></dt>
+<dd><p>Calculate source image pixel coordinates corresponding to each target image pixel.</p>
+<p>This function performs the inverse transformation from the target image grid through
+sky coordinates and back to pixel coordinates in the source image. This is especially
+useful for image resampling and alignment tasks.</p>
+<p>Returns source image pixel coordinates (x, y) corresponding to each target pixel.</p>
+<p><strong>Key Steps:</strong></p>
+<ol class="arabic">
+<li><p><strong>Sky Coordinate Calculation</strong>: Obtain sky coordinates (RA, Dec) using <cite>calculate_skyCoords</cite></p></li>
+<li><p><strong>World to Native Transformation</strong>: Convert world coordinates to native spherical coordinates</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\delta_{ra} = ra - ra_0\\y_{\phi} = -\cos(dec) \cdot \sin(\delta_{ra})\\x_{\phi} = \sin(dec) \cdot \cos(dec_0) - \cos(dec) \cdot \sin(dec_0) \cdot \cos(\delta_{ra})\\\phi = \tan^{-1}(y_{\phi}, x_{\phi}) \cdot \frac{180}{\pi}\\\theta = \sin^{-1}(\sin(dec) \cdot \sin(dec_0) + \cos(dec) \cdot \cos(dec_0) \cdot \cos(\delta_{ra})) \cdot \frac{180}{\pi}\end{aligned}\end{align} \]</div>
+<p>where <span class="math notranslate nohighlight">\(ra, dec\)</span> are the input sky coordinates, <span class="math notranslate nohighlight">\(ra_0, dec_0\)</span> are the reference point coordinates (CRVAL1, CRVAL2),
+<span class="math notranslate nohighlight">\(\delta_{ra}\)</span> is the difference in right ascension, and <span class="math notranslate nohighlight">\(\phi, \theta\)</span> are native spherical coordinates.</p>
+</li>
+<li><p><strong>Projection Inversion</strong>: Apply inverse TAN projection</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}r_0 = \frac{180}{\pi}\\r = r_0 \cdot \frac{\cos(\theta)}{\sin(\theta)}\\x_{scaled} = -r \cdot \sin(\phi)\\y_{scaled} = r \cdot \cos(\phi)\end{aligned}\end{align} \]</div>
+<p>where <span class="math notranslate nohighlight">\(r_0\)</span> is the radius scaling factor, <span class="math notranslate nohighlight">\(r\)</span> is the radial distance, and <span class="math notranslate nohighlight">\(x_{scaled}, y_{scaled}\)</span>
+are intermediate coordinates in the standard projection plane.</p>
+</li>
+<li><p><strong>Linear Transformation</strong>: Apply inverse CD matrix to get pixel offsets</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}CD\_matrix = PC\_matrix \cdot CDELT\\\begin{split}\begin{bmatrix} u \\ v \end{bmatrix} = CD\_matrix^{-1} \cdot \begin{bmatrix} x_{scaled} \\ y_{scaled} \end{bmatrix}\end{split}\end{aligned}\end{align} \]</div>
+<p>where <span class="math notranslate nohighlight">\(CD\_matrix^{-1}\)</span> is the inverse of the combined transformation matrix, and <span class="math notranslate nohighlight">\(u, v\)</span> are pixel
+offsets before SIP correction.</p>
+</li>
+<li><p><strong>SIP Correction</strong>: Apply inverse SIP distortion correction if present</p>
+<div class="math notranslate nohighlight">
+\[(u', v') = \text{apply_inverse_sip_distortion}(u, v)\]</div>
+<p>where <span class="math notranslate nohighlight">\(u', v'\)</span> are the corrected pixel offsets after applying inverse SIP distortion.</p>
+</li>
+<li><p><strong>Final Coordinates</strong>: Add reference pixel position to get final pixel coordinates</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}x_{pixel} = u' + (CRPIX1 - 1)\\y_{pixel} = v' + (CRPIX2 - 1)\end{aligned}\end{align} \]</div>
+<p>where <span class="math notranslate nohighlight">\(CRPIX1, CRPIX2\)</span> are the reference pixel coordinates, and <span class="math notranslate nohighlight">\(x_{pixel}, y_{pixel}\)</span> are
+the final source image pixel coordinates.</p>
+</li>
+</ol>
+<p>This implementation carefully handles the sign conventions and coordinate system transformations
+required for accurate results, matching the behavior of the standard WCSLib implementation.</p>
+</dd></dl>
+
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Both functions support batch processing for efficient transformation of multiple coordinates</p></li>
+<li><p>The code uses PyTorch tensors for GPU acceleration and differentiable operations</p></li>
+<li><p>Special care is taken to handle edge cases like singularities in the projections</p></li>
+<li><p>The implementation follows the WCSLib conventions for sign handling and coordinate transformations</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to reprojection’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Carter Rhea.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

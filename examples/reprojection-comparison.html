@@ -1,0 +1,406 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test of reprojection &mdash; reprojection  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Comparison of Astropy vs Torch implementation of coordinate transformation" href="Coordinate-Comparison.html" />
+    <link rel="prev" title="Examples" href="../examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            reprojection
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../methodology.html">Astronomical Coordinate Transformations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Test of reprojection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Reprojection">Reprojection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Coordinate-Comparison.html">Comparison of Astropy vs Torch implementation of coordinate transformation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">reprojection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../examples.html">Examples</a></li>
+      <li class="breadcrumb-item active">Test of reprojection</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/reprojection-comparison.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Test-of-reprojection">
+<h1>Test of reprojection<a class="headerlink" href="#Test-of-reprojection" title="Link to this heading"></a></h1>
+<p>In this notebook we will test our reprojection method on 2 frames taken with the Dragonfly instrument. The goal of this notebook is to demonstrate that the results are equivalent and that we gain a speedup using our methodology.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">reprojection.reproject</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_reprojection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cmcrameri.cm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cmc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">reproject</span><span class="w"> </span><span class="kn">import</span> <span class="n">reproject_interp</span>
+</pre></div>
+</div>
+</div>
+<p>We now read in the data. Please update this with your own data if you wish to test it locally.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">light1</span> <span class="o">=</span> <span class="s1">&#39;./data/Atik1442426-0035_0032_light.fits&#39;</span>
+<span class="n">light2</span> <span class="o">=</span> <span class="s1">&#39;./data/Atik1442428-0045_0032_light.fits&#39;</span>
+
+<span class="n">light1_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">light1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">light2_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">light2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s go ahead and visualize these two frames.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">light1_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmc</span><span class="o">.</span><span class="n">lipari</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">700</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Light 1&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">light2_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmc</span><span class="o">.</span><span class="n">lipari</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Light 2&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_reprojection-comparison_5_0.png" src="../_images/examples_reprojection-comparison_5_0.png" />
+</div>
+</div>
+<p>Between these two frames there is some rotation (about 90 degrees) and slight translation.</p>
+<section id="Reprojection">
+<h2>Reprojection<a class="headerlink" href="#Reprojection" title="Link to this heading"></a></h2>
+<p>Now let’s go ahead and do the reprojections using a cubic reprojection.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">reprojected_source_torch</span> <span class="o">=</span> <span class="n">calculate_reprojection</span><span class="p">(</span><span class="n">light2_hdu</span><span class="p">,</span> <span class="n">light1_hdu</span><span class="p">,</span> <span class="n">interpolation_mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+<span class="n">torch_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;total time: </span><span class="si">{</span><span class="n">torch_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/carterrhea/Documents/reprojection/src/reprojection/reproject.py:505: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  CD_matrix = torch.tensor(CD_matrix, device=self.device)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+total time: 1.1784660816192627
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">light1_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmc</span><span class="o">.</span><span class="n">lipari</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">700</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Light 1&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">3200</span><span class="p">,</span> <span class="mi">3800</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">2500</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">reprojected_source_torch</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmc</span><span class="o">.</span><span class="n">lipari</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Light 2 Torch Reprojection&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">3200</span><span class="p">,</span> <span class="mi">3800</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">2500</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/><br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_reprojection-comparison_8_0.png" src="../_images/examples_reprojection-comparison_8_0.png" />
+</div>
+</div>
+<p>|As we can see the results are extremely similar. The differences are due to how the normalization is handled in our implementation versus reproject_interp.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">reprojected_source_reproj</span> <span class="o">=</span> <span class="n">reproject_interp</span><span class="p">(</span><span class="n">light2_hdu</span><span class="p">,</span> <span class="n">light1_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">reproject_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;total time: </span><span class="si">{</span><span class="n">reproject_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyboardInterrupt</span>                         Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[6], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> start <span style="color: rgb(98,98,98)">=</span> time<span style="color: rgb(98,98,98)">.</span>time()
+<span class="ansi-green-fg">----&gt; 2</span> reprojected_source_reproj <span style="color: rgb(98,98,98)">=</span> reproject_interp(light2_hdu, light1_hdu<span style="color: rgb(98,98,98)">.</span>header,order<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">bilinear</span><span style="color: rgb(175,0,0)">&#39;</span>)[<span style="color: rgb(98,98,98)">0</span>]
+<span class="ansi-green-intense-fg ansi-bold">      3</span> reproject_time <span style="color: rgb(98,98,98)">=</span> time<span style="color: rgb(98,98,98)">.</span>time()<span style="color: rgb(98,98,98)">-</span>start
+<span class="ansi-green-intense-fg ansi-bold">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">total time: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>reproject_time<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/reproject/interpolation/high_level.py:132</span>, in <span class="ansi-cyan-fg">reproject_interp</span><span class="ansi-blue-fg">(input_data, output_projection, shape_out, hdu_in, order, roundtrip_coords, output_array, output_footprint, return_footprint, block_size, parallel, return_type)</span>
+<span class="ansi-green-intense-fg ansi-bold">    128</span>     order <span style="color: rgb(98,98,98)">=</span> ORDER[order]
+<span class="ansi-green-intense-fg ansi-bold">    130</span> <span style="color: rgb(95,135,135)"># TODO: add tests that actually ensure that order and roundtrip_coords work</span>
+<span class="ansi-green-fg">--&gt; 132</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> _reproject_dispatcher(
+<span class="ansi-green-intense-fg ansi-bold">    133</span>     _reproject_full,
+<span class="ansi-green-intense-fg ansi-bold">    134</span>     array_in<span style="color: rgb(98,98,98)">=</span>array_in,
+<span class="ansi-green-intense-fg ansi-bold">    135</span>     wcs_in<span style="color: rgb(98,98,98)">=</span>wcs_in,
+<span class="ansi-green-intense-fg ansi-bold">    136</span>     wcs_out<span style="color: rgb(98,98,98)">=</span>wcs_out,
+<span class="ansi-green-intense-fg ansi-bold">    137</span>     shape_out<span style="color: rgb(98,98,98)">=</span>shape_out,
+<span class="ansi-green-intense-fg ansi-bold">    138</span>     array_out<span style="color: rgb(98,98,98)">=</span>output_array,
+<span class="ansi-green-intense-fg ansi-bold">    139</span>     parallel<span style="color: rgb(98,98,98)">=</span>parallel,
+<span class="ansi-green-intense-fg ansi-bold">    140</span>     block_size<span style="color: rgb(98,98,98)">=</span>block_size,
+<span class="ansi-green-intense-fg ansi-bold">    141</span>     return_footprint<span style="color: rgb(98,98,98)">=</span>return_footprint,
+<span class="ansi-green-intense-fg ansi-bold">    142</span>     output_footprint<span style="color: rgb(98,98,98)">=</span>output_footprint,
+<span class="ansi-green-intense-fg ansi-bold">    143</span>     reproject_func_kwargs<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(0,135,0)">dict</span>(
+<span class="ansi-green-intense-fg ansi-bold">    144</span>         order<span style="color: rgb(98,98,98)">=</span>order,
+<span class="ansi-green-intense-fg ansi-bold">    145</span>         roundtrip_coords<span style="color: rgb(98,98,98)">=</span>roundtrip_coords,
+<span class="ansi-green-intense-fg ansi-bold">    146</span>     ),
+<span class="ansi-green-intense-fg ansi-bold">    147</span>     return_type<span style="color: rgb(98,98,98)">=</span>return_type,
+<span class="ansi-green-intense-fg ansi-bold">    148</span> )
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/reproject/common.py:170</span>, in <span class="ansi-cyan-fg">_reproject_dispatcher</span><span class="ansi-blue-fg">(reproject_func, array_in, wcs_in, shape_out, wcs_out, block_size, array_out, return_footprint, output_footprint, parallel, reproject_func_kwargs, return_type)</span>
+<span class="ansi-green-intense-fg ansi-bold">    167</span> logger<span style="color: rgb(98,98,98)">.</span>info(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Calling </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>reproject_func<span style="color: rgb(98,98,98)">.</span><span style="color: rgb(0,0,135)">__name__</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)"> in non-dask mode</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">    169</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">--&gt; 170</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> reproject_func(
+<span class="ansi-green-intense-fg ansi-bold">    171</span>         array_in,
+<span class="ansi-green-intense-fg ansi-bold">    172</span>         wcs_in,
+<span class="ansi-green-intense-fg ansi-bold">    173</span>         wcs_out,
+<span class="ansi-green-intense-fg ansi-bold">    174</span>         shape_out<span style="color: rgb(98,98,98)">=</span>shape_out,
+<span class="ansi-green-intense-fg ansi-bold">    175</span>         array_out<span style="color: rgb(98,98,98)">=</span>array_out,
+<span class="ansi-green-intense-fg ansi-bold">    176</span>         return_footprint<span style="color: rgb(98,98,98)">=</span>return_footprint,
+<span class="ansi-green-intense-fg ansi-bold">    177</span>         output_footprint<span style="color: rgb(98,98,98)">=</span>output_footprint,
+<span class="ansi-green-intense-fg ansi-bold">    178</span>         <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>reproject_func_kwargs,
+<span class="ansi-green-intense-fg ansi-bold">    179</span>     )
+<span class="ansi-green-intense-fg ansi-bold">    180</span> <span class="ansi-bold" style="color: rgb(0,135,0)">finally</span>:
+<span class="ansi-green-intense-fg ansi-bold">    181</span>     <span style="color: rgb(95,135,135)"># Clean up reference to numpy memmap</span>
+<span class="ansi-green-intense-fg ansi-bold">    182</span>     array_in <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/reproject/interpolation/core.py:112</span>, in <span class="ansi-cyan-fg">_reproject_full</span><span class="ansi-blue-fg">(array, wcs_in, wcs_out, shape_out, order, array_out, return_footprint, roundtrip_coords, output_footprint)</span>
+<span class="ansi-green-intense-fg ansi-bold">    110</span> <span style="color: rgb(95,135,135)"># For each pixel in the output array, get the pixel value in the input WCS</span>
+<span class="ansi-green-intense-fg ansi-bold">    111</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> roundtrip_coords:
+<span class="ansi-green-fg">--&gt; 112</span>     pixel_in <span style="color: rgb(98,98,98)">=</span> pixel_to_pixel_with_roundtrip(wcs_out, wcs_in, <span style="color: rgb(98,98,98)">*</span>pixel_out[::<span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">1</span>])[::<span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">1</span>]
+<span class="ansi-green-intense-fg ansi-bold">    113</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-green-intense-fg ansi-bold">    114</span>     pixel_in <span style="color: rgb(98,98,98)">=</span> pixel_to_pixel(wcs_out, wcs_in, <span style="color: rgb(98,98,98)">*</span>pixel_out[::<span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">1</span>])[::<span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">1</span>]
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/reproject/wcs_utils.py:29</span>, in <span class="ansi-cyan-fg">pixel_to_pixel_with_roundtrip</span><span class="ansi-blue-fg">(wcs1, wcs2, *inputs)</span>
+<span class="ansi-green-intense-fg ansi-bold">     28</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">pixel_to_pixel_with_roundtrip</span>(wcs1, wcs2, <span style="color: rgb(98,98,98)">*</span>inputs):
+<span class="ansi-green-fg">---&gt; 29</span>     outputs <span style="color: rgb(98,98,98)">=</span> pixel_to_pixel(wcs1, wcs2, <span style="color: rgb(98,98,98)">*</span>inputs)
+<span class="ansi-green-intense-fg ansi-bold">     31</span>     <span style="color: rgb(95,135,135)"># Now convert back to check that coordinates round-trip, if not then set to NaN</span>
+<span class="ansi-green-intense-fg ansi-bold">     32</span>     inputs_check <span style="color: rgb(98,98,98)">=</span> pixel_to_pixel(wcs2, wcs1, <span style="color: rgb(98,98,98)">*</span>outputs)
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/astropy/wcs/utils.py:932</span>, in <span class="ansi-cyan-fg">pixel_to_pixel</span><span class="ansi-blue-fg">(wcs_in, wcs_out, *inputs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    928</span>         pixel_inputs<span style="color: rgb(98,98,98)">.</span>append(inputs[ipix]<span style="color: rgb(98,98,98)">.</span>flat[<span style="color: rgb(98,98,98)">0</span>])
+<span class="ansi-green-intense-fg ansi-bold">    930</span> pixel_inputs <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>broadcast_arrays(<span style="color: rgb(98,98,98)">*</span>pixel_inputs)
+<span class="ansi-green-fg">--&gt; 932</span> world_outputs <span style="color: rgb(98,98,98)">=</span> wcs_in<span style="color: rgb(98,98,98)">.</span>pixel_to_world(<span style="color: rgb(98,98,98)">*</span>pixel_inputs)
+<span class="ansi-green-intense-fg ansi-bold">    934</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span style="color: rgb(0,135,0)">isinstance</span>(world_outputs, (<span style="color: rgb(0,135,0)">tuple</span>, <span style="color: rgb(0,135,0)">list</span>)):
+<span class="ansi-green-intense-fg ansi-bold">    935</span>     world_outputs <span style="color: rgb(98,98,98)">=</span> (world_outputs,)
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/astropy/wcs/wcsapi/high_level_api.py:363</span>, in <span class="ansi-cyan-fg">HighLevelWCSMixin.pixel_to_world</span><span class="ansi-blue-fg">(self, *pixel_arrays)</span>
+<span class="ansi-green-intense-fg ansi-bold">    361</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">pixel_to_world</span>(<span style="color: rgb(0,135,0)">self</span>, <span style="color: rgb(98,98,98)">*</span>pixel_arrays):
+<span class="ansi-green-intense-fg ansi-bold">    362</span>     <span style="color: rgb(95,135,135)"># Compute the world coordinate values</span>
+<span class="ansi-green-fg">--&gt; 363</span>     world_values <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>low_level_wcs<span style="color: rgb(98,98,98)">.</span>pixel_to_world_values(<span style="color: rgb(98,98,98)">*</span>pixel_arrays)
+<span class="ansi-green-intense-fg ansi-bold">    365</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>low_level_wcs<span style="color: rgb(98,98,98)">.</span>world_n_dim <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(98,98,98)">1</span>:
+<span class="ansi-green-intense-fg ansi-bold">    366</span>         world_values <span style="color: rgb(98,98,98)">=</span> (world_values,)
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/astropy/wcs/wcsapi/fitswcs.py:356</span>, in <span class="ansi-cyan-fg">FITSWCSAPIMixin.pixel_to_world_values</span><span class="ansi-blue-fg">(self, *pixel_arrays)</span>
+<span class="ansi-green-intense-fg ansi-bold">    354</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">pixel_to_world_values</span>(<span style="color: rgb(0,135,0)">self</span>, <span style="color: rgb(98,98,98)">*</span>pixel_arrays):
+<span class="ansi-green-intense-fg ansi-bold">    355</span>     pixel_arrays <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_out_of_bounds_to_nan(pixel_arrays)
+<span class="ansi-green-fg">--&gt; 356</span>     world <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>all_pix2world(<span style="color: rgb(98,98,98)">*</span>pixel_arrays, <span style="color: rgb(98,98,98)">0</span>)
+<span class="ansi-green-intense-fg ansi-bold">    357</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> world[<span style="color: rgb(98,98,98)">0</span>] <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>world_n_dim <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(98,98,98)">1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span> <span style="color: rgb(0,135,0)">tuple</span>(world)
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/astropy/wcs/wcs.py:1556</span>, in <span class="ansi-cyan-fg">WCS.all_pix2world</span><span class="ansi-blue-fg">(self, *args, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1555</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">all_pix2world</span>(<span style="color: rgb(0,135,0)">self</span>, <span style="color: rgb(98,98,98)">*</span>args, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>kwargs):
+<span class="ansi-green-fg">-&gt; 1556</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_array_converter(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_all_pix2world, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">output</span><span style="color: rgb(175,0,0)">&#34;</span>, <span style="color: rgb(98,98,98)">*</span>args, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>kwargs)
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/astropy/wcs/wcs.py:1546</span>, in <span class="ansi-cyan-fg">WCS._array_converter</span><span class="ansi-blue-fg">(self, func, sky, ra_dec_order, *args)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1540</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">Exception</span>:
+<span class="ansi-green-intense-fg ansi-bold">   1541</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">TypeError</span>(
+<span class="ansi-green-intense-fg ansi-bold">   1542</span>             <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">When providing more than two arguments, they must be </span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">   1543</span>             <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">a 1-D array for each axis, followed by an origin.</span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">   1544</span>         )
+<span class="ansi-green-fg">-&gt; 1546</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> _return_list_of_arrays(axes, origin)
+<span class="ansi-green-intense-fg ansi-bold">   1548</span> <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">TypeError</span>(
+<span class="ansi-green-intense-fg ansi-bold">   1549</span>     <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">WCS projection has </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>naxis<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)"> dimensions, so expected 2 (an Nx</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>naxis<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)"> array </span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">   1550</span>     <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">and the origin argument) or </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>naxis<span style="color: rgb(188,188,188)"> </span><span style="color: rgb(98,98,98)">+</span><span style="color: rgb(188,188,188)"> </span><span style="color: rgb(98,98,98)">1</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)"> arguments (the position in each </span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">   1551</span>     <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">dimension, and the origin argument). Instead, </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">len</span>(args)<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)"> arguments were </span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">   1552</span>     <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">given.</span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">   1553</span> )
+
+File <span class="ansi-green-fg">~/miniconda3/envs/reprojection/lib/python3.12/site-packages/astropy/wcs/wcs.py:1496</span>, in <span class="ansi-cyan-fg">WCS._array_converter.&lt;locals&gt;._return_list_of_arrays</span><span class="ansi-blue-fg">(axes, origin)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1494</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> ra_dec_order <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> sky <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">input</span><span style="color: rgb(175,0,0)">&#34;</span>:
+<span class="ansi-green-intense-fg ansi-bold">   1495</span>     xy <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_denormalize_sky(xy)
+<span class="ansi-green-fg">-&gt; 1496</span> output <span style="color: rgb(98,98,98)">=</span> func(xy, origin)
+<span class="ansi-green-intense-fg ansi-bold">   1497</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> ra_dec_order <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> sky <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">output</span><span style="color: rgb(175,0,0)">&#34;</span>:
+<span class="ansi-green-intense-fg ansi-bold">   1498</span>     output <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_normalize_sky(output)
+
+<span class="ansi-red-fg">KeyboardInterrupt</span>:
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">light1_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmc</span><span class="o">.</span><span class="n">lipari</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">700</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Light 1&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">3200</span><span class="p">,</span> <span class="mi">3800</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">2500</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">reprojected_source_reproj</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmc</span><span class="o">.</span><span class="n">lipari</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Light 2 Reproject Reprojection&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">3200</span><span class="p">,</span> <span class="mi">3800</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">2500</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<p>So we can see that the results look consistent accross the methods. Let’s go ahead and double check that by plotting out the residuals.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">reprojected_source_torch</span><span class="o">-</span><span class="n">reprojected_source_reproj</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmc</span><span class="o">.</span><span class="n">lipari</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">3200</span><span class="p">,</span> <span class="mi">3800</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">2500</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Coordinate-Comparison.html" class="btn btn-neutral float-right" title="Comparison of Astropy vs Torch implementation of coordinate transformation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Carter Rhea.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
