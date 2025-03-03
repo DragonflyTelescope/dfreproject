@@ -26,10 +26,6 @@ Functions
 .. autoapisummary::
 
    reproject.interpolate_image
-   reproject.get_sip_coeffs
-   reproject.apply_sip_distortion
-   reproject.apply_inverse_sip_distortion
-   reproject.iterative_inverse_sip
    reproject.calculate_reprojection
 
 
@@ -43,83 +39,6 @@ Module Contents
 .. py:function:: interpolate_image(source_image: torch.Tensor, grid: torch.Tensor, interpolation_mode: str) -> torch.Tensor
 
    JIT-compiled image interpolation using grid_sample
-
-
-.. py:function:: get_sip_coeffs(wcs: astropy.wcs.WCS) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
-
-   Extract SIP polynomial coefficients from a WCS object.
-
-   Parameters:
-   -----------
-   wcs : astropy.wcs.WCS
-       WCS object potentially containing SIP distortion
-
-   Returns:
-   --------
-   dict:
-       Dictionary containing SIP coefficient matrices A, B, AP, BP and orders
-
-
-.. py:function:: apply_sip_distortion(u: torch.Tensor, v: torch.Tensor, sip_coeffs: Tuple, device: str = 'cpu')
-
-   Apply SIP distortion to intermediate pixel coordinates.
-
-   Parameters:
-   -----------
-   u, v : torch.Tensor
-       Intermediate pixel coordinates (before distortion)
-   sip_coeffs : Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
-       SIP coefficient matrices
-   device : torch.device, optional
-       Device to place tensors on
-
-   Returns:
-   --------
-   tuple:
-       (u', v') distorted coordinates
-
-
-.. py:function:: apply_inverse_sip_distortion(u: torch.Tensor, v: torch.Tensor, sip_coeffs: Tuple, device: str = 'cpu')
-
-   Apply inverse SIP distortion to go from distorted to intermediate coordinates.
-
-   Parameters:
-   -----------
-   u, v : torch.Tensor
-       Distorted coordinates
-   sip_coeffs : Tuple
-       SIP coefficient matrices
-   device : torch.device, optional
-       Device to place tensors on
-
-   Returns:
-   --------
-   tuple:
-       (u', v') undistorted coordinates
-
-
-.. py:function:: iterative_inverse_sip(u: torch.Tensor, v: torch.Tensor, sip_coeffs: Tuple, device: str = 'cpu', max_iter: int = 20, tol: float = 1e-08)
-
-   Iteratively solve for undistorted coordinates when inverse SIP coefficients
-   are not available.
-
-   Parameters:
-   -----------
-   u, v : torch.Tensor
-       Distorted coordinates
-   sip_coeffs : Tuple
-       SIP coefficient matrices
-   device : torch.device, optional
-       Device to place tensors on
-   max_iter : int, optional
-       Maximum number of iterations
-   tol : float, optional
-       Convergence tolerance
-
-   Returns:
-   --------
-   tuple:
-       (u', v') undistorted coordinates
 
 
 .. py:class:: Reproject(source_hdu: astropy.io.fits.PrimaryHDU, target_hdu: astropy.io.fits.PrimaryHDU)

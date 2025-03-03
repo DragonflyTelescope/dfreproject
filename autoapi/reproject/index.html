@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../methodology.html">Astronomical Coordinate Transformations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../sip/index.html">sip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/index.html">utils</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">reproject</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#attributes">Attributes</a></li>
@@ -56,10 +57,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#reproject.EPSILON"><code class="docutils literal notranslate"><span class="pre">EPSILON</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reproject.interpolate_image"><code class="docutils literal notranslate"><span class="pre">interpolate_image()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reproject.get_sip_coeffs"><code class="docutils literal notranslate"><span class="pre">get_sip_coeffs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reproject.apply_sip_distortion"><code class="docutils literal notranslate"><span class="pre">apply_sip_distortion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reproject.apply_inverse_sip_distortion"><code class="docutils literal notranslate"><span class="pre">apply_inverse_sip_distortion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reproject.iterative_inverse_sip"><code class="docutils literal notranslate"><span class="pre">iterative_inverse_sip()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reproject.Reproject"><code class="docutils literal notranslate"><span class="pre">Reproject</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reproject.calculate_reprojection"><code class="docutils literal notranslate"><span class="pre">calculate_reprojection()</span></code></a></li>
 </ul>
@@ -124,18 +121,6 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#reproject.interpolate_image" title="reproject.interpolate_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_image</span></code></a>(→ torch.Tensor)</p></td>
 <td><p>JIT-compiled image interpolation using grid_sample</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reproject.get_sip_coeffs" title="reproject.get_sip_coeffs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sip_coeffs</span></code></a>(→ Tuple[torch.Tensor, torch.Tensor, ...)</p></td>
-<td><p>Extract SIP polynomial coefficients from a WCS object.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reproject.apply_sip_distortion" title="reproject.apply_sip_distortion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_sip_distortion</span></code></a>(u, v, sip_coeffs[, device])</p></td>
-<td><p>Apply SIP distortion to intermediate pixel coordinates.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reproject.apply_inverse_sip_distortion" title="reproject.apply_inverse_sip_distortion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_inverse_sip_distortion</span></code></a>(u, v, sip_coeffs[, device])</p></td>
-<td><p>Apply inverse SIP distortion to go from distorted to intermediate coordinates.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reproject.iterative_inverse_sip" title="reproject.iterative_inverse_sip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iterative_inverse_sip</span></code></a>(u, v, sip_coeffs[, device, ...])</p></td>
-<td><p>Iteratively solve for undistorted coordinates when inverse SIP coefficients</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reproject.calculate_reprojection" title="reproject.calculate_reprojection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_reprojection</span></code></a>(source_hdu, target_hdu[, ...])</p></td>
 <td><p>Reproject an astronomical image from a source WCS to a target WCS.</p></td>
 </tr>
@@ -153,103 +138,6 @@
 <dt class="sig sig-object py" id="reproject.interpolate_image">
 <span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">interpolate_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="../../_modules/reproject.html#interpolate_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.interpolate_image" title="Link to this definition"></a></dt>
 <dd><p>JIT-compiled image interpolation using grid_sample</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="reproject.get_sip_coeffs">
-<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">get_sip_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.wcs.WCS.html#astropy.wcs.WCS" title="(in Astropy v7.0)"><span class="pre">astropy.wcs.WCS</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/reproject.html#get_sip_coeffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.get_sip_coeffs" title="Link to this definition"></a></dt>
-<dd><p>Extract SIP polynomial coefficients from a WCS object.</p>
-<section id="parameters">
-<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>wcs<span class="classifier">astropy.wcs.WCS</span></dt><dd><p>WCS object potentially containing SIP distortion</p>
-</dd>
-</dl>
-</section>
-<section id="returns">
-<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>dict:</dt><dd><p>Dictionary containing SIP coefficient matrices A, B, AP, BP and orders</p>
-</dd>
-</dl>
-</section>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="reproject.apply_sip_distortion">
-<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">apply_sip_distortion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sip_coeffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#apply_sip_distortion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.apply_sip_distortion" title="Link to this definition"></a></dt>
-<dd><p>Apply SIP distortion to intermediate pixel coordinates.</p>
-<section id="id1">
-<h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Intermediate pixel coordinates (before distortion)</p>
-</dd>
-<dt>sip_coeffs<span class="classifier">Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]</span></dt><dd><p>SIP coefficient matrices</p>
-</dd>
-<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on</p>
-</dd>
-</dl>
-</section>
-<section id="id2">
-<h3>Returns:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>tuple:</dt><dd><p>(u’, v’) distorted coordinates</p>
-</dd>
-</dl>
-</section>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="reproject.apply_inverse_sip_distortion">
-<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">apply_inverse_sip_distortion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sip_coeffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#apply_inverse_sip_distortion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.apply_inverse_sip_distortion" title="Link to this definition"></a></dt>
-<dd><p>Apply inverse SIP distortion to go from distorted to intermediate coordinates.</p>
-<section id="id3">
-<h3>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Distorted coordinates</p>
-</dd>
-<dt>sip_coeffs<span class="classifier">Tuple</span></dt><dd><p>SIP coefficient matrices</p>
-</dd>
-<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on</p>
-</dd>
-</dl>
-</section>
-<section id="id4">
-<h3>Returns:<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>tuple:</dt><dd><p>(u’, v’) undistorted coordinates</p>
-</dd>
-</dl>
-</section>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="reproject.iterative_inverse_sip">
-<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">iterative_inverse_sip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sip_coeffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#iterative_inverse_sip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.iterative_inverse_sip" title="Link to this definition"></a></dt>
-<dd><p>Iteratively solve for undistorted coordinates when inverse SIP coefficients
-are not available.</p>
-<section id="id5">
-<h3>Parameters:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Distorted coordinates</p>
-</dd>
-<dt>sip_coeffs<span class="classifier">Tuple</span></dt><dd><p>SIP coefficient matrices</p>
-</dd>
-<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on</p>
-</dd>
-<dt>max_iter<span class="classifier">int, optional</span></dt><dd><p>Maximum number of iterations</p>
-</dd>
-<dt>tol<span class="classifier">float, optional</span></dt><dd><p>Convergence tolerance</p>
-</dd>
-</dl>
-</section>
-<section id="id6">
-<h3>Returns:<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>tuple:</dt><dd><p>(u’, v’) undistorted coordinates</p>
-</dd>
-</dl>
-</section>
 </dd></dl>
 
 <dl class="py class">

@@ -6,6 +6,7 @@ This page contains auto-generated API reference documentation [#f1]_.
 .. toctree::
    :titlesonly:
 
+   /autoapi/sip/index
    /autoapi/utils/index
    /autoapi/reproject/index
 
