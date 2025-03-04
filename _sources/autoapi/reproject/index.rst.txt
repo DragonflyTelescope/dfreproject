@@ -41,29 +41,34 @@ Module Contents
    JIT-compiled image interpolation using grid_sample
 
 
-.. py:class:: Reproject(source_hdu: astropy.io.fits.PrimaryHDU, target_hdu: astropy.io.fits.PrimaryHDU)
+.. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_hdu: astropy.io.fits.PrimaryHDU)
 
    .. py:attribute:: device
 
 
-   .. py:attribute:: target_image
+   .. py:attribute:: batch_source_images
 
 
-   .. py:attribute:: source_image
+   .. py:attribute:: batch_source_wcs_params
 
 
-   .. py:attribute:: target_wcs_astropy
-
-
-   .. py:attribute:: source_wcs_astropy
+   .. py:attribute:: target_wcs_params
 
 
    .. py:attribute:: target_grid
 
 
-   .. py:method:: calculate_skyCoords(x=None, y=None)
+   .. py:method:: calculate_skyCoords(x_grid=None, y_grid=None) -> Tuple[torch.Tensor, torch.Tensor]
 
       Calculate sky coordinates using Astropy WCS implementation.
+
+      :param x_grid: Batch of x-coordinates. If None, uses target grid x-coordinates
+      :type x_grid: torch.Tensor, optional
+      :param y_grid: Batch of y-coordinates. If None, uses target grid y-coordinates
+      :type y_grid: torch.Tensor, optional
+
+      :returns: Batched RA and Dec coordinates
+      :rtype: tuple
 
 
 
@@ -121,7 +126,7 @@ Module Contents
 
 
 
-.. py:function:: calculate_reprojection(source_hdu: astropy.io.fits.PrimaryHDU, target_hdu: astropy.io.fits.PrimaryHDU, interpolation_mode='nearest')
+.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, List[astropy.io.fits.PrimaryHDU]], target_hdu: astropy.io.fits.PrimaryHDU, interpolation_mode='nearest')
 
    Reproject an astronomical image from a source WCS to a target WCS.
 
@@ -130,9 +135,9 @@ Module Contents
    It converts FITS HDU objects to the internal representation, performs the reprojection,
    and returns the resulting image as a PyTorch tensor.
 
-   :param source_hdu: The source image HDU containing the image data to be reprojected and
-                      its associated WCS information in the header.
-   :type source_hdu: fits.PrimaryHDU
+   :param source_hdus: The source image HDU list containing the image data to be reprojected and
+                       its associated WCS information in the header.
+   :type source_hdus: Union[PrimaryHDU, List[PrimaryHDU]]
    :param target_hdu: The target image HDU providing the output grid and WCS information. The
                       shape of target_hdu.data defines the dimensions of the output image.
    :type target_hdu: fits.PrimaryHDU

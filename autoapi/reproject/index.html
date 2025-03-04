@@ -121,7 +121,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#reproject.interpolate_image" title="reproject.interpolate_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_image</span></code></a>(→ torch.Tensor)</p></td>
 <td><p>JIT-compiled image interpolation using grid_sample</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reproject.calculate_reprojection" title="reproject.calculate_reprojection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_reprojection</span></code></a>(source_hdu, target_hdu[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reproject.calculate_reprojection" title="reproject.calculate_reprojection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_reprojection</span></code></a>(source_hdus, target_hdu[, ...])</p></td>
 <td><p>Reproject an astronomical image from a source WCS to a target WCS.</p></td>
 </tr>
 </tbody>
@@ -142,30 +142,25 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="reproject.Reproject">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">Reproject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#Reproject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">Reproject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_hdus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#Reproject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject" title="Link to this definition"></a></dt>
 <dd><dl class="py attribute">
 <dt class="sig sig-object py" id="reproject.Reproject.device">
 <span class="sig-name descname"><span class="pre">device</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.device" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="reproject.Reproject.target_image">
-<span class="sig-name descname"><span class="pre">target_image</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.target_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.target_image" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="reproject.Reproject.batch_source_images">
+<span class="sig-name descname"><span class="pre">batch_source_images</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.batch_source_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.batch_source_images" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="reproject.Reproject.source_image">
-<span class="sig-name descname"><span class="pre">source_image</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.source_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.source_image" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="reproject.Reproject.batch_source_wcs_params">
+<span class="sig-name descname"><span class="pre">batch_source_wcs_params</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.batch_source_wcs_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.batch_source_wcs_params" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="reproject.Reproject.target_wcs_astropy">
-<span class="sig-name descname"><span class="pre">target_wcs_astropy</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.target_wcs_astropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.target_wcs_astropy" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="reproject.Reproject.source_wcs_astropy">
-<span class="sig-name descname"><span class="pre">source_wcs_astropy</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.source_wcs_astropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.source_wcs_astropy" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="reproject.Reproject.target_wcs_params">
+<span class="sig-name descname"><span class="pre">target_wcs_params</span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.target_wcs_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.target_wcs_params" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -175,8 +170,22 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reproject.Reproject.calculate_skyCoords">
-<span class="sig-name descname"><span class="pre">calculate_skyCoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#Reproject.calculate_skyCoords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.calculate_skyCoords" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">calculate_skyCoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.calculate_skyCoords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.calculate_skyCoords" title="Link to this definition"></a></dt>
 <dd><p>Calculate sky coordinates using Astropy WCS implementation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_grid</strong> (<em>torch.Tensor</em><em>, </em><em>optional</em>) – Batch of x-coordinates. If None, uses target grid x-coordinates</p></li>
+<li><p><strong>y_grid</strong> (<em>torch.Tensor</em><em>, </em><em>optional</em>) – Batch of y-coordinates. If None, uses target grid y-coordinates</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Batched RA and Dec coordinates</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -236,7 +245,7 @@ characteristics and the flux distribution of sources.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="reproject.calculate_reprojection">
-<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">calculate_reprojection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#calculate_reprojection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.calculate_reprojection" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">calculate_reprojection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_hdus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_hdu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#calculate_reprojection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.calculate_reprojection" title="Link to this definition"></a></dt>
 <dd><p>Reproject an astronomical image from a source WCS to a target WCS.</p>
 <p>This high-level function provides a convenient interface for image reprojection,
 handling all the necessary steps: WCS extraction, tensor creation, and interpolation.
@@ -245,7 +254,7 @@ and returns the resulting image as a PyTorch tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>source_hdu</strong> (<em>fits.PrimaryHDU</em>) – The source image HDU containing the image data to be reprojected and
+<li><p><strong>source_hdus</strong> (<em>Union</em><em>[</em><em>PrimaryHDU</em><em>, </em><em>List</em><em>[</em><em>PrimaryHDU</em><em>]</em><em>]</em>) – The source image HDU list containing the image data to be reprojected and
 its associated WCS information in the header.</p></li>
 <li><p><strong>target_hdu</strong> (<em>fits.PrimaryHDU</em>) – The target image HDU providing the output grid and WCS information. The
 shape of target_hdu.data defines the dimensions of the output image.</p></li>

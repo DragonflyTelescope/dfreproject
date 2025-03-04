@@ -77,11 +77,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io.fits</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrimaryHDU</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
-
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">reprojection.sip</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">apply_inverse_sip_distortion</span><span class="p">,</span>
                               <span class="n">apply_sip_distortion</span><span class="p">,</span> <span class="n">get_sip_coeffs</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">reprojection.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
 <div class="viewcode-block" id="EPSILON">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.EPSILON">[docs]</a>
 <span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">1e-10</span></div>
@@ -108,7 +108,7 @@
 <div class="viewcode-block" id="Reproject">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Reproject</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdu</span><span class="p">:</span> <span class="n">PrimaryHDU</span><span class="p">,</span> <span class="n">target_hdu</span><span class="p">:</span> <span class="n">PrimaryHDU</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">],</span> <span class="n">target_hdu</span><span class="p">:</span> <span class="n">PrimaryHDU</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a reprojection operation between source and target image frames.</span>
 
@@ -119,8 +119,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        source_hdu : PrimaryHDU</span>
-<span class="sd">            HDU containing the data and the header information for the source image</span>
+<span class="sd">        source_hdus : List[PrimaryHDU]</span>
+<span class="sd">            List of HDUs containing the data and the header information for the source image</span>
 
 <span class="sd">        target_hdu : PrimaryHDU</span>
 <span class="sd">            HDU containing the data and the header information for the target image</span>
@@ -138,7 +138,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; # Initialize the reprojection object</span>
-<span class="sd">        &gt;&gt;&gt; reproject = Reproject(target_image, source_image, target_header, source_header, &#39;cuda:0&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; reproject = Reproject(source_hdus, target_hdu)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Set device</span>
@@ -148,131 +148,159 @@
 
 
         <span class="c1"># Initialize data</span>
-<div class="viewcode-block" id="Reproject.target_image">
-<a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.target_image">[docs]</a>
-        <span class="bp">self</span><span class="o">.</span><span class="n">target_image</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-            <span class="n">target_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="Reproject.source_image">
-<a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.source_image">[docs]</a>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source_image</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-            <span class="n">source_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
-        <span class="p">)</span></div>
-
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_image</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                <span class="n">target_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># Need to swap order of bytes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_image</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">target_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+            <span class="p">)</span>
+<div class="viewcode-block" id="Reproject.batch_source_images">
+<a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.batch_source_images">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_source_images</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">)</span></div>
 
         <span class="c1"># Initialize the WCS objects</span>
-<div class="viewcode-block" id="Reproject.target_wcs_astropy">
-<a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.target_wcs_astropy">[docs]</a>
-        <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_astropy</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">target_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">)</span></div>
+<div class="viewcode-block" id="Reproject.batch_source_wcs_params">
+<a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.batch_source_wcs_params">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_wcs_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_batch_wcs_params</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Reproject.source_wcs_astropy">
-<a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.source_wcs_astropy">[docs]</a>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source_wcs_astropy</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">source_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">)</span></div>
+<div class="viewcode-block" id="Reproject.target_wcs_params">
+<a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.target_wcs_params">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_wcs_params</span><span class="p">(</span><span class="n">WCS</span><span class="p">(</span><span class="n">target_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">))</span></div>
 
 
         <span class="c1"># Define target grid</span>
 <div class="viewcode-block" id="Reproject.target_grid">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.target_grid">[docs]</a>
-        <span class="bp">self</span><span class="o">.</span><span class="n">target_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">target_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
-            <span class="p">),</span>  <span class="c1"># height</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">target_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
-            <span class="p">),</span>  <span class="c1"># width</span>
-            <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">,</span>  <span class="c1"># y, x</span>
-        <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_batch_target_grid</span><span class="p">()</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_source_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare batch of source images as a single tensor&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">source_images</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">source_hdus</span>
+            <span class="p">]</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># In case there is a byte order error</span>
+            <span class="n">source_images</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">source_hdus</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">source_images</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_wcs_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wcs</span><span class="p">:</span> <span class="n">WCS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract key WCS parameters into a dictionary for efficient tensor operations</span>
+
+<span class="sd">        Returns a dictionary with pre-computed tensor parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;crpix&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crpix</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
+            <span class="s1">&#39;crval&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crval</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
+            <span class="s1">&#39;pc_matrix&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">get_pc</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
+            <span class="s1">&#39;cdelt&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">cdelt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
+            <span class="s1">&#39;sip_coeffs&#39;</span><span class="p">:</span> <span class="n">get_sip_coeffs</span><span class="p">(</span><span class="n">wcs</span><span class="p">)</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_batch_wcs_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare batch of WCS parameters&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_extract_wcs_params</span><span class="p">(</span><span class="n">WCS</span><span class="p">(</span><span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">))</span> <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">source_hdus</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_batch_target_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a batched target grid matching the number of source images</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span><span class="p">)</span>
+        <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_image</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># Create meshgrid and repeat for batch</span>
+        <span class="n">y_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+        <span class="n">x_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">y_grid</span><span class="p">,</span> <span class="n">x_grid</span>
 
 <div class="viewcode-block" id="Reproject.calculate_skyCoords">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.calculate_skyCoords">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_skyCoords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate sky coordinates using Astropy WCS implementation.&quot;&quot;&quot;</span>
-        <span class="c1"># Get target grid if not provided</span>
-        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_grid</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_skyCoords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y_grid</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate sky coordinates using Astropy WCS implementation.</span>
 
-        <span class="n">CRPIX1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crpix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">CRPIX2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crpix</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">CRVAL1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Reference RA</span>
-        <span class="n">CRVAL2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Reference Dec</span>
-        <span class="n">PC_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">get_pc</span><span class="p">(),</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-        <span class="p">)</span>  <span class="c1"># PC Matrix</span>
-        <span class="n">CDELT</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">cdelt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
-        <span class="p">)</span>  <span class="c1"># Scaling factors</span>
-        <span class="c1"># Get SIP coefficients if present</span>
-        <span class="n">sip_coeffs</span> <span class="o">=</span> <span class="n">get_sip_coeffs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_astropy</span><span class="p">)</span>
-        <span class="c1"># Convert numpy arrays to torch tensors if needed</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x_grid : torch.Tensor, optional</span>
+<span class="sd">            Batch of x-coordinates. If None, uses target grid x-coordinates</span>
+<span class="sd">        y_grid : torch.Tensor, optional</span>
+<span class="sd">            Batch of y-coordinates. If None, uses target grid y-coordinates</span>
 
-        <span class="c1"># Step 1: Compute Pixel Offsets - Precisely as in wcsprm::p2x</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="p">(</span><span class="n">CRPIX1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="p">(</span><span class="n">CRPIX2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            Batched RA and Dec coordinates&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">x_grid</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">y_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y_grid</span><span class="p">,</span> <span class="n">x_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_grid</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Ensure x and y are tensors on the correct device</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                <span class="n">x_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_grid</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                <span class="n">y_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_grid</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+            <span class="c1"># Ensure consistent batch dimensions</span>
+            <span class="k">if</span> <span class="n">x_grid</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">x_grid</span> <span class="o">=</span> <span class="n">x_grid</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">y_grid</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">y_grid</span> <span class="o">=</span> <span class="n">y_grid</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">y_grid</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># Unpack target WCS parameters</span>
+        <span class="n">crpix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_params</span><span class="p">[</span><span class="s1">&#39;crpix&#39;</span><span class="p">]</span>
+        <span class="n">crval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_params</span><span class="p">[</span><span class="s1">&#39;crval&#39;</span><span class="p">]</span>
+        <span class="n">pc_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_params</span><span class="p">[</span><span class="s1">&#39;pc_matrix&#39;</span><span class="p">]</span>
+        <span class="n">cdelt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_params</span><span class="p">[</span><span class="s1">&#39;cdelt&#39;</span><span class="p">]</span>
+        <span class="n">sip_coeffs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_params</span><span class="p">[</span><span class="s1">&#39;sip_coeffs&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Compute pixel offsets</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">x_grid</span> <span class="o">-</span> <span class="p">(</span><span class="n">crpix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">y_grid</span> <span class="o">-</span> <span class="p">(</span><span class="n">crpix</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Apply SIP distortion if present</span>
         <span class="k">if</span> <span class="n">sip_coeffs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">apply_sip_distortion</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sip_coeffs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="c1"># Step 2: Apply PC Matrix (Rotation) and CDELT (Scaling)</span>
-        <span class="n">CD_matrix</span> <span class="o">=</span> <span class="n">PC_matrix</span> <span class="o">*</span> <span class="n">CDELT</span>  <span class="c1"># Construct CD Matrix</span>
-        <span class="c1"># Handle both scalar and array inputs</span>
-        <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># scalar</span>
-            <span class="n">pixel_offsets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">v</span><span class="o">.</span><span class="n">item</span><span class="p">()],</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span>
-            <span class="p">)</span>
-            <span class="n">transformed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">CD_matrix</span><span class="p">,</span> <span class="n">pixel_offsets</span><span class="p">)</span>
-            <span class="n">x_scaled</span><span class="p">,</span> <span class="n">y_scaled</span> <span class="o">=</span> <span class="n">transformed</span><span class="o">.</span><span class="n">unbind</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># arrays</span>
-            <span class="c1"># Reshape for batch matrix multiplication if needed</span>
-            <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">original_shape</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>
-                <span class="n">u_flat</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-                <span class="n">v_flat</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">u_flat</span> <span class="o">=</span> <span class="n">u</span>
-                <span class="n">v_flat</span> <span class="o">=</span> <span class="n">v</span>
 
-            <span class="c1"># Stack coordinates for batch processing</span>
-            <span class="n">pixel_offsets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">u_flat</span><span class="p">,</span> <span class="n">v_flat</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Shape: [N, 2]</span>
+        <span class="c1"># Apply PC Matrix and CDELT</span>
+        <span class="n">CD_matrix</span> <span class="o">=</span> <span class="n">pc_matrix</span> <span class="o">*</span> <span class="n">cdelt</span>
 
-            <span class="c1"># Perform batch matrix multiplication</span>
-            <span class="n">transformed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">pixel_offsets</span><span class="p">,</span> <span class="n">CD_matrix</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># Shape: [N, 2]</span>
-            <span class="n">x_scaled</span> <span class="o">=</span> <span class="n">transformed</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-            <span class="n">y_scaled</span> <span class="o">=</span> <span class="n">transformed</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Batch matrix multiplication for scaling</span>
+        <span class="c1"># Reshape to [B, H*W, 2] for batch matrix multiplication</span>
+        <span class="n">pixel_offsets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">transformed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">pixel_offsets</span><span class="p">,</span> <span class="n">CD_matrix</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
-            <span class="c1"># Reshape back to original if needed</span>
-            <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">x_scaled</span> <span class="o">=</span> <span class="n">x_scaled</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span>
-                <span class="n">y_scaled</span> <span class="o">=</span> <span class="n">y_scaled</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span>
+        <span class="n">x_scaled</span> <span class="o">=</span> <span class="n">transformed</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+        <span class="n">y_scaled</span> <span class="o">=</span> <span class="n">transformed</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
 
-        <span class="c1"># Step 3: Use the exact tanx2s logic from WCSLib</span>
-        <span class="c1"># Compute the radial distance</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_scaled</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y_scaled</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">r0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">180.0</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># R2D from WCSLib</span>
+        <span class="c1"># Compute radial distance</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_scaled</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y_scaled</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">r0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">180.0</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
-        <span class="c1"># Apply the tanx2s function exactly as in WCSLib</span>
-        <span class="c1"># Note the sign conventions</span>
+        <span class="c1"># Compute phi</span>
         <span class="n">phi</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
         <span class="n">non_zero_r</span> <span class="o">=</span> <span class="n">r</span> <span class="o">!=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">non_zero_r</span><span class="p">):</span>
-            <span class="n">phi</span><span class="p">[</span><span class="n">non_zero_r</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="o">-</span><span class="n">x_scaled</span><span class="p">[</span><span class="n">non_zero_r</span><span class="p">],</span> <span class="n">y_scaled</span><span class="p">[</span><span class="n">non_zero_r</span><span class="p">])</span>
-            <span class="p">)</span>
+        <span class="n">phi</span><span class="p">[</span><span class="n">non_zero_r</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="o">-</span><span class="n">x_scaled</span><span class="p">[</span><span class="n">non_zero_r</span><span class="p">],</span> <span class="n">y_scaled</span><span class="p">[</span><span class="n">non_zero_r</span><span class="p">]))</span>
 
+        <span class="c1"># Compute theta</span>
         <span class="n">theta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span>
 
-        <span class="c1"># Step 4: Now apply the sph2x (spherical to native) transform from prjx2s</span>
-        <span class="c1"># First convert to radians exactly as WCSLib would</span>
+        <span class="c1"># Convert to radians</span>
         <span class="n">phi_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
         <span class="n">theta_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
-        <span class="n">ra0_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">CRVAL1</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">dec0_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">CRVAL2</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">ra0_rad</span> <span class="o">=</span> <span class="n">crval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span>
+        <span class="n">dec0_rad</span> <span class="o">=</span> <span class="n">crval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span>
 
-        <span class="c1"># For TAN projection, the pole is at (0,90) in native coordinates</span>
+        <span class="c1"># Spherical coordinate calculations</span>
         <span class="n">sin_theta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span>
         <span class="n">cos_theta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span>
         <span class="n">sin_phi</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_rad</span><span class="p">)</span>
@@ -280,11 +308,9 @@
         <span class="n">sin_dec0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec0_rad</span><span class="p">)</span>
         <span class="n">cos_dec0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec0_rad</span><span class="p">)</span>
 
-        <span class="c1"># This is the exact calculation from wcslib&#39;s sphx2s function</span>
         <span class="n">sin_dec</span> <span class="o">=</span> <span class="n">sin_theta</span> <span class="o">*</span> <span class="n">sin_dec0</span> <span class="o">+</span> <span class="n">cos_theta</span> <span class="o">*</span> <span class="n">cos_dec0</span> <span class="o">*</span> <span class="n">cos_phi</span>
         <span class="n">dec_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">sin_dec</span><span class="p">)</span>
 
-        <span class="c1"># Calculate RA offset - exact formula from WCSLib</span>
         <span class="n">y_term</span> <span class="o">=</span> <span class="n">cos_theta</span> <span class="o">*</span> <span class="n">sin_phi</span>
         <span class="n">x_term</span> <span class="o">=</span> <span class="n">sin_theta</span> <span class="o">*</span> <span class="n">cos_dec0</span> <span class="o">-</span> <span class="n">cos_theta</span> <span class="o">*</span> <span class="n">sin_dec0</span> <span class="o">*</span> <span class="n">cos_phi</span>
         <span class="n">ra_rad</span> <span class="o">=</span> <span class="n">ra0_rad</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="o">-</span><span class="n">y_term</span><span class="p">,</span> <span class="n">x_term</span><span class="p">)</span>
@@ -300,141 +326,153 @@
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.calculate_sourceCoords">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_sourceCoords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate source image pixel coordinates corresponding to each target image pixel.&quot;&quot;&quot;</span>
-        <span class="c1"># Get sky coordinates in radians</span>
-        <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_skyCoords</span><span class="p">()</span>
+        <span class="c1"># Get batch of sky coordinates</span>
+        <span class="n">batch_ra</span><span class="p">,</span> <span class="n">batch_dec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_skyCoords</span><span class="p">()</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">batch_ra</span><span class="o">.</span><span class="n">shape</span>
 
-        <span class="c1"># Get WCS parameters</span>
-        <span class="n">CRPIX1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crpix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">CRPIX2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crpix</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">CRVAL1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Reference RA</span>
-        <span class="n">CRVAL2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">crval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Reference Dec</span>
-        <span class="n">PC_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">source_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">get_pc</span><span class="p">(),</span>
-            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">CDELT</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_wcs_astropy</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">cdelt</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="c1"># Get SIP coefficients if present</span>
-        <span class="n">sip_coeffs</span> <span class="o">=</span> <span class="n">get_sip_coeffs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_wcs_astropy</span><span class="p">)</span>
-        <span class="c1"># Convert numpy arrays to torch tensors if needed</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
-            <span class="n">ra</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-            <span class="n">dec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">dec</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># Prepare to collect results for each source image</span>
+        <span class="n">batch_x_pixel</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">batch_y_pixel</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
-        <span class="c1"># Helper functions for trigonometric calculations</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">atan2d</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;PyTorch implementation of WCSLib&#39;s atan2d function&quot;&quot;&quot;</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+        <span class="c1"># Process each source image&#39;s coordinates</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="p">):</span>
+            <span class="c1"># Get WCS parameters for this specific source image</span>
+            <span class="n">source_wcs_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_wcs_params</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">sincosd</span><span class="p">(</span><span class="n">angle_deg</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;PyTorch implementation of WCSLib&#39;s sincosd function&quot;&quot;&quot;</span>
-            <span class="n">angle_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">angle_deg</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_rad</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle_rad</span><span class="p">)</span>
+            <span class="c1"># Unpack WCS parameters</span>
+            <span class="n">crpix</span> <span class="o">=</span> <span class="n">source_wcs_params</span><span class="p">[</span><span class="s1">&#39;crpix&#39;</span><span class="p">]</span>
+            <span class="n">crval</span> <span class="o">=</span> <span class="n">source_wcs_params</span><span class="p">[</span><span class="s1">&#39;crval&#39;</span><span class="p">]</span>
+            <span class="n">pc_matrix</span> <span class="o">=</span> <span class="n">source_wcs_params</span><span class="p">[</span><span class="s1">&#39;pc_matrix&#39;</span><span class="p">]</span>
+            <span class="n">cdelt</span> <span class="o">=</span> <span class="n">source_wcs_params</span><span class="p">[</span><span class="s1">&#39;cdelt&#39;</span><span class="p">]</span>
+            <span class="n">sip_coeffs</span> <span class="o">=</span> <span class="n">source_wcs_params</span><span class="p">[</span><span class="s1">&#39;sip_coeffs&#39;</span><span class="p">]</span>
 
-        <span class="c1"># Step 1: Convert from world to native spherical coordinates</span>
-        <span class="c1"># Convert to radians</span>
-        <span class="n">ra_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
-        <span class="n">dec_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
-        <span class="n">ra0_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">CRVAL1</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">dec0_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">CRVAL2</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># Extract this batch&#39;s RA and Dec</span>
+            <span class="n">ra</span> <span class="o">=</span> <span class="n">batch_ra</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+            <span class="n">dec</span> <span class="o">=</span> <span class="n">batch_dec</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
 
-        <span class="c1"># Calculate the difference in RA</span>
-        <span class="n">delta_ra</span> <span class="o">=</span> <span class="n">ra_rad</span> <span class="o">-</span> <span class="n">ra0_rad</span>
+            <span class="c1"># Conversion calculations</span>
+            <span class="n">ra_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+            <span class="n">dec_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+            <span class="n">ra0_rad</span> <span class="o">=</span> <span class="n">crval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span>
+            <span class="n">dec0_rad</span> <span class="o">=</span> <span class="n">crval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span>
+            <span class="c1"># Convert numpy arrays to torch tensors if needed</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                <span class="n">ra</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">dec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">dec</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
-        <span class="c1"># Calculate sine and cosine values</span>
-        <span class="n">sin_dec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec_rad</span><span class="p">)</span>
-        <span class="n">cos_dec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec_rad</span><span class="p">)</span>
-        <span class="n">sin_dec0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec0_rad</span><span class="p">)</span>
-        <span class="n">cos_dec0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec0_rad</span><span class="p">)</span>
-        <span class="n">sin_delta_ra</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">delta_ra</span><span class="p">)</span>
-        <span class="n">cos_delta_ra</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta_ra</span><span class="p">)</span>
+            <span class="c1"># Helper functions for trigonometric calculations</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">atan2d</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;PyTorch implementation of WCSLib&#39;s atan2d function&quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
 
-        <span class="c1"># Calculate the native spherical coordinates using the correct sign conventions</span>
-        <span class="c1"># Calculate the numerator for phi (native longitude)</span>
-        <span class="n">y_phi</span> <span class="o">=</span> <span class="o">-</span><span class="n">cos_dec</span> <span class="o">*</span> <span class="n">sin_delta_ra</span>  <span class="c1"># Note the negative sign</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">sincosd</span><span class="p">(</span><span class="n">angle_deg</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;PyTorch implementation of WCSLib&#39;s sincosd function&quot;&quot;&quot;</span>
+                <span class="n">angle_rad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">angle_deg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_rad</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle_rad</span><span class="p">)</span>
 
-        <span class="c1"># Calculate the denominator for phi</span>
-        <span class="n">x_phi</span> <span class="o">=</span> <span class="n">sin_dec</span> <span class="o">*</span> <span class="n">cos_dec0</span> <span class="o">-</span> <span class="n">cos_dec</span> <span class="o">*</span> <span class="n">sin_dec0</span> <span class="o">*</span> <span class="n">cos_delta_ra</span>
+            <span class="c1"># Step 1: Convert from world to native spherical coordinates</span>
 
-        <span class="c1"># Calculate native longitude (phi)</span>
-        <span class="n">phi</span> <span class="o">=</span> <span class="n">atan2d</span><span class="p">(</span><span class="n">y_phi</span><span class="p">,</span> <span class="n">x_phi</span><span class="p">)</span>
 
-        <span class="c1"># Calculate native latitude (theta)</span>
-        <span class="n">theta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">sin_dec</span> <span class="o">*</span> <span class="n">sin_dec0</span> <span class="o">+</span> <span class="n">cos_dec</span> <span class="o">*</span> <span class="n">cos_dec0</span> <span class="o">*</span> <span class="n">cos_delta_ra</span><span class="p">)</span>
-        <span class="p">)</span>
+            <span class="c1"># Calculate the difference in RA</span>
+            <span class="n">delta_ra</span> <span class="o">=</span> <span class="n">ra_rad</span> <span class="o">-</span> <span class="n">ra0_rad</span>
 
-        <span class="c1"># Step 2: Apply the TAN projection (tans2x function from WCSLib)</span>
-        <span class="c1"># Calculate sine and cosine of phi and theta</span>
-        <span class="n">sin_phi</span><span class="p">,</span> <span class="n">cos_phi</span> <span class="o">=</span> <span class="n">sincosd</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
-        <span class="n">sin_theta</span><span class="p">,</span> <span class="n">cos_theta</span> <span class="o">=</span> <span class="n">sincosd</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="c1"># Calculate sine and cosine values</span>
+            <span class="n">sin_dec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec_rad</span><span class="p">)</span>
+            <span class="n">cos_dec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec_rad</span><span class="p">)</span>
+            <span class="n">sin_dec0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec0_rad</span><span class="p">)</span>
+            <span class="n">cos_dec0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec0_rad</span><span class="p">)</span>
+            <span class="n">sin_delta_ra</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">delta_ra</span><span class="p">)</span>
+            <span class="n">cos_delta_ra</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta_ra</span><span class="p">)</span>
 
-        <span class="c1"># Check for singularity (when sin_theta is zero)</span>
-        <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-10</span>
-        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sin_theta</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Singularity in tans2x: theta close to 0 degrees&quot;</span><span class="p">)</span>
+            <span class="c1"># Calculate the native spherical coordinates using the correct sign conventions</span>
+            <span class="c1"># Calculate the numerator for phi (native longitude)</span>
+            <span class="n">y_phi</span> <span class="o">=</span> <span class="o">-</span><span class="n">cos_dec</span> <span class="o">*</span> <span class="n">sin_delta_ra</span>  <span class="c1"># Note the negative sign</span>
 
-        <span class="c1"># r0 is the radius scaling factor (typically 180.0/π)</span>
-        <span class="n">r0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">180.0</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># Calculate the denominator for phi</span>
+            <span class="n">x_phi</span> <span class="o">=</span> <span class="n">sin_dec</span> <span class="o">*</span> <span class="n">cos_dec0</span> <span class="o">-</span> <span class="n">cos_dec</span> <span class="o">*</span> <span class="n">sin_dec0</span> <span class="o">*</span> <span class="n">cos_delta_ra</span>
 
-        <span class="c1"># Calculate the scaling factor r with correct sign</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">r0</span> <span class="o">*</span> <span class="n">cos_theta</span> <span class="o">/</span> <span class="n">sin_theta</span>
+            <span class="c1"># Calculate native longitude (phi)</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">atan2d</span><span class="p">(</span><span class="n">y_phi</span><span class="p">,</span> <span class="n">x_phi</span><span class="p">)</span>
 
-        <span class="c1"># Calculate intermediate world coordinates (x_scaled, y_scaled)</span>
-        <span class="c1"># With the corrected signs based on your findings</span>
-        <span class="n">x_scaled</span> <span class="o">=</span> <span class="o">-</span><span class="n">r</span> <span class="o">*</span> <span class="n">sin_phi</span>  <span class="c1"># Note the negative sign</span>
-        <span class="n">y_scaled</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">cos_phi</span>
-
-        <span class="c1"># Step 3: Apply the inverse of the CD matrix to get pixel offsets</span>
-        <span class="c1"># First, construct the CD matrix</span>
-        <span class="n">CD_matrix</span> <span class="o">=</span> <span class="n">PC_matrix</span> <span class="o">*</span> <span class="n">CDELT</span>
-        <span class="c1"># Calculate the inverse of the CD matrix</span>
-        <span class="n">CD_inv</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">CD_matrix</span><span class="p">)</span>
-
-        <span class="c1"># Handle batch processing for arrays</span>
-        <span class="k">if</span> <span class="n">ra</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># scalar inputs</span>
-            <span class="n">standard_coords</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">x_scaled</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">y_scaled</span><span class="o">.</span><span class="n">item</span><span class="p">()],</span>
-                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+            <span class="c1"># Calculate native latitude (theta)</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">sin_dec</span> <span class="o">*</span> <span class="n">sin_dec0</span> <span class="o">+</span> <span class="n">cos_dec</span> <span class="o">*</span> <span class="n">cos_dec0</span> <span class="o">*</span> <span class="n">cos_delta_ra</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">pixel_offsets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">CD_inv</span><span class="p">,</span> <span class="n">standard_coords</span><span class="p">)</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">pixel_offsets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">pixel_offsets</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># array inputs</span>
-            <span class="c1"># Reshape for batch processing if needed</span>
-            <span class="k">if</span> <span class="n">ra</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">original_shape</span> <span class="o">=</span> <span class="n">ra</span><span class="o">.</span><span class="n">shape</span>
-                <span class="n">x_scaled_flat</span> <span class="o">=</span> <span class="n">x_scaled</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-                <span class="n">y_scaled_flat</span> <span class="o">=</span> <span class="n">y_scaled</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">x_scaled_flat</span> <span class="o">=</span> <span class="n">x_scaled</span>
-                <span class="n">y_scaled_flat</span> <span class="o">=</span> <span class="n">y_scaled</span>
 
-            <span class="c1"># Stack for batch matrix multiplication</span>
-            <span class="n">standard_coords</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">x_scaled_flat</span><span class="p">,</span> <span class="n">y_scaled_flat</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span>
-            <span class="p">)</span>  <span class="c1"># Shape: [N, 2]</span>
+            <span class="c1"># Step 2: Apply the TAN projection (tans2x function from WCSLib)</span>
+            <span class="c1"># Calculate sine and cosine of phi and theta</span>
+            <span class="n">sin_phi</span><span class="p">,</span> <span class="n">cos_phi</span> <span class="o">=</span> <span class="n">sincosd</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+            <span class="n">sin_theta</span><span class="p">,</span> <span class="n">cos_theta</span> <span class="o">=</span> <span class="n">sincosd</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
 
-            <span class="c1"># Use batch matrix multiplication</span>
-            <span class="n">pixel_offsets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">standard_coords</span><span class="p">,</span> <span class="n">CD_inv</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># Shape: [N, 2]</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">pixel_offsets</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">pixel_offsets</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># Check for singularity (when sin_theta is zero)</span>
+            <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-10</span>
+            <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sin_theta</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Singularity in tans2x: theta close to 0 degrees&quot;</span><span class="p">)</span>
 
-            <span class="c1"># Reshape back to original dimensions if needed</span>
-            <span class="k">if</span> <span class="n">ra</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">u</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span>
+            <span class="c1"># r0 is the radius scaling factor (typically 180.0/π)</span>
+            <span class="n">r0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">180.0</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">sip_coeffs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">apply_inverse_sip_distortion</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sip_coeffs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># Calculate the scaling factor r with correct sign</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">r0</span> <span class="o">*</span> <span class="n">cos_theta</span> <span class="o">/</span> <span class="n">sin_theta</span>
 
-        <span class="c1"># Step 4: Add the reference pixel to get final pixel coordinates</span>
-        <span class="c1"># Remember to add (CRPIX-1) to account for 1-based indexing in FITS/WCS</span>
-        <span class="n">x_pixel</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="p">(</span><span class="n">CRPIX1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">y_pixel</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="p">(</span><span class="n">CRPIX2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Calculate intermediate world coordinates (x_scaled, y_scaled)</span>
+            <span class="c1"># With the corrected signs based on your findings</span>
+            <span class="n">x_scaled</span> <span class="o">=</span> <span class="o">-</span><span class="n">r</span> <span class="o">*</span> <span class="n">sin_phi</span>  <span class="c1"># Note the negative sign</span>
+            <span class="n">y_scaled</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">cos_phi</span>
 
-        <span class="k">return</span> <span class="n">x_pixel</span><span class="p">,</span> <span class="n">y_pixel</span></div>
+            <span class="c1"># Step 3: Apply the inverse of the CD matrix to get pixel offsets</span>
+            <span class="c1"># First, construct the CD matrix</span>
+            <span class="n">CD_matrix</span> <span class="o">=</span> <span class="n">pc_matrix</span> <span class="o">*</span> <span class="n">cdelt</span>
+            <span class="c1"># Calculate the inverse of the CD matrix</span>
+            <span class="n">CD_inv</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">CD_matrix</span><span class="p">)</span>
+
+            <span class="c1"># Handle batch processing for arrays</span>
+            <span class="k">if</span> <span class="n">ra</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># scalar inputs</span>
+                <span class="n">standard_coords</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">x_scaled</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">y_scaled</span><span class="o">.</span><span class="n">item</span><span class="p">()],</span>
+                    <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">pixel_offsets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">CD_inv</span><span class="p">,</span> <span class="n">standard_coords</span><span class="p">)</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">pixel_offsets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">pixel_offsets</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># array inputs</span>
+                <span class="c1"># Reshape for batch processing if needed</span>
+                <span class="k">if</span> <span class="n">ra</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">original_shape</span> <span class="o">=</span> <span class="n">ra</span><span class="o">.</span><span class="n">shape</span>
+                    <span class="n">x_scaled_flat</span> <span class="o">=</span> <span class="n">x_scaled</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">y_scaled_flat</span> <span class="o">=</span> <span class="n">y_scaled</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">x_scaled_flat</span> <span class="o">=</span> <span class="n">x_scaled</span>
+                    <span class="n">y_scaled_flat</span> <span class="o">=</span> <span class="n">y_scaled</span>
+
+                <span class="c1"># Stack for batch matrix multiplication</span>
+                <span class="n">standard_coords</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">x_scaled_flat</span><span class="p">,</span> <span class="n">y_scaled_flat</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span>
+                <span class="p">)</span>  <span class="c1"># Shape: [N, 2]</span>
+
+                <span class="c1"># Use batch matrix multiplication</span>
+                <span class="n">pixel_offsets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">standard_coords</span><span class="p">,</span> <span class="n">CD_inv</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># Shape: [N, 2]</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">pixel_offsets</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">pixel_offsets</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+                <span class="c1"># Reshape back to original dimensions if needed</span>
+                <span class="k">if</span> <span class="n">ra</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">u</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">sip_coeffs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">apply_inverse_sip_distortion</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sip_coeffs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+            <span class="c1"># Step 4: Add the reference pixel to get final pixel coordinates</span>
+            <span class="c1"># Remember to add (CRPIX-1) to account for 1-based indexing in FITS/WCS</span>
+            <span class="n">x_pixel</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="p">(</span><span class="n">crpix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">y_pixel</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="p">(</span><span class="n">crpix</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">batch_x_pixel</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_pixel</span>
+            <span class="n">batch_y_pixel</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_pixel</span>
+
+        <span class="k">return</span> <span class="n">batch_x_pixel</span><span class="p">,</span> <span class="n">batch_y_pixel</span></div>
 
 
 <div class="viewcode-block" id="Reproject.interpolate_source_image">
@@ -491,21 +529,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get source coordinates</span>
         <span class="n">x_source</span><span class="p">,</span> <span class="n">y_source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_sourceCoords</span><span class="p">()</span>
-        <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_image</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span><span class="o">.</span><span class="n">shape</span>
 
-        <span class="c1"># Original grid_sample implementation for other modes</span>
+        <span class="c1"># Normalize coordinates</span>
         <span class="n">x_normalized</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_source</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
         <span class="n">y_normalized</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">y_source</span> <span class="o">/</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
 
-        <span class="c1"># Stack coordinates into sampling grid</span>
+        <span class="c1"># Create sampling grid</span>
         <span class="n">grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x_normalized</span><span class="p">,</span> <span class="n">y_normalized</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="c1"># Add batch and channel dimensions if needed</span>
-        <span class="n">source_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_image</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># [1, 1, H, W]</span>
-        <span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># [1, H, W, 2]</span>
-        <span class="n">ones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">source_image</span><span class="p">)</span>
-        <span class="c1"># Stack image and ones along the channel dimension</span>
-        <span class="n">combined</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">source_image</span><span class="p">,</span> <span class="n">ones</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Shape becomes [1, 2, H, W]</span>
+        <span class="c1"># Prepare images and grid for grid_sample</span>
+        <span class="n">source_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># [B, 1, H, W]</span>
+        <span class="n">ones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">source_images</span><span class="p">)</span>
+
+        <span class="c1"># Combine images with ones for footprint calculation</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">source_images</span><span class="p">,</span> <span class="n">ones</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># [B, 2, H, W]</span>
 
         <span class="c1"># Single grid_sample call</span>
         <span class="n">combined_result</span> <span class="o">=</span> <span class="n">interpolate_image</span><span class="p">(</span><span class="n">combined</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">interpolation_mode</span><span class="p">)</span>
@@ -526,10 +564,8 @@
             <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">resampled_image</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">/</span> <span class="n">resampled_footprint</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span>
             <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully applied footprint correction to valid pixels&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: No valid pixels found in footprint!&quot;</span><span class="p">)</span>
-
             <span class="c1"># FALLBACK: Use raw interpolated values without footprint correction</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fallback: Using raw interpolated values&quot;</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">resampled_image</span>
@@ -542,8 +578,8 @@
 <div class="viewcode-block" id="calculate_reprojection">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.calculate_reprojection">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_reprojection</span><span class="p">(</span>
-    <span class="n">source_hdu</span><span class="p">:</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">,</span>
-    <span class="n">target_hdu</span><span class="p">:</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">,</span>
+    <span class="n">source_hdus</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">]],</span>
+    <span class="n">target_hdu</span><span class="p">:</span> <span class="n">PrimaryHDU</span><span class="p">,</span>
     <span class="n">interpolation_mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -556,8 +592,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    source_hdu : fits.PrimaryHDU</span>
-<span class="sd">        The source image HDU containing the image data to be reprojected and</span>
+<span class="sd">    source_hdus : Union[PrimaryHDU, List[PrimaryHDU]]</span>
+<span class="sd">        The source image HDU list containing the image data to be reprojected and</span>
 <span class="sd">        its associated WCS information in the header.</span>
 
 <span class="sd">    target_hdu : fits.PrimaryHDU</span>
@@ -611,7 +647,10 @@
 <span class="sd">    &gt;&gt;&gt; output_hdu = fits.PrimaryHDU(data=reprojected_np, header=target_hdu.header)</span>
 <span class="sd">    &gt;&gt;&gt; output_hdu.writeto(&#39;reprojected_image.fits&#39;, overwrite=True)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">reprojection</span> <span class="o">=</span> <span class="n">Reproject</span><span class="p">(</span><span class="n">source_hdu</span><span class="o">=</span><span class="n">source_hdu</span><span class="p">,</span> <span class="n">target_hdu</span><span class="o">=</span><span class="n">target_hdu</span><span class="p">)</span>
+    <span class="c1"># Convert single HDU to list if not already a list</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">source_hdus</span> <span class="o">=</span> <span class="p">[</span><span class="n">source_hdus</span><span class="p">]</span>
+    <span class="n">reprojection</span> <span class="o">=</span> <span class="n">Reproject</span><span class="p">(</span><span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdus</span><span class="p">,</span> <span class="n">target_hdu</span><span class="o">=</span><span class="n">target_hdu</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">interpolation_mode</span><span class="p">)</span></div>
 
 </pre></div>
