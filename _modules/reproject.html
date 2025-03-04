@@ -78,11 +78,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io.fits</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrimaryHDU</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">reprojection.sip</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">apply_inverse_sip_distortion</span><span class="p">,</span>
-    <span class="n">apply_sip_distortion</span><span class="p">,</span>
-    <span class="n">get_sip_coeffs</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">reprojection.sip</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">apply_inverse_sip_distortion</span><span class="p">,</span>
+                              <span class="n">apply_sip_distortion</span><span class="p">,</span> <span class="n">get_sip_coeffs</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">reprojection.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device</span>
 
 <div class="viewcode-block" id="EPSILON">
@@ -222,7 +219,6 @@
             <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">apply_sip_distortion</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sip_coeffs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="c1"># Step 2: Apply PC Matrix (Rotation) and CDELT (Scaling)</span>
         <span class="n">CD_matrix</span> <span class="o">=</span> <span class="n">PC_matrix</span> <span class="o">*</span> <span class="n">CDELT</span>  <span class="c1"># Construct CD Matrix</span>
-        <span class="n">CD_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">CD_matrix</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="c1"># Handle both scalar and array inputs</span>
         <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># scalar</span>
             <span class="n">pixel_offsets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
@@ -392,7 +388,6 @@
         <span class="c1"># Step 3: Apply the inverse of the CD matrix to get pixel offsets</span>
         <span class="c1"># First, construct the CD matrix</span>
         <span class="n">CD_matrix</span> <span class="o">=</span> <span class="n">PC_matrix</span> <span class="o">*</span> <span class="n">CDELT</span>
-        <span class="n">CD_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">CD_matrix</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="c1"># Calculate the inverse of the CD matrix</span>
         <span class="n">CD_inv</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">CD_matrix</span><span class="p">)</span>
 
@@ -502,8 +497,6 @@
         <span class="n">x_normalized</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_source</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
         <span class="n">y_normalized</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">y_source</span> <span class="o">/</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
 
-        <span class="c1"># Calculate origin flux</span>
-        <span class="n">original_total_flux</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_image</span><span class="p">)</span>
         <span class="c1"># Stack coordinates into sampling grid</span>
         <span class="n">grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x_normalized</span><span class="p">,</span> <span class="n">y_normalized</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
@@ -520,17 +513,26 @@
         <span class="c1"># Split the results</span>
         <span class="n">resampled_image</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
         <span class="n">resampled_footprint</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-        <span class="c1">## Create output array initialized with NaN or zeros</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">resampled_image</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="c1"># Create output array initialized with zeros</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">resampled_image</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="c1"># Apply footprint correction only where footprint is significant</span>
         <span class="c1"># This follows Astropy&#39;s approach of using a small epsilon</span>
         <span class="n">valid_pixels</span> <span class="o">=</span> <span class="n">resampled_footprint</span> <span class="o">&gt;</span> <span class="mf">1e-8</span>
 
+        <span class="c1"># Apply footprint correction only where footprint is significant</span>
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">valid_pixels</span><span class="p">):</span>
             <span class="c1"># Normalize by the footprint where valid</span>
-            <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">=</span> <span class="n">resampled_image</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">/</span> <span class="n">resampled_footprint</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">resampled_image</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">/</span> <span class="n">resampled_footprint</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully applied footprint correction to valid pixels&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: No valid pixels found in footprint!&quot;</span><span class="p">)</span>
 
+            <span class="c1"># FALLBACK: Use raw interpolated values without footprint correction</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fallback: Using raw interpolated values&quot;</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">resampled_image</span>
 
         <span class="k">return</span> <span class="n">result</span></div>
 </div>
