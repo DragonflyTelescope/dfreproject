@@ -41,7 +41,7 @@ Module Contents
    JIT-compiled image interpolation using grid_sample
 
 
-.. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_hdu: astropy.io.fits.PrimaryHDU)
+.. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int])
 
    .. py:attribute:: device
 
@@ -126,7 +126,7 @@ Module Contents
 
 
 
-.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, List[astropy.io.fits.PrimaryHDU]], target_hdu: astropy.io.fits.PrimaryHDU, interpolation_mode='nearest')
+.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, List[astropy.io.fits.PrimaryHDU]], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], interpolation_mode='nearest')
 
    Reproject an astronomical image from a source WCS to a target WCS.
 
@@ -138,9 +138,8 @@ Module Contents
    :param source_hdus: The source image HDU list containing the image data to be reprojected and
                        its associated WCS information in the header.
    :type source_hdus: Union[PrimaryHDU, List[PrimaryHDU]]
-   :param target_hdu: The target image HDU providing the output grid and WCS information. The
-                      shape of target_hdu.data defines the dimensions of the output image.
-   :type target_hdu: fits.PrimaryHDU
+   :param target_wcs: WCS information fopr the target.
+   :type target_wcs: WCS
    :param interpolation_mode: The interpolation method to use when resampling the source image.
                               Options:
                               - 'nearest' : Nearest neighbor interpolation (fastest, default)
@@ -167,16 +166,18 @@ Module Contents
    .. rubric:: Examples
 
    >>> from astropy.io import fits
+   >>> from astropy.wcs import WCS
    >>> import torch
    >>> from reprojection.reproject import calculate_reprojection
    >>>
    >>> # Open source and target images
    >>> source_hdu = fits.open('source_image.fits')[0]
    >>> target_hdu = fits.open('target_grid.fits')[0]
+   >>> target_wcs = WCS(target_hdu.header)
    >>>
    >>> # Perform reprojection with bilinear interpolation
    >>> reprojected = calculate_reprojection(
-   ...     target_hdu=target_hdu,
+   ...     target_hdu=target_wcs,
    ...     source_hdu=source_hdu,
    ...     interpolation_mode='bilinear'
    ... )

@@ -108,7 +108,7 @@
 <div class="viewcode-block" id="Reproject">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Reproject</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">],</span> <span class="n">target_hdu</span><span class="p">:</span> <span class="n">PrimaryHDU</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">],</span> <span class="n">target_wcs</span><span class="p">:</span> <span class="n">WCS</span><span class="p">,</span> <span class="n">shape_out</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a reprojection operation between source and target image frames.</span>
 
@@ -122,9 +122,11 @@
 <span class="sd">        source_hdus : List[PrimaryHDU]</span>
 <span class="sd">            List of HDUs containing the data and the header information for the source image</span>
 
-<span class="sd">        target_hdu : PrimaryHDU</span>
-<span class="sd">            HDU containing the data and the header information for the target image</span>
+<span class="sd">        target_wcs : WCS</span>
+<span class="sd">            WCS for the target</span>
 
+<span class="sd">        shape_out: Tuple[int, int]</span>
+<span class="sd">            Shape of the output image</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -138,7 +140,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; # Initialize the reprojection object</span>
-<span class="sd">        &gt;&gt;&gt; reproject = Reproject(source_hdus, target_hdu)</span>
+<span class="sd">        &gt;&gt;&gt; reproject = Reproject(source_hdus, target_wcs)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Set device</span>
@@ -147,15 +149,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">get_device</span><span class="p">()</span></div>
 
 
-        <span class="c1"># Initialize data</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target_image</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-                <span class="n">target_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
-            <span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># Need to swap order of bytes</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">target_image</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">target_hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
-            <span class="p">)</span>
+
 <div class="viewcode-block" id="Reproject.batch_source_images">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.batch_source_images">[docs]</a>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_source_images</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">)</span></div>
@@ -167,13 +161,14 @@
 
 <div class="viewcode-block" id="Reproject.target_wcs_params">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.target_wcs_params">[docs]</a>
-        <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_wcs_params</span><span class="p">(</span><span class="n">WCS</span><span class="p">(</span><span class="n">target_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_wcs_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_wcs_params</span><span class="p">(</span><span class="n">target_wcs</span><span class="p">)</span></div>
 
 
         <span class="c1"># Define target grid</span>
 <div class="viewcode-block" id="Reproject.target_grid">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.Reproject.target_grid">[docs]</a>
-        <span class="bp">self</span><span class="o">.</span><span class="n">target_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_batch_target_grid</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_batch_target_grid</span><span class="p">(</span><span class="n">shape_out</span><span class="p">)</span></div>
+
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_source_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
@@ -208,13 +203,13 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare batch of WCS parameters&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_extract_wcs_params</span><span class="p">(</span><span class="n">WCS</span><span class="p">(</span><span class="n">hdu</span><span class="o">.</span><span class="n">header</span><span class="p">))</span> <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">source_hdus</span><span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_batch_target_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_batch_target_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape_out</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a batched target grid matching the number of source images</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">B</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span><span class="p">)</span>
-        <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_image</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">shape_out</span>
 
         <span class="c1"># Create meshgrid and repeat for batch</span>
         <span class="n">y_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
@@ -579,7 +574,8 @@
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.calculate_reprojection">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_reprojection</span><span class="p">(</span>
     <span class="n">source_hdus</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">]],</span>
-    <span class="n">target_hdu</span><span class="p">:</span> <span class="n">PrimaryHDU</span><span class="p">,</span>
+    <span class="n">target_wcs</span><span class="p">:</span> <span class="n">WCS</span><span class="p">,</span>
+    <span class="n">shape_out</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
     <span class="n">interpolation_mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -596,9 +592,8 @@
 <span class="sd">        The source image HDU list containing the image data to be reprojected and</span>
 <span class="sd">        its associated WCS information in the header.</span>
 
-<span class="sd">    target_hdu : fits.PrimaryHDU</span>
-<span class="sd">        The target image HDU providing the output grid and WCS information. The</span>
-<span class="sd">        shape of target_hdu.data defines the dimensions of the output image.</span>
+<span class="sd">    target_wcs : WCS</span>
+<span class="sd">        WCS information fopr the target.</span>
 
 <span class="sd">    interpolation_mode : str, default &#39;nearest&#39;</span>
 <span class="sd">        The interpolation method to use when resampling the source image.</span>
@@ -628,16 +623,18 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from astropy.io import fits</span>
+<span class="sd">    &gt;&gt;&gt; from astropy.wcs import WCS</span>
 <span class="sd">    &gt;&gt;&gt; import torch</span>
 <span class="sd">    &gt;&gt;&gt; from reprojection.reproject import calculate_reprojection</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # Open source and target images</span>
 <span class="sd">    &gt;&gt;&gt; source_hdu = fits.open(&#39;source_image.fits&#39;)[0]</span>
 <span class="sd">    &gt;&gt;&gt; target_hdu = fits.open(&#39;target_grid.fits&#39;)[0]</span>
+<span class="sd">    &gt;&gt;&gt; target_wcs = WCS(target_hdu.header)</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # Perform reprojection with bilinear interpolation</span>
 <span class="sd">    &gt;&gt;&gt; reprojected = calculate_reprojection(</span>
-<span class="sd">    ...     target_hdu=target_hdu,</span>
+<span class="sd">    ...     target_hdu=target_wcs,</span>
 <span class="sd">    ...     source_hdu=source_hdu,</span>
 <span class="sd">    ...     interpolation_mode=&#39;bilinear&#39;</span>
 <span class="sd">    ... )</span>
@@ -650,7 +647,7 @@
     <span class="c1"># Convert single HDU to list if not already a list</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">source_hdus</span> <span class="o">=</span> <span class="p">[</span><span class="n">source_hdus</span><span class="p">]</span>
-    <span class="n">reprojection</span> <span class="o">=</span> <span class="n">Reproject</span><span class="p">(</span><span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdus</span><span class="p">,</span> <span class="n">target_hdu</span><span class="o">=</span><span class="n">target_hdu</span><span class="p">)</span>
+    <span class="n">reprojection</span> <span class="o">=</span> <span class="n">Reproject</span><span class="p">(</span><span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdus</span><span class="p">,</span> <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span> <span class="n">shape_out</span><span class="o">=</span><span class="n">shape_out</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">interpolation_mode</span><span class="p">)</span></div>
 
 </pre></div>
