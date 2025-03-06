@@ -56,6 +56,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#reproject.EPSILON"><code class="docutils literal notranslate"><span class="pre">EPSILON</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reproject.atan2d"><code class="docutils literal notranslate"><span class="pre">atan2d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reproject.sincosd"><code class="docutils literal notranslate"><span class="pre">sincosd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reproject.interpolate_image"><code class="docutils literal notranslate"><span class="pre">interpolate_image()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reproject.Reproject"><code class="docutils literal notranslate"><span class="pre">Reproject</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reproject.calculate_reprojection"><code class="docutils literal notranslate"><span class="pre">calculate_reprojection()</span></code></a></li>
@@ -118,6 +120,12 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reproject.atan2d" title="reproject.atan2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atan2d</span></code></a>(y, x)</p></td>
+<td><p>PyTorch implementation of WCSLib's atan2d function</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reproject.sincosd" title="reproject.sincosd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sincosd</span></code></a>(angle_deg)</p></td>
+<td><p>PyTorch implementation of WCSLib's sincosd function</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reproject.interpolate_image" title="reproject.interpolate_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_image</span></code></a>(→ torch.Tensor)</p></td>
 <td><p>JIT-compiled image interpolation using grid_sample</p></td>
 </tr>
@@ -133,6 +141,18 @@
 <dt class="sig sig-object py" id="reproject.EPSILON">
 <span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">EPSILON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-10</span></em><a class="reference internal" href="../../_modules/reproject.html#EPSILON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.EPSILON" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reproject.atan2d">
+<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">atan2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#atan2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.atan2d" title="Link to this definition"></a></dt>
+<dd><p>PyTorch implementation of WCSLib’s atan2d function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reproject.sincosd">
+<span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">sincosd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle_deg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#sincosd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.sincosd" title="Link to this definition"></a></dt>
+<dd><p>PyTorch implementation of WCSLib’s sincosd function</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="reproject.interpolate_image">
@@ -171,7 +191,13 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="reproject.Reproject.calculate_skyCoords">
 <span class="sig-name descname"><span class="pre">calculate_skyCoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.calculate_skyCoords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.calculate_skyCoords" title="Link to this definition"></a></dt>
-<dd><p>Calculate sky coordinates using Astropy WCS implementation.</p>
+<dd><p>Calculate sky coordinates.
+There are four primary steps:
+1. Apply shift
+2. Apply SIP distortion
+3. Apply CD matrix
+4. Apply transformation to celestial coordinates uing the Gnomonic Projection</p>
+<p>These steps use the target wcs parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -192,11 +218,20 @@
 <dt class="sig sig-object py" id="reproject.Reproject.calculate_sourceCoords">
 <span class="sig-name descname"><span class="pre">calculate_sourceCoords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#Reproject.calculate_sourceCoords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.calculate_sourceCoords" title="Link to this definition"></a></dt>
 <dd><p>Calculate source image pixel coordinates corresponding to each target image pixel.</p>
+<p>This function repeats the same steps in self.calculate_skyCoords() except in the opposite order and with the source coordinate wcs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Batch of source image pixel coordinates</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>torch.Tensor</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="reproject.Reproject.interpolate_source_image">
-<span class="sig-name descname"><span class="pre">interpolate_source_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bilinear'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#Reproject.interpolate_source_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.interpolate_source_image" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">interpolate_source_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bilinear'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.interpolate_source_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.interpolate_source_image" title="Link to this definition"></a></dt>
 <dd><p>Interpolate the source image at the calculated source coordinates with flux conservation.</p>
 <p>This method performs the actual pixel resampling needed for reprojection
 while preserving the total flux (photometric accuracy). It implements a
@@ -204,8 +239,7 @@ footprint-based approach similar to that used in reproject_interp from the
 Astropy package.</p>
 <p>The method uses a combined tensor approach for computational efficiency,
 performing both image resampling and footprint tracking in a single operation.
-Total flux is conserved both locally (via footprint correction) and globally
-(via final normalization).</p>
+Total flux is conserved locally (via footprint correction).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>interpolation_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>default 'bilinear'</em>) – <p>The interpolation mode to use when sampling the source image.
@@ -231,8 +265,6 @@ the WCS transformation with flux conservation preserved.</p>
 <li><p>Local flux conservation: The image and a “ones” tensor are interpolated
 together, and the interpolated image is divided by the interpolated ones
 tensor (footprint) to correct for any flux spreading during interpolation.</p></li>
-<li><p>Global flux conservation: The total flux of the output image is normalized
-to match the total flux of the input image.</p></li>
 </ol>
 <p>Areas in the target image that map outside the source image boundaries
 will be filled with zeros (using ‘zeros’ padding_mode).</p>
@@ -257,6 +289,7 @@ and returns the resulting image as a PyTorch tensor.</p>
 <li><p><strong>source_hdus</strong> (<em>Union</em><em>[</em><em>PrimaryHDU</em><em>, </em><em>List</em><em>[</em><em>PrimaryHDU</em><em>]</em><em>]</em>) – The source image HDU list containing the image data to be reprojected and
 its associated WCS information in the header.</p></li>
 <li><p><strong>target_wcs</strong> (<em>WCS</em>) – WCS information fopr the target.</p></li>
+<li><p><strong>shape_out</strong> (<em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – Shape of the resampled array</p></li>
 <li><p><strong>interpolation_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>default 'nearest'</em>) – The interpolation method to use when resampling the source image.
 Options:
 - ‘nearest’ : Nearest neighbor interpolation (fastest, default)
@@ -294,8 +327,9 @@ back to a NumPy array and create a new FITS HDU with the target WCS header.</p>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Perform reprojection with bilinear interpolation</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">reprojected</span> <span class="o">=</span> <span class="n">calculate_reprojection</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">target_hdu</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">source_hdu</span><span class="o">=</span><span class="n">source_hdu</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdu</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">shape_out</span><span class="o">=</span><span class="n">target_hdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">interpolation_mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt;</span>

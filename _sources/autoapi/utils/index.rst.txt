@@ -17,3 +17,9 @@ Module Contents
 
 .. py:function:: get_device()
 
+   Utility function to get the device
+
+   :returns: Available torch device (either gpu or cpu)
+   :rtype: torch.device
+
+

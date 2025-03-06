@@ -25,6 +25,8 @@ Functions
 
 .. autoapisummary::
 
+   reproject.atan2d
+   reproject.sincosd
    reproject.interpolate_image
    reproject.calculate_reprojection
 
@@ -34,6 +36,16 @@ Module Contents
 
 .. py:data:: EPSILON
    :value: 1e-10
+
+
+.. py:function:: atan2d(y, x)
+
+   PyTorch implementation of WCSLib's atan2d function
+
+
+.. py:function:: sincosd(angle_deg)
+
+   PyTorch implementation of WCSLib's sincosd function
 
 
 .. py:function:: interpolate_image(source_image: torch.Tensor, grid: torch.Tensor, interpolation_mode: str) -> torch.Tensor
@@ -60,7 +72,14 @@ Module Contents
 
    .. py:method:: calculate_skyCoords(x_grid=None, y_grid=None) -> Tuple[torch.Tensor, torch.Tensor]
 
-      Calculate sky coordinates using Astropy WCS implementation.
+      Calculate sky coordinates.
+      There are four primary steps:
+      1. Apply shift
+      2. Apply SIP distortion
+      3. Apply CD matrix
+      4. Apply transformation to celestial coordinates uing the Gnomonic Projection
+
+      These steps use the target wcs parameters
 
       :param x_grid: Batch of x-coordinates. If None, uses target grid x-coordinates
       :type x_grid: torch.Tensor, optional
@@ -76,9 +95,14 @@ Module Contents
 
       Calculate source image pixel coordinates corresponding to each target image pixel.
 
+      This function repeats the same steps in self.calculate_skyCoords() except in the opposite order and with the source coordinate wcs.
+
+      :returns: Batch of source image pixel coordinates
+      :rtype: torch.Tensor
 
 
-   .. py:method:: interpolate_source_image(interpolation_mode='bilinear')
+
+   .. py:method:: interpolate_source_image(interpolation_mode='bilinear') -> torch.Tensor
 
       Interpolate the source image at the calculated source coordinates with flux conservation.
 
@@ -89,8 +113,7 @@ Module Contents
 
       The method uses a combined tensor approach for computational efficiency,
       performing both image resampling and footprint tracking in a single operation.
-      Total flux is conserved both locally (via footprint correction) and globally
-      (via final normalization).
+      Total flux is conserved locally (via footprint correction).
 
       :param interpolation_mode: The interpolation mode to use when sampling the source image.
                                  Options include:
@@ -113,9 +136,6 @@ Module Contents
       1. Local flux conservation: The image and a "ones" tensor are interpolated
          together, and the interpolated image is divided by the interpolated ones
          tensor (footprint) to correct for any flux spreading during interpolation.
-
-      2. Global flux conservation: The total flux of the output image is normalized
-         to match the total flux of the input image.
 
       Areas in the target image that map outside the source image boundaries
       will be filled with zeros (using 'zeros' padding_mode).
@@ -140,6 +160,8 @@ Module Contents
    :type source_hdus: Union[PrimaryHDU, List[PrimaryHDU]]
    :param target_wcs: WCS information fopr the target.
    :type target_wcs: WCS
+   :param shape_out: Shape of the resampled array
+   :type shape_out: Tuple[int, int]
    :param interpolation_mode: The interpolation method to use when resampling the source image.
                               Options:
                               - 'nearest' : Nearest neighbor interpolation (fastest, default)
@@ -177,8 +199,9 @@ Module Contents
    >>>
    >>> # Perform reprojection with bilinear interpolation
    >>> reprojected = calculate_reprojection(
-   ...     target_hdu=target_wcs,
-   ...     source_hdu=source_hdu,
+   ...     source_hdus=source_hdu,
+   ...     target_wcs=target_wcs,
+   ...     shape_out=target_hdu[0].data.shape,
    ...     interpolation_mode='bilinear'
    ... )
    >>>
