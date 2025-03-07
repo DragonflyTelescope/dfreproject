@@ -656,10 +656,9 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    torch.Tensor</span>
-<span class="sd">        The reprojected image as a PyTorch tensor with the same shape as</span>
-<span class="sd">        target_hdu.data. The tensor is on the same device as the computation</span>
-<span class="sd">        (GPU if available, otherwise CPU).</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        The reprojected image as a numpy ndarray with the same shape as</span>
+<span class="sd">        target_hdu.data.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -703,7 +702,9 @@
     <span class="n">reprojection</span> <span class="o">=</span> <span class="n">Reproject</span><span class="p">(</span>
         <span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdus</span><span class="p">,</span> <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span> <span class="n">shape_out</span><span class="o">=</span><span class="n">shape_out</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">interpolation_mode</span><span class="p">)</span></div>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">interpolation_mode</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">result</span></div>
 
 </pre></div>
 

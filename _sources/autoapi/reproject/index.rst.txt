@@ -169,10 +169,9 @@ Module Contents
                               - 'bicubic' : Bicubic interpolation (highest quality, slowest)
    :type interpolation_mode: str, default 'nearest'
 
-   :returns: The reprojected image as a PyTorch tensor with the same shape as
-             target_hdu.data. The tensor is on the same device as the computation
-             (GPU if available, otherwise CPU).
-   :rtype: torch.Tensor
+   :returns: The reprojected image as a numpy ndarray with the same shape as
+             target_hdu.data.
+   :rtype: numpy.ndarray
 
    .. rubric:: Notes
 
