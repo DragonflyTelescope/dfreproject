@@ -6,7 +6,7 @@ from astropy.wcs import WCS
 import os
 
 # Import the function to test
-from reprojection.reproject import calculate_reprojection, Reproject
+from dfreproject.reproject import calculate_reprojection, Reproject
 
 def nanmax(tensor, dim=None, keepdim=False):
     min_value = torch.finfo(tensor.dtype).min
@@ -77,11 +77,11 @@ class TestCalculateReprojection:
         return source_hdu, target_hdu, source_file, target_file, target_wcs
 
     def test_basic_reprojection(self, simple_source_target_pair):
-        """Test that the function performs basic reprojection correctly."""
+        """Test that the function performs basic dfreproject correctly."""
         source_hdu, target_hdu, _, _, target_wcs = simple_source_target_pair
 
 
-        # Perform reprojection
+        # Perform dfreproject
         result = calculate_reprojection(
             source_hdus=source_hdu,
             target_wcs=target_wcs,
@@ -102,7 +102,7 @@ class TestCalculateReprojection:
         modes = ["nearest", "bilinear", "bicubic"]
 
         for mode in modes:
-            # Perform reprojection with each mode
+            # Perform dfreproject with each mode
             result = calculate_reprojection(
                 source_hdus=source_hdu,
                 target_wcs=target_wcs,
@@ -117,7 +117,7 @@ class TestCalculateReprojection:
 
 
     def test_with_real_fits_files(self, source_fits_file, target_fits_file):
-        """Test reprojection with real FITS files from fixtures."""
+        """Test dfreproject with real FITS files from fixtures."""
         # Load HDUs
         source_hdu = fits.open(source_fits_file)[0]
         target_hdu = fits.open(target_fits_file)[0]
@@ -129,7 +129,7 @@ class TestCalculateReprojection:
         if hasattr(target_hdu, 'data') and target_hdu.data is not None:
             target_hdu.data = np.asarray(target_hdu.data, dtype=np.float64).copy()
 
-        # Perform reprojection
+        # Perform dfreproject
         result = calculate_reprojection(
             source_hdus=source_hdu,
             target_wcs=WCS(target_hdu.header),
@@ -156,7 +156,7 @@ class TestCalculateReprojection:
         if hasattr(target_hdu, 'data') and target_hdu.data is not None:
             target_hdu.data = np.asarray(target_hdu.data, dtype=np.float64).copy()
 
-        # Perform reprojection
+        # Perform dfreproject
         reprojected = calculate_reprojection(
             source_hdus=source_hdu,
             target_wcs=WCS(target_hdu.header),

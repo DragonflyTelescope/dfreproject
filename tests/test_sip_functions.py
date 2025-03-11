@@ -3,7 +3,7 @@ import torch
 import numpy as np
 
 # Import the functions to test - adjust imports as needed
-from reprojection.sip import (
+from dfreproject.sip import (
     apply_sip_distortion,
     apply_inverse_sip_distortion,
     iterative_inverse_sip

@@ -1,8 +1,8 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="reprojection",
-    version="0.1.0",
+    name="dfreproject",
+    version="1.0.0",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     install_requires=[
@@ -24,8 +24,8 @@ setup(
     author="Carter Rhea",
     author_email="carter.rhea@dragonfly1000.com",
     description="A package for reprojecting astronomical images",
-    long_description="A package that implements astronomical image reprojection with SIP distortion correction",
-    url="https://github.com/yourusername/reprojection",
+    long_description="A package that implements astronomical image dfreproject with SIP distortion correction",
+    url="https://github.com/DragonflyTelescope/dfreproject",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

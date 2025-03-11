@@ -1,7 +1,7 @@
 import pytest
 import torch
 import numpy as np
-from reprojection.reproject import Reproject
+from dfreproject.reproject import Reproject
 from astropy.io import fits
 from astropy.wcs import WCS
 

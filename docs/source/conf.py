@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath("../.."))  # Path to your package
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "reprojection"
+project = "dfreproject"
 copyright = "2025, Carter Rhea"
 author = "Carter Rhea"
 

@@ -3,7 +3,7 @@ import torch
 import unittest.mock as mock
 
 # Import the function to test
-from reprojection.utils import get_device  # Adjust import path as needed
+from dfreproject.utils import get_device  # Adjust import path as needed
 
 
 @pytest.mark.unit

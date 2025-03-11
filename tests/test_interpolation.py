@@ -6,7 +6,7 @@ from astropy.io import fits
 
 
 # Import the actual Reproject class - adjust as needed
-# from reprojection.reproject import Reproject
+# from dfreproject.reproject import Reproject
 
 @pytest.mark.integration
 class TestInterpolationIntegration:
@@ -25,7 +25,7 @@ class TestInterpolationIntegration:
         if hasattr(target_hdu, 'data') and target_hdu.data is not None:
             target_hdu.data = np.asarray(target_hdu.data, dtype=np.float64).copy()
         # Import the Reproject class
-        from reprojection.reproject import Reproject
+        from dfreproject.reproject import Reproject
 
         # Create actual instance
         reproject = Reproject([source_hdu], WCS(target_hdu.header), shape_out=target_hdu.data.shape)
@@ -102,7 +102,7 @@ class TestInterpolationIntegration:
         target_hdu.header.update(target_wcs.to_header())
 
         # Import the Reproject class
-        from reprojection.reproject import Reproject
+        from dfreproject.reproject import Reproject
 
         # Create reproject instance
         reproject = Reproject([source_hdu], target_wcs, shape_out=target_data.shape)
