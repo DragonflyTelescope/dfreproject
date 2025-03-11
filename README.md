@@ -6,8 +6,8 @@ A high-performance Python package for reprojecting astronomical images between d
 [![Tests](https://github.com/DragonflyTelescope/reprojection/actions/workflows/tests.yml/badge.svg)](https://github.com/DragonflyTelescope/reprojection/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/DragonflyTelescope/reprojection/branch/main/graph/badge.svg)](https://codecov.io/gh/DragonflyTelescope/reprojection)
 
-The idea behind this package was to make a stripped down version of the `reproject` package by astropy in order to reduce computational time. 
-We achieve approximately 40X faster computations with this package. Take a look at the demos for an example. 
+The idea behind this package was to make a stripped down version of the `reproject` package by astropy in order to reduce computational time.
+We achieve approximately 40X faster computations with this package. Take a look at the demos for an example.
 
 ## Features
 
@@ -49,7 +49,7 @@ pip install -e ".[docs]"
 ```python
 from astropy.io import fits
 from astropy.wcs import WCS
-from reprojection.reproject import calculate_reprojection
+from reprojection import calculate_reprojection
 
 # Load source and target images
 source_hdu = fits.open('source_image.fits')[0]
@@ -57,7 +57,7 @@ target_hdu = fits.open('target_grid.fits')[0]
 target_wcs = WCS(target_hdu.header)
 # Perform reprojection with bilinear interpolation
 reprojected = calculate_reprojection(
-    source_hdus=source_hdu, 
+    source_hdus=source_hdu,
     target_wcs=target_wcs,
     shape_out=target_hdu.data.shape,
     interpolation_mode='bilinear'

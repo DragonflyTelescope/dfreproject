@@ -5,9 +5,12 @@ import torch
 from astropy.io.fits import PrimaryHDU
 from astropy.wcs import WCS
 
-from reprojection.sip import (apply_inverse_sip_distortion,
-                              apply_sip_distortion, get_sip_coeffs)
-from reprojection.utils import get_device
+from .sip import (
+    apply_inverse_sip_distortion,
+    apply_sip_distortion,
+    get_sip_coeffs
+)
+from .utils import get_device
 
 EPSILON = 1e-10
 
@@ -560,7 +563,7 @@ def calculate_reprojection(
     >>> from astropy.io import fits
     >>> from astropy.wcs import WCS
     >>> import torch
-    >>> from reprojection.reproject import calculate_reprojection
+    >>> from reprojection import calculate_reprojection
     >>>
     >>> # Open source and target images
     >>> source_hdu = fits.open('source_image.fits')[0]
