@@ -106,7 +106,7 @@ Module Contents
 
       Interpolate the source image at the calculated source coordinates with flux conservation.
 
-      This method performs the actual pixel resampling needed for reprojection
+      This method performs the actual pixel resampling needed for dfreproject
       while preserving the total flux (photometric accuracy). It implements a
       footprint-based approach similar to that used in reproject_interp from the
       Astropy package.
@@ -150,9 +150,9 @@ Module Contents
 
    Reproject an astronomical image from a source WCS to a target WCS.
 
-   This high-level function provides a convenient interface for image reprojection,
+   This high-level function provides a convenient interface for image dfreproject,
    handling all the necessary steps: WCS extraction, tensor creation, and interpolation.
-   It converts FITS HDU objects to the internal representation, performs the reprojection,
+   It converts FITS HDU objects to the internal representation, performs the dfreproject,
    and returns the resulting image as a PyTorch tensor.
 
    :param source_hdus: The source image HDU list containing the image data to be reprojected and
@@ -189,14 +189,14 @@ Module Contents
    >>> from astropy.io import fits
    >>> from astropy.wcs import WCS
    >>> import torch
-   >>> from reprojection.reproject import calculate_reprojection
+   >>> from dfreproject.reproject import calculate_reprojection
    >>>
    >>> # Open source and target images
    >>> source_hdu = fits.open('source_image.fits')[0]
    >>> target_hdu = fits.open('target_grid.fits')[0]
    >>> target_wcs = WCS(target_hdu.header)
    >>>
-   >>> # Perform reprojection with bilinear interpolation
+   >>> # Perform dfreproject with bilinear interpolation
    >>> reprojected = calculate_reprojection(
    ...     source_hdus=source_hdu,
    ...     target_wcs=target_wcs,

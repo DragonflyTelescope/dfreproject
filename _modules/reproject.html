@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>reproject &mdash; reprojection  documentation</title>
+  <title>reproject &mdash; dfreproject  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
@@ -31,7 +31,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            reprojection
+            dfreproject
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -54,7 +54,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">reprojection</a>
+          <a href="../index.html">dfreproject</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -80,9 +80,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io.fits</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrimaryHDU</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">reprojection.sip</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">apply_inverse_sip_distortion</span><span class="p">,</span>
-                              <span class="n">apply_sip_distortion</span><span class="p">,</span> <span class="n">get_sip_coeffs</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">reprojection.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dfreproject.sip</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">apply_inverse_sip_distortion</span><span class="p">,</span>
+                             <span class="n">apply_sip_distortion</span><span class="p">,</span> <span class="n">get_sip_coeffs</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dfreproject.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device</span>
 
 <div class="viewcode-block" id="EPSILON">
 <a class="viewcode-back" href="../autoapi/reproject/index.html#reproject.EPSILON">[docs]</a>
@@ -131,12 +131,12 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">],</span> <span class="n">target_wcs</span><span class="p">:</span> <span class="n">WCS</span><span class="p">,</span> <span class="n">shape_out</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize a reprojection operation between source and target image frames.</span>
+<span class="sd">        Initialize a dfreproject operation between source and target image frames.</span>
 
 <span class="sd">        This constructor sets up the necessary components for reprojecting an astronomical</span>
 <span class="sd">        image from one World Coordinate System (WCS) to another. It stores the source</span>
 <span class="sd">        and target WCS information, images, and creates a coordinate grid for the target</span>
-<span class="sd">        image that will be used in the reprojection process.</span>
+<span class="sd">        image that will be used in the dfreproject process.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -153,14 +153,14 @@
 <span class="sd">        -----</span>
 <span class="sd">        This constructor creates a coordinate grid spanning the entire target image,</span>
 <span class="sd">        which will be used for the pixel-to-world and world-to-pixel transformations</span>
-<span class="sd">        during reprojection. The grid is created with &#39;ij&#39; indexing, where the first</span>
+<span class="sd">        during dfreproject. The grid is created with &#39;ij&#39; indexing, where the first</span>
 <span class="sd">        dimension corresponds to y (rows) and the second to x (columns).</span>
 
 <span class="sd">        The coordinate grid is stored as a tuple of tensors (batch, y_grid, x_grid), where</span>
 <span class="sd">        each element has the same shape as the target image.</span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; # Initialize the reprojection object</span>
+<span class="sd">        &gt;&gt;&gt; # Initialize the dfreproject object</span>
 <span class="sd">        &gt;&gt;&gt; reproject = Reproject(source_hdus, target_wcs)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -538,7 +538,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Interpolate the source image at the calculated source coordinates with flux conservation.</span>
 
-<span class="sd">        This method performs the actual pixel resampling needed for reprojection</span>
+<span class="sd">        This method performs the actual pixel resampling needed for dfreproject</span>
 <span class="sd">        while preserving the total flux (photometric accuracy). It implements a</span>
 <span class="sd">        footprint-based approach similar to that used in reproject_interp from the</span>
 <span class="sd">        Astropy package.</span>
@@ -630,9 +630,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reproject an astronomical image from a source WCS to a target WCS.</span>
 
-<span class="sd">    This high-level function provides a convenient interface for image reprojection,</span>
+<span class="sd">    This high-level function provides a convenient interface for image dfreproject,</span>
 <span class="sd">    handling all the necessary steps: WCS extraction, tensor creation, and interpolation.</span>
-<span class="sd">    It converts FITS HDU objects to the internal representation, performs the reprojection,</span>
+<span class="sd">    It converts FITS HDU objects to the internal representation, performs the dfreproject,</span>
 <span class="sd">    and returns the resulting image as a PyTorch tensor.</span>
 
 <span class="sd">    Parameters</span>
@@ -676,14 +676,14 @@
 <span class="sd">    &gt;&gt;&gt; from astropy.io import fits</span>
 <span class="sd">    &gt;&gt;&gt; from astropy.wcs import WCS</span>
 <span class="sd">    &gt;&gt;&gt; import torch</span>
-<span class="sd">    &gt;&gt;&gt; from reprojection.reproject import calculate_reprojection</span>
+<span class="sd">    &gt;&gt;&gt; from dfreproject.reproject import calculate_reprojection</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # Open source and target images</span>
 <span class="sd">    &gt;&gt;&gt; source_hdu = fits.open(&#39;source_image.fits&#39;)[0]</span>
 <span class="sd">    &gt;&gt;&gt; target_hdu = fits.open(&#39;target_grid.fits&#39;)[0]</span>
 <span class="sd">    &gt;&gt;&gt; target_wcs = WCS(target_hdu.header)</span>
 <span class="sd">    &gt;&gt;&gt;</span>
-<span class="sd">    &gt;&gt;&gt; # Perform reprojection with bilinear interpolation</span>
+<span class="sd">    &gt;&gt;&gt; # Perform dfreproject with bilinear interpolation</span>
 <span class="sd">    &gt;&gt;&gt; reprojected = calculate_reprojection(</span>
 <span class="sd">    ...     source_hdus=source_hdu,</span>
 <span class="sd">    ...     target_wcs=target_wcs,</span>

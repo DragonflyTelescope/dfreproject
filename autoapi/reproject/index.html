@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>reproject &mdash; reprojection  documentation</title>
+  <title>reproject &mdash; dfreproject  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
@@ -33,7 +33,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            reprojection
+            dfreproject
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -75,7 +75,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">reprojection</a>
+          <a href="../../index.html">dfreproject</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -233,7 +233,7 @@ There are four primary steps:
 <dt class="sig sig-object py" id="reproject.Reproject.interpolate_source_image">
 <span class="sig-name descname"><span class="pre">interpolate_source_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bilinear'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="../../_modules/reproject.html#Reproject.interpolate_source_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.Reproject.interpolate_source_image" title="Link to this definition"></a></dt>
 <dd><p>Interpolate the source image at the calculated source coordinates with flux conservation.</p>
-<p>This method performs the actual pixel resampling needed for reprojection
+<p>This method performs the actual pixel resampling needed for dfreproject
 while preserving the total flux (photometric accuracy). It implements a
 footprint-based approach similar to that used in reproject_interp from the
 Astropy package.</p>
@@ -279,9 +279,9 @@ characteristics and the flux distribution of sources.</p>
 <dt class="sig sig-object py" id="reproject.calculate_reprojection">
 <span class="sig-prename descclassname"><span class="pre">reproject.</span></span><span class="sig-name descname"><span class="pre">calculate_reprojection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_hdus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.astropy.org/en/stable/io/fits/api/hdus.html#astropy.io.fits.PrimaryHDU" title="(in Astropy v7.0)"><span class="pre">astropy.io.fits.PrimaryHDU</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_wcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.wcs.WCS.html#astropy.wcs.WCS" title="(in Astropy v7.0)"><span class="pre">astropy.wcs.WCS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/reproject.html#calculate_reprojection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reproject.calculate_reprojection" title="Link to this definition"></a></dt>
 <dd><p>Reproject an astronomical image from a source WCS to a target WCS.</p>
-<p>This high-level function provides a convenient interface for image reprojection,
+<p>This high-level function provides a convenient interface for image dfreproject,
 handling all the necessary steps: WCS extraction, tensor creation, and interpolation.
-It converts FITS HDU objects to the internal representation, performs the reprojection,
+It converts FITS HDU objects to the internal representation, performs the dfreproject,
 and returns the resulting image as a PyTorch tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -317,14 +317,14 @@ back to a NumPy array and create a new FITS HDU with the target WCS header.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">reprojection.reproject</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_reprojection</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">dfreproject.reproject</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_reprojection</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Open source and target images</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">source_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;source_image.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">target_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;target_grid.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">target_wcs</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">target_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Perform reprojection with bilinear interpolation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Perform dfreproject with bilinear interpolation</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">reprojected</span> <span class="o">=</span> <span class="n">calculate_reprojection</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdu</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span>
