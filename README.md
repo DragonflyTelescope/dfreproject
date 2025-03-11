@@ -33,7 +33,7 @@ We achieve approximately 40X faster computations with this package. Take a look 
 For the latest development version, install directly from the GitHub repository:
 
 ```bash
-git clone https://github.com/dragonfly/dfreproject.git
+git clone https://github.com/DragonflyTelescope/dfreproject.git
 cd dfreproject
 pip install -e .
 ```
