@@ -1,7 +1,7 @@
-utils
-=====
+dfreproject.utils
+=================
 
-.. py:module:: utils
+.. py:module:: dfreproject.utils
 
 
 Functions
@@ -9,7 +9,7 @@ Functions
 
 .. autoapisummary::
 
-   utils.get_device
+   dfreproject.utils.get_device
 
 
 Module Contents

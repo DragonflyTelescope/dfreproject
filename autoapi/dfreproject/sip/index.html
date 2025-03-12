@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dfreproject.sip &mdash; dfreproject  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="dfreproject.utils" href="../utils/index.html" />
+    <link rel="prev" title="dfreproject.reproject" href="../reproject/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            dfreproject
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../methodology.html">Astronomical Coordinate Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">dfreproject</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../reproject/index.html">dfreproject.reproject</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dfreproject.sip</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">dfreproject.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">dfreproject</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">dfreproject</a></li>
+      <li class="breadcrumb-item active">dfreproject.sip</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/dfreproject/sip/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-dfreproject.sip">
+<span id="dfreproject-sip"></span><h1>dfreproject.sip<a class="headerlink" href="#module-dfreproject.sip" title="Link to this heading"></a></h1>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.sip.get_sip_coeffs" title="dfreproject.sip.get_sip_coeffs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sip_coeffs</span></code></a>(→ Tuple[torch.Tensor, torch.Tensor, ...)</p></td>
+<td><p>Extract SIP polynomial coefficients from a WCS object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dfreproject.sip.apply_sip_distortion" title="dfreproject.sip.apply_sip_distortion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_sip_distortion</span></code></a>(u, v, sip_coeffs[, device])</p></td>
+<td><p>Apply SIP distortion to intermediate pixel coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.sip.apply_inverse_sip_distortion" title="dfreproject.sip.apply_inverse_sip_distortion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_inverse_sip_distortion</span></code></a>(u, v, sip_coeffs[, device])</p></td>
+<td><p>Apply inverse SIP distortion to go from distorted to intermediate coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dfreproject.sip.iterative_inverse_sip" title="dfreproject.sip.iterative_inverse_sip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iterative_inverse_sip</span></code></a>(u, v, sip_coeffs[, device, ...])</p></td>
+<td><p>Iteratively solve for undistorted coordinates when inverse SIP coefficients</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dfreproject.sip.get_sip_coeffs">
+<span class="sig-prename descclassname"><span class="pre">dfreproject.sip.</span></span><span class="sig-name descname"><span class="pre">get_sip_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.wcs.WCS.html#astropy.wcs.WCS" title="(in Astropy v7.0)"><span class="pre">astropy.wcs.WCS</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/dfreproject/sip.html#get_sip_coeffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.sip.get_sip_coeffs" title="Link to this definition"></a></dt>
+<dd><p>Extract SIP polynomial coefficients from a WCS object.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>wcs<span class="classifier">astropy.wcs.WCS</span></dt><dd><p>WCS object potentially containing SIP distortion</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>dict:</dt><dd><p>Dictionary containing SIP coefficient matrices A, B, AP, BP and orders</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dfreproject.sip.apply_sip_distortion">
+<span class="sig-prename descclassname"><span class="pre">dfreproject.sip.</span></span><span class="sig-name descname"><span class="pre">apply_sip_distortion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sip_coeffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dfreproject/sip.html#apply_sip_distortion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.sip.apply_sip_distortion" title="Link to this definition"></a></dt>
+<dd><p>Apply SIP distortion to intermediate pixel coordinates.</p>
+<section id="id1">
+<h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Intermediate pixel coordinates (before distortion)</p>
+</dd>
+<dt>sip_coeffs<span class="classifier">Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]</span></dt><dd><p>SIP coefficient matrices</p>
+</dd>
+<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h3>Returns:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>tuple:</dt><dd><p>(u’, v’) distorted coordinates</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dfreproject.sip.apply_inverse_sip_distortion">
+<span class="sig-prename descclassname"><span class="pre">dfreproject.sip.</span></span><span class="sig-name descname"><span class="pre">apply_inverse_sip_distortion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sip_coeffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dfreproject/sip.html#apply_inverse_sip_distortion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.sip.apply_inverse_sip_distortion" title="Link to this definition"></a></dt>
+<dd><p>Apply inverse SIP distortion to go from distorted to intermediate coordinates.</p>
+<section id="id3">
+<h3>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Distorted coordinates</p>
+</dd>
+<dt>sip_coeffs<span class="classifier">Tuple</span></dt><dd><p>SIP coefficient matrices</p>
+</dd>
+<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Returns:<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>tuple:</dt><dd><p>(u’, v’) undistorted coordinates</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dfreproject.sip.iterative_inverse_sip">
+<span class="sig-prename descclassname"><span class="pre">dfreproject.sip.</span></span><span class="sig-name descname"><span class="pre">iterative_inverse_sip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sip_coeffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dfreproject/sip.html#iterative_inverse_sip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.sip.iterative_inverse_sip" title="Link to this definition"></a></dt>
+<dd><p>Iteratively solve for undistorted coordinates when inverse SIP coefficients
+are not available.</p>
+<section id="id5">
+<h3>Parameters:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Distorted coordinates</p>
+</dd>
+<dt>sip_coeffs<span class="classifier">Tuple</span></dt><dd><p>SIP coefficient matrices</p>
+</dd>
+<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on</p>
+</dd>
+<dt>max_iter<span class="classifier">int, optional</span></dt><dd><p>Maximum number of iterations</p>
+</dd>
+<dt>tol<span class="classifier">float, optional</span></dt><dd><p>Convergence tolerance</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h3>Returns:<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>tuple:</dt><dd><p>(u’, v’) undistorted coordinates</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../reproject/index.html" class="btn btn-neutral float-left" title="dfreproject.reproject" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../utils/index.html" class="btn btn-neutral float-right" title="dfreproject.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Carter Rhea.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

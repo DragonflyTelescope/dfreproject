@@ -1,7 +1,7 @@
-sip
-===
+dfreproject.sip
+===============
 
-.. py:module:: sip
+.. py:module:: dfreproject.sip
 
 
 Functions
@@ -9,10 +9,10 @@ Functions
 
 .. autoapisummary::
 
-   sip.get_sip_coeffs
-   sip.apply_sip_distortion
-   sip.apply_inverse_sip_distortion
-   sip.iterative_inverse_sip
+   dfreproject.sip.get_sip_coeffs
+   dfreproject.sip.apply_sip_distortion
+   dfreproject.sip.apply_inverse_sip_distortion
+   dfreproject.sip.iterative_inverse_sip
 
 
 Module Contents
