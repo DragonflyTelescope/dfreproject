@@ -10,6 +10,7 @@ Attributes
 .. autoapisummary::
 
    dfreproject.reproject.EPSILON
+   dfreproject.reproject.VALID_ORDERS
 
 
 Classes
@@ -25,6 +26,7 @@ Functions
 
 .. autoapisummary::
 
+   dfreproject.reproject.validate_interpolation_order
    dfreproject.reproject.atan2d
    dfreproject.reproject.sincosd
    dfreproject.reproject.interpolate_image
@@ -37,6 +39,12 @@ Module Contents
 .. py:data:: EPSILON
    :value: 1e-10
 
+
+.. py:data:: VALID_ORDERS
+   :value: ['bicubic', 'bilinear', 'nearest', 'nearest-neighbors']
+
+
+.. py:function:: validate_interpolation_order(order)
 
 .. py:function:: atan2d(y, x)
 

@@ -97,6 +97,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.reproject.EPSILON" title="dfreproject.reproject.EPSILON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EPSILON</span></code></a></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dfreproject.reproject.VALID_ORDERS" title="dfreproject.reproject.VALID_ORDERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_ORDERS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -114,16 +117,19 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.reproject.atan2d" title="dfreproject.reproject.atan2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atan2d</span></code></a>(y, x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.reproject.validate_interpolation_order" title="dfreproject.reproject.validate_interpolation_order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_interpolation_order</span></code></a>(order)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dfreproject.reproject.atan2d" title="dfreproject.reproject.atan2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atan2d</span></code></a>(y, x)</p></td>
 <td><p>PyTorch implementation of WCSLib's atan2d function</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dfreproject.reproject.sincosd" title="dfreproject.reproject.sincosd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sincosd</span></code></a>(angle_deg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.reproject.sincosd" title="dfreproject.reproject.sincosd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sincosd</span></code></a>(angle_deg)</p></td>
 <td><p>PyTorch implementation of WCSLib's sincosd function</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.reproject.interpolate_image" title="dfreproject.reproject.interpolate_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_image</span></code></a>(→ torch.Tensor)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dfreproject.reproject.interpolate_image" title="dfreproject.reproject.interpolate_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_image</span></code></a>(→ torch.Tensor)</p></td>
 <td><p>JIT-compiled image interpolation using grid_sample</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dfreproject.reproject.calculate_reprojection" title="dfreproject.reproject.calculate_reprojection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_reprojection</span></code></a>(source_hdus, target_wcs[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.reproject.calculate_reprojection" title="dfreproject.reproject.calculate_reprojection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_reprojection</span></code></a>(source_hdus, target_wcs[, ...])</p></td>
 <td><p>Reproject an astronomical image from a source WCS to a target WCS.</p></td>
 </tr>
 </tbody>
@@ -134,6 +140,16 @@
 <dl class="py data">
 <dt class="sig sig-object py" id="dfreproject.reproject.EPSILON">
 <span class="sig-prename descclassname"><span class="pre">dfreproject.reproject.</span></span><span class="sig-name descname"><span class="pre">EPSILON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-10</span></em><a class="reference internal" href="../../../_modules/dfreproject/reproject.html#EPSILON"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.reproject.EPSILON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dfreproject.reproject.VALID_ORDERS">
+<span class="sig-prename descclassname"><span class="pre">dfreproject.reproject.</span></span><span class="sig-name descname"><span class="pre">VALID_ORDERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['bicubic',</span> <span class="pre">'bilinear',</span> <span class="pre">'nearest',</span> <span class="pre">'nearest-neighbors']</span></em><a class="reference internal" href="../../../_modules/dfreproject/reproject.html#VALID_ORDERS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.reproject.VALID_ORDERS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dfreproject.reproject.validate_interpolation_order">
+<span class="sig-prename descclassname"><span class="pre">dfreproject.reproject.</span></span><span class="sig-name descname"><span class="pre">validate_interpolation_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dfreproject/reproject.html#validate_interpolation_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.reproject.validate_interpolation_order" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">

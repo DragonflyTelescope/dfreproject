@@ -93,6 +93,20 @@
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.EPSILON">[docs]</a>
 <span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">1e-10</span></div>
 
+<div class="viewcode-block" id="VALID_ORDERS">
+<a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.VALID_ORDERS">[docs]</a>
+<span class="n">VALID_ORDERS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;bicubic&#39;</span><span class="p">,</span> <span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="s1">&#39;nearest-neighbors&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="validate_interpolation_order">
+<a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.validate_interpolation_order">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_interpolation_order</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VALID_ORDERS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;order must be one of </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VALID_ORDERS</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="s1">&#39;nearest-neighbors&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;nearest&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">order</span></div>
 
 
 <span class="c1"># Helper functions for trigonometric calculations</span>
@@ -716,7 +730,8 @@
     <span class="n">reprojection</span> <span class="o">=</span> <span class="n">Reproject</span><span class="p">(</span>
         <span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdus</span><span class="p">,</span> <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span> <span class="n">shape_out</span><span class="o">=</span><span class="n">shape_out</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
     <span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">validate_interpolation_order</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
