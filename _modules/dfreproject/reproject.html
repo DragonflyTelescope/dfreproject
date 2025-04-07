@@ -73,11 +73,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dfreproject.reproject</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io.fits</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrimaryHDU</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io.fits</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrimaryHDU</span><span class="p">,</span> <span class="n">Header</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
 
 
@@ -630,8 +630,8 @@
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.calculate_reprojection">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_reprojection</span><span class="p">(</span>
     <span class="n">source_hdus</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">]],</span>
-    <span class="n">target_wcs</span><span class="p">:</span> <span class="n">WCS</span><span class="p">,</span>
-    <span class="n">shape_out</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">target_wcs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">WCS</span><span class="p">,</span> <span class="n">Header</span><span class="p">],</span>
+    <span class="n">shape_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">order</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
@@ -649,11 +649,11 @@
 <span class="sd">        The source image HDU list containing the image data to be reprojected and</span>
 <span class="sd">        its associated WCS information in the header.</span>
 
-<span class="sd">    target_wcs : WCS</span>
-<span class="sd">        WCS information fopr the target.</span>
+<span class="sd">    target_wcs : Union[WCS, Header]</span>
+<span class="sd">        WCS information fopr the target. If a Header is passed it will be transformed to WCS.</span>
 
-<span class="sd">    shape_out: Tuple[int, int]</span>
-<span class="sd">        Shape of the resampled array</span>
+<span class="sd">    shape_out: Optional[Tuple[int, int]]</span>
+<span class="sd">        Shape of the resampled array. If no argument is passed, then the output shape will be the same as the input shape.</span>
 
 <span class="sd">    order : str, default &#39;nearest&#39;</span>
 <span class="sd">        The interpolation method to use when resampling the source image.</span>
@@ -709,6 +709,10 @@
     <span class="c1"># Convert single HDU to list if not already a list</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">source_hdus</span> <span class="o">=</span> <span class="p">[</span><span class="n">source_hdus</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target_wcs</span><span class="p">,</span> <span class="n">Header</span><span class="p">):</span>
+        <span class="n">target_wcs</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">target_wcs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">shape_out</span><span class="p">:</span>
+        <span class="n">shape_out</span> <span class="o">=</span> <span class="n">source_hdus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">reprojection</span> <span class="o">=</span> <span class="n">Reproject</span><span class="p">(</span>
         <span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdus</span><span class="p">,</span> <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span> <span class="n">shape_out</span><span class="o">=</span><span class="n">shape_out</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
     <span class="p">)</span>

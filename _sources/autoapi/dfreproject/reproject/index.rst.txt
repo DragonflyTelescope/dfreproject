@@ -143,7 +143,7 @@ Module Contents
 
 
 
-.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, List[astropy.io.fits.PrimaryHDU]], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], order='nearest', device=None)
+.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, List[astropy.io.fits.PrimaryHDU]], target_wcs: Union[astropy.wcs.WCS, astropy.io.fits.Header], shape_out: Optional[Tuple[int, int]] = None, order='nearest', device=None)
 
    Reproject an astronomical image from a source WCS to a target WCS.
 
@@ -155,10 +155,10 @@ Module Contents
    :param source_hdus: The source image HDU list containing the image data to be reprojected and
                        its associated WCS information in the header.
    :type source_hdus: Union[PrimaryHDU, List[PrimaryHDU]]
-   :param target_wcs: WCS information fopr the target.
-   :type target_wcs: WCS
-   :param shape_out: Shape of the resampled array
-   :type shape_out: Tuple[int, int]
+   :param target_wcs: WCS information fopr the target. If a Header is passed it will be transformed to WCS.
+   :type target_wcs: Union[WCS, Header]
+   :param shape_out: Shape of the resampled array. If no argument is passed, then the output shape will be the same as the input shape.
+   :type shape_out: Optional[Tuple[int, int]]
    :param order: The interpolation method to use when resampling the source image.
                  Options:
                  - 'nearest' : Nearest neighbor interpolation (fastest, default)
