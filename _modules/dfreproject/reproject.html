@@ -701,10 +701,9 @@
 <span class="sd">    ...     shape_out=target_hdu[0].data.shape,</span>
 <span class="sd">    ...     order=&#39;bilinear&#39;</span>
 <span class="sd">    ... )</span>
-<span class="sd">    &gt;&gt;&gt;</span>
-<span class="sd">    &gt;&gt;&gt; # Convert back to NumPy and save as FITS</span>
-<span class="sd">    &gt;&gt;&gt; reprojected_np = reprojected.cpu().numpy()</span>
-<span class="sd">    &gt;&gt;&gt; output_hdu = fits.PrimaryHDU(data=reprojected_np, header=target_hdu.header)</span>
+<span class="sd">    &gt;&gt;&gt; # By default the resulting tensor is thrown to a numpy array</span>
+<span class="sd">    &gt;&gt;&gt; # Save as FITS</span>
+<span class="sd">    &gt;&gt;&gt; output_hdu = fits.PrimaryHDU(data=reprojected, header=target_hdu.header)</span>
 <span class="sd">    &gt;&gt;&gt; output_hdu.writeto(&#39;reprojected_image.fits&#39;, overwrite=True)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Convert single HDU to list if not already a list</span>
