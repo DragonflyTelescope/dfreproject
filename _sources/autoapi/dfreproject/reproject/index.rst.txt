@@ -53,10 +53,7 @@ Module Contents
    JIT-compiled image interpolation using grid_sample
 
 
-.. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int])
-
-   .. py:attribute:: device
-
+.. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], device=None)
 
    .. py:attribute:: batch_source_images
 
@@ -106,7 +103,7 @@ Module Contents
 
       Interpolate the source image at the calculated source coordinates with flux conservation.
 
-      This method performs the actual pixel resampling needed for reprojection
+      This method performs the actual pixel resampling needed for dfreproject
       while preserving the total flux (photometric accuracy). It implements a
       footprint-based approach similar to that used in reproject_interp from the
       Astropy package.
@@ -146,13 +143,13 @@ Module Contents
 
 
 
-.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, List[astropy.io.fits.PrimaryHDU]], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], interpolation_mode='nearest')
+.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, List[astropy.io.fits.PrimaryHDU]], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], order='nearest', device=None)
 
    Reproject an astronomical image from a source WCS to a target WCS.
 
-   This high-level function provides a convenient interface for image reprojection,
+   This high-level function provides a convenient interface for image dfreproject,
    handling all the necessary steps: WCS extraction, tensor creation, and interpolation.
-   It converts FITS HDU objects to the internal representation, performs the reprojection,
+   It converts FITS HDU objects to the internal representation, performs the dfreproject,
    and returns the resulting image as a PyTorch tensor.
 
    :param source_hdus: The source image HDU list containing the image data to be reprojected and
@@ -162,12 +159,14 @@ Module Contents
    :type target_wcs: WCS
    :param shape_out: Shape of the resampled array
    :type shape_out: Tuple[int, int]
-   :param interpolation_mode: The interpolation method to use when resampling the source image.
-                              Options:
-                              - 'nearest' : Nearest neighbor interpolation (fastest, default)
-                              - 'bilinear' : Bilinear interpolation (good balance of speed/quality)
-                              - 'bicubic' : Bicubic interpolation (highest quality, slowest)
-   :type interpolation_mode: str, default 'nearest'
+   :param order: The interpolation method to use when resampling the source image.
+                 Options:
+                 - 'nearest' : Nearest neighbor interpolation (fastest, default)
+                 - 'bilinear' : Bilinear interpolation (good balance of speed/quality)
+                 - 'bicubic' : Bicubic interpolation (highest quality, slowest)
+   :type order: str, default 'nearest'
+   :param device: Device to use for computations. Defaults to GPU if available otherwise uses CPU
+   :type device: str
 
    :returns: The reprojected image as a numpy ndarray with the same shape as
              target_hdu.data.
@@ -189,19 +188,19 @@ Module Contents
    >>> from astropy.io import fits
    >>> from astropy.wcs import WCS
    >>> import torch
-   >>> from reprojection.reproject import calculate_reprojection
+   >>> from dfreproject.reproject import calculate_reprojection
    >>>
    >>> # Open source and target images
    >>> source_hdu = fits.open('source_image.fits')[0]
    >>> target_hdu = fits.open('target_grid.fits')[0]
    >>> target_wcs = WCS(target_hdu.header)
    >>>
-   >>> # Perform reprojection with bilinear interpolation
+   >>> # Perform dfreproject with bilinear interpolation
    >>> reprojected = calculate_reprojection(
    ...     source_hdus=source_hdu,
    ...     target_wcs=target_wcs,
    ...     shape_out=target_hdu[0].data.shape,
-   ...     interpolation_mode='bilinear'
+   ...     order='bilinear'
    ... )
    >>>
    >>> # Convert back to NumPy and save as FITS
