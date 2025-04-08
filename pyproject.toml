@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dfreproject"
-version = "0.0.1"
+version = "1.0.0"
 dynamic = []
 authors = [
   { name = "Carter Rhea", email = "carter.rhea@dragonfly1000.com" },
