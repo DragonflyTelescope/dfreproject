@@ -73,21 +73,26 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dfreproject.reproject</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io.fits</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrimaryHDU</span><span class="p">,</span> <span class="n">Header</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
 
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">.sip</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">apply_inverse_sip_distortion</span><span class="p">,</span>
     <span class="n">apply_sip_distortion</span><span class="p">,</span>
     <span class="n">get_sip_coeffs</span>
 <span class="p">)</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device</span>
+
+
+<div class="viewcode-block" id="logger">
+<a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.logger">[docs]</a>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="EPSILON">
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.EPSILON">[docs]</a>
@@ -643,10 +648,7 @@
                 <span class="n">resampled_image</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">/</span> <span class="n">resampled_footprint</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: No valid pixels found in footprint!&quot;</span><span class="p">)</span>
-            <span class="c1"># FALLBACK: Use raw interpolated values without footprint correction</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fallback: Using raw interpolated values&quot;</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">resampled_image</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No valid pixels found in footprint! Using raw interpolated values&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result</span></div>
 </div>

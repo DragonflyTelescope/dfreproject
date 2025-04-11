@@ -4,6 +4,14 @@ dfreproject.utils
 .. py:module:: dfreproject.utils
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   dfreproject.utils.logger
+
+
 Functions
 ---------
 
@@ -14,6 +22,8 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:data:: logger
 
 .. py:function:: get_device()
 

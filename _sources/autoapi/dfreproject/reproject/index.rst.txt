@@ -9,6 +9,7 @@ Attributes
 
 .. autoapisummary::
 
+   dfreproject.reproject.logger
    dfreproject.reproject.EPSILON
    dfreproject.reproject.VALID_ORDERS
 
@@ -35,6 +36,8 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:data:: logger
 
 .. py:data:: EPSILON
    :value: 1e-10
