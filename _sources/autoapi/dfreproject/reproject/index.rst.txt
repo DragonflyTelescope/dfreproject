@@ -61,7 +61,7 @@ Module Contents
    JIT-compiled image interpolation using grid_sample
 
 
-.. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], device=None)
+.. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], device: str = None, num_threads: int = None)
 
    .. py:attribute:: batch_source_images
 
@@ -151,7 +151,7 @@ Module Contents
 
 
 
-.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, List[astropy.io.fits.PrimaryHDU]], target_wcs: Union[astropy.wcs.WCS, astropy.io.fits.Header], shape_out: Optional[Tuple[int, int]] = None, order='nearest', device=None)
+.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, List[astropy.io.fits.PrimaryHDU]], target_wcs: Union[astropy.wcs.WCS, astropy.io.fits.Header], shape_out: Optional[Tuple[int, int]] = None, order: str = 'nearest', device: str = None, num_threads: int = None)
 
    Reproject an astronomical image from a source WCS to a target WCS.
 
@@ -175,6 +175,8 @@ Module Contents
    :type order: str, default 'nearest'
    :param device: Device to use for computations. Defaults to GPU if available otherwise uses CPU
    :type device: str
+   :param num_threads: Number of threads to use on CPU
+   :type num_threads: int
 
    :returns: The reprojected image as a numpy ndarray with the same shape as
              target_hdu.data.

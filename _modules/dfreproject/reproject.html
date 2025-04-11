@@ -147,7 +147,12 @@
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.Reproject">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Reproject</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">],</span> <span class="n">target_wcs</span><span class="p">:</span> <span class="n">WCS</span><span class="p">,</span> <span class="n">shape_out</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">],</span>
+        <span class="n">target_wcs</span><span class="p">:</span> <span class="n">WCS</span><span class="p">,</span>
+        <span class="n">shape_out</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a dfreproject operation between source and target image frames.</span>
@@ -171,6 +176,9 @@
 <span class="sd">        device: str</span>
 <span class="sd">            Device to use for computations. Defaults to GPU if available otherwise uses CPU</span>
 
+<span class="sd">        num_threads: int</span>
+<span class="sd">            Number of threads to use on CPU</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        This constructor creates a coordinate grid spanning the entire target image,</span>
@@ -191,9 +199,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">get_device</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">num_threads</span><span class="p">:</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="n">num_threads</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Reproject.batch_source_images">
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.Reproject.batch_source_images">[docs]</a>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_source_images</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">)</span></div>
+
 
         <span class="c1"># Initialize the WCS objects</span>
 <div class="viewcode-block" id="Reproject.batch_source_wcs_params">
@@ -646,8 +659,9 @@
     <span class="n">source_hdus</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">]],</span>
     <span class="n">target_wcs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">WCS</span><span class="p">,</span> <span class="n">Header</span><span class="p">],</span>
     <span class="n">shape_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
-    <span class="n">device</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reproject an astronomical image from a source WCS to a target WCS.</span>
@@ -678,6 +692,9 @@
 
 <span class="sd">    device: str</span>
 <span class="sd">            Device to use for computations. Defaults to GPU if available otherwise uses CPU</span>
+
+<span class="sd">    num_threads: int</span>
+<span class="sd">        Number of threads to use on CPU</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -727,9 +744,11 @@
         <span class="n">target_wcs</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">target_wcs</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">shape_out</span><span class="p">:</span>
         <span class="n">shape_out</span> <span class="o">=</span> <span class="n">source_hdus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">reprojection</span> <span class="o">=</span> <span class="n">Reproject</span><span class="p">(</span>
-        <span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdus</span><span class="p">,</span> <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span> <span class="n">shape_out</span><span class="o">=</span><span class="n">shape_out</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
+    <span class="n">reprojection</span> <span class="o">=</span> <span class="n">Reproject</span><span class="p">(</span><span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdus</span><span class="p">,</span>
+                             <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span>
+                             <span class="n">shape_out</span><span class="o">=</span><span class="n">shape_out</span><span class="p">,</span>
+                             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                             <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">)</span>
     <span class="n">order</span> <span class="o">=</span> <span class="n">validate_interpolation_order</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
