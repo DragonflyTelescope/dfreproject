@@ -9,3 +9,4 @@ This section contains example notebooks demonstrating how to use the package.
 
    examples/reprojection-comparison
    examples/Coordinate-Comparison
+   examples/reprojection-comparison-mini
