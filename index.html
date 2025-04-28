@@ -10,6 +10,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
@@ -17,6 +18,8 @@
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -78,30 +81,52 @@
              
   <section id="welcome-to-reprojection-s-documentation">
 <h1>Welcome to reprojection’s documentation!<a class="headerlink" href="#welcome-to-reprojection-s-documentation" title="Link to this heading"></a></h1>
+<a class="reference external image-reference" href="https://codecov.io/gh/DragonflyTelescope/dfreproject"><img alt="https://codecov.io/gh/DragonflyTelescope/dfreproject/graph/badge.svg?token=409E407TN5" src="https://codecov.io/gh/DragonflyTelescope/dfreproject/graph/badge.svg?token=409E407TN5" />
+</a>
+<a class="reference external image-reference" href="https://doi.org/10.5281/zenodo.15170605"><img alt="https://zenodo.org/badge/936088731.svg" src="https://zenodo.org/badge/936088731.svg" />
+</a>
+<a class="reference external image-reference" href="https://dfreproject.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/dfreproject/badge/?version=latest" />
+</a>
 <p>Reprojection is a Python package for reprojecting astronomical images. The code runs using torch in order to speed up calculations.</p>
+<p>The idea behind this package was to make a stripped down version of the <cite>reproject</cite> package affiliated with astropy in order to reduce computational time.
+We achieve approximately 20X faster computations with this package using the GPU and 10X using the CPU for images taken by the Dragonfly Telephoto Array. Take a look at the demos for an example.
+We note that the only projection we currently support is the Tangential Gnomonic projection which is the most popular in optical astronomy.
+If you have need for this package to work with another projection geometry, please open a GitHub ticket.</p>
+<p>For the sake of transparency of the calculations <cite>dfreproject</cite> performs, we’ve written out the computations at each step in the <a class="reference internal" href="methodology.html"><span class="doc">methodology section</span></a> file.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="methodology.html">Astronomical Coordinate Transformations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="methodology.html#key-wcs-variables">Key WCS Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="methodology.html#calculate-skycoords">calculate_skyCoords</a></li>
-<li class="toctree-l2"><a class="reference internal" href="methodology.html#calculate-sourcecoords">calculate_sourceCoords</a></li>
-<li class="toctree-l2"><a class="reference internal" href="methodology.html#notes">Notes</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/reprojection-comparison.html">Test of reprojection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/Coordinate-Comparison.html">Comparison of Astropy vs Torch implementation of coordinate transformation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/reprojection-comparison-mini.html">Comparison of interpolation methods</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/dfreproject/index.html">dfreproject</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="methodology.html">Astronomical Coordinate Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
 </ul>
 </div>
-<p>Note: Claude.ai was used in preparing the docstrings for the functions and helping understand each step of the process.</p>
+<p>You can quickly run <cite>dfreproject</cite> with the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">reprojection</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_reprojection</span>
+
+<span class="c1"># Load source and target images</span>
+<span class="n">source_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;source_image.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">target_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;target_grid.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">target_wcs</span> <span class="o">=</span> <span class="n">WCS</span><span class="p">(</span><span class="n">target_hdu</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+<span class="c1"># Perform dfreproject with bilinear interpolation</span>
+<span class="n">reprojected</span> <span class="o">=</span> <span class="n">calculate_reprojection</span><span class="p">(</span>
+    <span class="n">source_hdus</span><span class="o">=</span><span class="n">source_hdu</span><span class="p">,</span>
+    <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span>
+    <span class="n">shape_out</span><span class="o">=</span><span class="n">target_hdu</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Save as FITS</span>
+<span class="n">output_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">reprojected</span><span class="p">)</span>
+<span class="n">output_hdu</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">target_wcs</span><span class="o">.</span><span class="n">to_header</span><span class="p">())</span>
+<span class="n">output_hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="s1">&#39;reprojected_image.fits&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you use this pacakge, please cite our Zenodo DOI:</p>
+<p><a class="reference external" href="https://doi.org/10.5281/zenodo.15170605">https://doi.org/10.5281/zenodo.15170605</a></p>
+<p>Note: Claude.ai was used in preparing the docstrings for the functions.</p>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>

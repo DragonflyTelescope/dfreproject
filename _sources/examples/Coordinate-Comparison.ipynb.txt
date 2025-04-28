@@ -380,14 +380,6 @@
    "cell_type": "markdown",
    "source": "So this is well below what we need :)",
    "id": "b96ec6d3156b5e42"
-  },
-  {
-   "metadata": {},
-   "cell_type": "code",
-   "source": "",
-   "id": "f05e82b28245978b",
-   "outputs": [],
-   "execution_count": null
   }
  ],
  "metadata": {

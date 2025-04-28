@@ -4,7 +4,7 @@ Examples
 This section contains example notebooks demonstrating how to use the package.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Example Notebooks:
 
    examples/reprojection-comparison

@@ -47,21 +47,55 @@ Module Contents
    :value: ['bicubic', 'bilinear', 'nearest', 'nearest-neighbors']
 
 
-.. py:function:: validate_interpolation_order(order)
+.. py:function:: validate_interpolation_order(order: str) -> str
 
-.. py:function:: atan2d(y, x)
+   Function to validate the requested interpolation order.
+
+   The order must be one of the following: {valid_orders}
+
+   :param order: Interpolation order to validate.
+   :type order: str
+
+   :returns: Validated interpolation order.
+   :rtype: str
+
+   :raises ValueError: When the provided order is not one of the valid interpolation orders.
+
+
+.. py:function:: atan2d(y: torch.Tensor, x: torch.Tensor) -> torch.Tensor
 
    PyTorch implementation of WCSLib's atan2d function
 
+   :param y: y coordinate(s)
+   :type y: torch.Tensor
+   :param x: x coordinate(s)
+   :type x: torch.Tensor
 
-.. py:function:: sincosd(angle_deg)
+   :returns: atan2d(y, x) in degrees
+   :rtype: torch.Tensor
+
+
+.. py:function:: sincosd(angle_deg: torch.Tensor) -> torch.Tensor
 
    PyTorch implementation of WCSLib's sincosd function
+
+   :param angle_deg: angle in degrees
+   :type angle_deg: torch.Tensor
+
+   :returns: sin(angle) in degrees, cos(angle) in degrees
+   :rtype: tuple(torch.Tensor, torch.Tensor)
 
 
 .. py:function:: interpolate_image(source_image: torch.Tensor, grid: torch.Tensor, interpolation_mode: str) -> torch.Tensor
 
    JIT-compiled image interpolation using grid_sample
+
+   :param source_image: Source image to interpolate
+   :type source_image: torch.Tensor
+   :param grid: Grid on which to interpolate
+   :type grid: torch.Tensor
+   :param interpolation_mode: Interpolation mode to use
+   :type interpolation_mode: str
 
 
 .. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], device: str = None, num_threads: int = None)
