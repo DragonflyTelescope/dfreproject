@@ -12,6 +12,7 @@ Submodules
 
    /autoapi/dfreproject/reproject/index
    /autoapi/dfreproject/sip/index
+   /autoapi/dfreproject/tensorhdu/index
    /autoapi/dfreproject/utils/index
 
 

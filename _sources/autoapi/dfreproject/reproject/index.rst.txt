@@ -98,7 +98,12 @@ Module Contents
    :type interpolation_mode: str
 
 
-.. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], device: str = None, num_threads: int = None)
+.. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], device: str = None, num_threads: int = None, requires_grad: bool = False)
+
+   .. py:attribute:: requires_grad
+      :value: False
+
+
 
    .. py:attribute:: batch_source_images
 
@@ -188,25 +193,26 @@ Module Contents
 
 
 
-.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]], List[Union[astropy.io.fits.PrimaryHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]]]]], target_wcs: Union[astropy.wcs.WCS, astropy.io.fits.Header], shape_out: Optional[Tuple[int, int]] = None, order: str = 'nearest', device: str = None, num_threads: int = None)
+.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, dfreproject.tensorhdu.TensorHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]], Tuple[torch.Tensor, Union[astropy.wcs.WCS, astropy.io.fits.Header]], List[Union[astropy.io.fits.PrimaryHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]]]]], target_wcs: Union[astropy.wcs.WCS, astropy.io.fits.Header], shape_out: Optional[Tuple[int, int]] = None, order: str = 'nearest', device: str = None, num_threads: int = None, requires_grad: bool = False)
 
    Reproject an astronomical image from a source WCS to a target WCS.
 
-   This high-level function provides a convenient interface for image dfreproject,
+   This high-level function provides a convenient interface for image reprojection,
    handling all the necessary steps: WCS extraction, tensor creation, and interpolation.
-   It converts FITS HDU objects to the internal representation, performs the dfreproject,
-   and returns the resulting image as a PyTorch tensor.
+   It converts FITS HDU objects to the internal representation, performs the reprojection,
+   and returns the resulting image as a NumPy array or PyTorch tensor.
 
    :param source_hdus: PrimaryHDU,
+                       TensorHDU,
                        Tuple[np.ndarray, Union[WCS, Header]],
+                       Tuple[torch.Tensor, Union[WCS, Header]],
                        List[Union[PrimaryHDU, Tuple[np.ndarray, Union[WCS, Header]]]]
    :type source_hdus: Union[
-   :param ]: The source image HDU list containing the image data to be reprojected and
-             its associated WCS information in the header. The user can also pass a single instance or a tuple
-             of the following form: (source_data, source_wcs).
-   :param target_wcs: WCS information fopr the target. If a Header is passed it will be transformed to WCS.
+   :param ]: The source image(s) to be reprojected, which can be a PrimaryHDU, TensorHDU,
+             a tuple of (data, WCS/Header), or a list of such items.
+   :param target_wcs: WCS information for the target. If a Header is passed it will be converted to WCS.
    :type target_wcs: Union[WCS, Header]
-   :param shape_out: Shape of the resampled array. If no argument is passed, then the output shape will be the same as the input shape.
+   :param shape_out: Shape of the resampled array. If not provided, the output shape will match the input.
    :type shape_out: Optional[Tuple[int, int]]
    :param order: The interpolation method to use when resampling the source image.
                  Options:
@@ -214,31 +220,31 @@ Module Contents
                  - 'bilinear' : Bilinear interpolation (good balance of speed/quality)
                  - 'bicubic' : Bicubic interpolation (highest quality, slowest)
    :type order: str, default 'nearest'
-   :param device: Device to use for computations. Defaults to GPU if available otherwise uses CPU
-   :type device: str
-   :param num_threads: Number of threads to use on CPU
-   :type num_threads: int
+   :param device: Device to use for computations. Defaults to GPU if available, otherwise uses CPU.
+   :type device: str, optional
+   :param num_threads: Number of threads to use on CPU.
+   :type num_threads: int, optional
+   :param requires_grad: If True, enables autograd for PyTorch tensors.
+   :type requires_grad: bool, optional
 
-   :returns: The reprojected image as a numpy ndarray with the same shape as
-             target_hdu.data.
-   :rtype: numpy.ndarray
+   :returns: The reprojected image as a numpy ndarray (default) or PyTorch tensor if requires_grad=True.
+   :rtype: numpy.ndarray or torch.Tensor
 
    .. rubric:: Notes
 
    This function automatically:
    - Detects and uses GPU acceleration if available
    - Handles byte order conversion for tensor creation
-   - Converts data to float32 for processing
-   - Creates WCSHeader objects from FITS headers
+   - Converts data to float64 for processing
+   - Converts Header to WCS if needed
 
-   To save the result as a FITS file, you will need to convert the tensor
+   To save the result as a FITS file, convert the tensor
    back to a NumPy array and create a new FITS HDU with the target WCS header.
 
    .. rubric:: Examples
 
    >>> from astropy.io import fits
    >>> from astropy.wcs import WCS
-   >>> import torch
    >>> from dfreproject.reproject import calculate_reprojection
    >>>
    >>> # Open source and target images
@@ -246,24 +252,13 @@ Module Contents
    >>> target_hdu = fits.open('target_grid.fits')[0]
    >>> target_wcs = WCS(target_hdu.header)
    >>>
-   >>> # Perform dfreproject with bilinear interpolation
-   >>> # Example 1: Using PrimaryHDU
+   >>> # Perform reprojection with bilinear interpolation
    >>> reprojected = calculate_reprojection(
    ...     source_hdus=source_hdu,
-   ...     target_wcs=target_wcs,
-   ...     shape_out=target_hdu[0].data.shape,
-   ...     order='bilinear'
-   ... )
-   >>> # Example 2: Using (data, WCS) tuple
-   >>> source_data = source_hdu.data
-   >>> source_wcs = WCS(source_hdu.header)
-   >>> reprojected = calculate_reprojection(
-   ...     source_hdus=(source_data, source_wcs),
    ...     target_wcs=target_wcs,
    ...     shape_out=target_hdu.data.shape,
    ...     order='bilinear'
    ... )
-   >>> # By default the resulting tensor is thrown to a numpy array
    >>> # Save as FITS
    >>> output_hdu = fits.PrimaryHDU(data=reprojected, header=target_hdu.header)
    >>> output_hdu.writeto('reprojected_image.fits', overwrite=True)

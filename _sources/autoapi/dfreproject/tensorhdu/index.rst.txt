@@ -1,0 +1,32 @@
+dfreproject.tensorhdu
+=====================
+
+.. py:module:: dfreproject.tensorhdu
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   dfreproject.tensorhdu.TensorHDU
+
+
+Module Contents
+---------------
+
+.. py:class:: TensorHDU(data=None, header=None, do_not_scale_image_data=False, ignore_blank=False, uint=True, scale_back=None)
+
+   Bases: :py:obj:`astropy.io.fits.PrimaryHDU`
+
+
+   FITS primary HDU class.
+
+
+   .. py:property:: tensor
+      :type: torch.Tensor
+
+
+      Returns the image data as a torch.Tensor.
+
+

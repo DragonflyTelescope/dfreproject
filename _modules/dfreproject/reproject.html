@@ -83,6 +83,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io.fits</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrimaryHDU</span><span class="p">,</span> <span class="n">Header</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tensorhdu</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorHDU</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.sip</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">apply_inverse_sip_distortion</span><span class="p">,</span>
@@ -217,7 +218,8 @@
         <span class="n">target_wcs</span><span class="p">:</span> <span class="n">WCS</span><span class="p">,</span>
         <span class="n">shape_out</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">requires_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a dfreproject operation between source and target image frames.</span>
@@ -268,6 +270,12 @@
         <span class="k">if</span> <span class="n">num_threads</span><span class="p">:</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="n">num_threads</span><span class="p">)</span>
 
+<div class="viewcode-block" id="Reproject.requires_grad">
+<a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.Reproject.requires_grad">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="n">requires_grad</span></div>
+
+
+
 <div class="viewcode-block" id="Reproject.batch_source_images">
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.Reproject.batch_source_images">[docs]</a>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_source_images</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">)</span></div>
@@ -289,6 +297,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">target_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_batch_target_grid</span><span class="p">(</span><span class="n">shape_out</span><span class="p">)</span></div>
 
 
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_source_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare batch of source images as a single tensor</span>
@@ -305,10 +314,14 @@
 <span class="sd">            Stack of source image tensors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">source_images</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">source_hdus</span>
-            <span class="p">]</span>
+            <span class="n">source_images</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">hdu</span> <span class="ow">in</span> <span class="n">source_hdus</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires_grad</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hdu</span><span class="p">,</span> <span class="n">TensorHDU</span><span class="p">):</span>
+                    <span class="n">img</span> <span class="o">=</span> <span class="n">hdu</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">hdu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">source_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+            
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># In case there is a byte order error</span>
             <span class="n">source_images</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
@@ -353,7 +366,7 @@
             <span class="s2">&quot;sip_coeffs&quot;</span><span class="p">:</span> <span class="n">get_sip_coeffs</span><span class="p">(</span><span class="n">wcs</span><span class="p">),</span>
         <span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_batch_wcs_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_batch_wcs_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_hdus</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">TensorHDU</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare batch of WCS parameters</span>
 
@@ -725,39 +738,43 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">calculate_reprojection</span><span class="p">(</span>
     <span class="n">source_hdus</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">PrimaryHDU</span><span class="p">,</span>
+        <span class="n">TensorHDU</span><span class="p">,</span>
         <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">WCS</span><span class="p">,</span> <span class="n">Header</span><span class="p">]],</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">WCS</span><span class="p">,</span> <span class="n">Header</span><span class="p">]],</span>
         <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">PrimaryHDU</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">WCS</span><span class="p">,</span> <span class="n">Header</span><span class="p">]]]]</span>
     <span class="p">],</span>
     <span class="n">target_wcs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">WCS</span><span class="p">,</span> <span class="n">Header</span><span class="p">],</span>
     <span class="n">shape_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">requires_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reproject an astronomical image from a source WCS to a target WCS.</span>
 
-<span class="sd">    This high-level function provides a convenient interface for image dfreproject,</span>
+<span class="sd">    This high-level function provides a convenient interface for image reprojection,</span>
 <span class="sd">    handling all the necessary steps: WCS extraction, tensor creation, and interpolation.</span>
-<span class="sd">    It converts FITS HDU objects to the internal representation, performs the dfreproject,</span>
-<span class="sd">    and returns the resulting image as a PyTorch tensor.</span>
+<span class="sd">    It converts FITS HDU objects to the internal representation, performs the reprojection,</span>
+<span class="sd">    and returns the resulting image as a NumPy array or PyTorch tensor.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    source_hdus : Union[</span>
 <span class="sd">        PrimaryHDU,</span>
+<span class="sd">        TensorHDU,</span>
 <span class="sd">        Tuple[np.ndarray, Union[WCS, Header]],</span>
+<span class="sd">        Tuple[torch.Tensor, Union[WCS, Header]],</span>
 <span class="sd">        List[Union[PrimaryHDU, Tuple[np.ndarray, Union[WCS, Header]]]]</span>
 <span class="sd">    ]</span>
-<span class="sd">        The source image HDU list containing the image data to be reprojected and</span>
-<span class="sd">        its associated WCS information in the header. The user can also pass a single instance or a tuple</span>
-<span class="sd">        of the following form: (source_data, source_wcs).</span>
+<span class="sd">        The source image(s) to be reprojected, which can be a PrimaryHDU, TensorHDU,</span>
+<span class="sd">        a tuple of (data, WCS/Header), or a list of such items.</span>
 
 <span class="sd">    target_wcs : Union[WCS, Header]</span>
-<span class="sd">        WCS information fopr the target. If a Header is passed it will be transformed to WCS.</span>
+<span class="sd">        WCS information for the target. If a Header is passed it will be converted to WCS.</span>
 
 <span class="sd">    shape_out: Optional[Tuple[int, int]]</span>
-<span class="sd">        Shape of the resampled array. If no argument is passed, then the output shape will be the same as the input shape.</span>
+<span class="sd">        Shape of the resampled array. If not provided, the output shape will match the input.</span>
 
 <span class="sd">    order : str, default &#39;nearest&#39;</span>
 <span class="sd">        The interpolation method to use when resampling the source image.</span>
@@ -766,34 +783,35 @@
 <span class="sd">        - &#39;bilinear&#39; : Bilinear interpolation (good balance of speed/quality)</span>
 <span class="sd">        - &#39;bicubic&#39; : Bicubic interpolation (highest quality, slowest)</span>
 
-<span class="sd">    device: str</span>
-<span class="sd">            Device to use for computations. Defaults to GPU if available otherwise uses CPU</span>
+<span class="sd">    device: str, optional</span>
+<span class="sd">        Device to use for computations. Defaults to GPU if available, otherwise uses CPU.</span>
 
-<span class="sd">    num_threads: int</span>
-<span class="sd">        Number of threads to use on CPU</span>
+<span class="sd">    num_threads: int, optional</span>
+<span class="sd">        Number of threads to use on CPU.</span>
+
+<span class="sd">    requires_grad: bool, optional</span>
+<span class="sd">        If True, enables autograd for PyTorch tensors.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    numpy.ndarray</span>
-<span class="sd">        The reprojected image as a numpy ndarray with the same shape as</span>
-<span class="sd">        target_hdu.data.</span>
+<span class="sd">    numpy.ndarray or torch.Tensor</span>
+<span class="sd">        The reprojected image as a numpy ndarray (default) or PyTorch tensor if requires_grad=True.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function automatically:</span>
 <span class="sd">    - Detects and uses GPU acceleration if available</span>
 <span class="sd">    - Handles byte order conversion for tensor creation</span>
-<span class="sd">    - Converts data to float32 for processing</span>
-<span class="sd">    - Creates WCSHeader objects from FITS headers</span>
+<span class="sd">    - Converts data to float64 for processing</span>
+<span class="sd">    - Converts Header to WCS if needed</span>
 
-<span class="sd">    To save the result as a FITS file, you will need to convert the tensor</span>
+<span class="sd">    To save the result as a FITS file, convert the tensor</span>
 <span class="sd">    back to a NumPy array and create a new FITS HDU with the target WCS header.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from astropy.io import fits</span>
 <span class="sd">    &gt;&gt;&gt; from astropy.wcs import WCS</span>
-<span class="sd">    &gt;&gt;&gt; import torch</span>
 <span class="sd">    &gt;&gt;&gt; from dfreproject.reproject import calculate_reprojection</span>
 <span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; # Open source and target images</span>
@@ -801,24 +819,13 @@
 <span class="sd">    &gt;&gt;&gt; target_hdu = fits.open(&#39;target_grid.fits&#39;)[0]</span>
 <span class="sd">    &gt;&gt;&gt; target_wcs = WCS(target_hdu.header)</span>
 <span class="sd">    &gt;&gt;&gt;</span>
-<span class="sd">    &gt;&gt;&gt; # Perform dfreproject with bilinear interpolation</span>
-<span class="sd">    &gt;&gt;&gt; # Example 1: Using PrimaryHDU</span>
+<span class="sd">    &gt;&gt;&gt; # Perform reprojection with bilinear interpolation</span>
 <span class="sd">    &gt;&gt;&gt; reprojected = calculate_reprojection(</span>
 <span class="sd">    ...     source_hdus=source_hdu,</span>
-<span class="sd">    ...     target_wcs=target_wcs,</span>
-<span class="sd">    ...     shape_out=target_hdu[0].data.shape,</span>
-<span class="sd">    ...     order=&#39;bilinear&#39;</span>
-<span class="sd">    ... )</span>
-<span class="sd">    &gt;&gt;&gt; # Example 2: Using (data, WCS) tuple</span>
-<span class="sd">    &gt;&gt;&gt; source_data = source_hdu.data</span>
-<span class="sd">    &gt;&gt;&gt; source_wcs = WCS(source_hdu.header)</span>
-<span class="sd">    &gt;&gt;&gt; reprojected = calculate_reprojection(</span>
-<span class="sd">    ...     source_hdus=(source_data, source_wcs),</span>
 <span class="sd">    ...     target_wcs=target_wcs,</span>
 <span class="sd">    ...     shape_out=target_hdu.data.shape,</span>
 <span class="sd">    ...     order=&#39;bilinear&#39;</span>
 <span class="sd">    ... )</span>
-<span class="sd">    &gt;&gt;&gt; # By default the resulting tensor is thrown to a numpy array</span>
 <span class="sd">    &gt;&gt;&gt; # Save as FITS</span>
 <span class="sd">    &gt;&gt;&gt; output_hdu = fits.PrimaryHDU(data=reprojected, header=target_hdu.header)</span>
 <span class="sd">    &gt;&gt;&gt; output_hdu.writeto(&#39;reprojected_image.fits&#39;, overwrite=True)</span>
@@ -826,7 +833,10 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize_to_hdu</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">PrimaryHDU</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">item</span>
+            <span class="k">if</span> <span class="n">requires_grad</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">TensorHDU</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">TensorHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">item</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">data</span><span class="p">,</span> <span class="n">wcs_or_header</span> <span class="o">=</span> <span class="n">item</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wcs_or_header</span><span class="p">,</span> <span class="n">Header</span><span class="p">):</span>
@@ -835,9 +845,13 @@
                 <span class="n">header</span> <span class="o">=</span> <span class="n">wcs_or_header</span><span class="o">.</span><span class="n">to_header</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected WCS or Header in tuple.&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">requires_grad</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">TensorHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">PrimaryHDU</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+            
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Each item must be a PrimaryHDU or a (data, wcs/header) tuple.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Each item must be a PrimaryHDU, TensorHDU, or a (data, wcs/header) tuple.&quot;</span><span class="p">)</span>
     <span class="c1"># Normalize source_input to a list of HDUs</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source_hdus</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">source_hdus</span> <span class="o">=</span> <span class="p">[</span><span class="n">normalize_to_hdu</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">source_hdus</span><span class="p">]</span>
@@ -853,10 +867,17 @@
                              <span class="n">target_wcs</span><span class="o">=</span><span class="n">target_wcs</span><span class="p">,</span>
                              <span class="n">shape_out</span><span class="o">=</span><span class="n">shape_out</span><span class="p">,</span>
                              <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-                             <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">)</span>
+                             <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
+                             <span class="n">requires_grad</span><span class="o">=</span><span class="n">requires_grad</span><span class="p">)</span>
     <span class="n">order</span> <span class="o">=</span> <span class="n">validate_interpolation_order</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
     <span class="n">input_type</span> <span class="o">=</span> <span class="n">source_hdus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">input_type</span><span class="p">)</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">requires_grad</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">input_type</span><span class="p">)</span>
+
+
     <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
