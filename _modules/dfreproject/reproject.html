@@ -881,12 +881,12 @@
                              <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span>
                              <span class="n">requires_grad</span><span class="o">=</span><span class="n">requires_grad</span><span class="p">)</span>
     <span class="n">order</span> <span class="o">=</span> <span class="n">validate_interpolation_order</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
-    <span class="n">input_type</span> <span class="o">=</span> <span class="n">source_hdus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="c1">#input_type = source_hdus[0].data[0][0].dtype</span>
 
     <span class="k">if</span><span class="p">(</span><span class="n">requires_grad</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">input_type</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reprojection</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span><span class="n">interpolation_mode</span><span class="o">=</span><span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
 
     <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
