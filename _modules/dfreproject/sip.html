@@ -151,59 +151,47 @@
 <span class="sd">    --------</span>
 <span class="sd">    tuple:</span>
 <span class="sd">        (u&#39;, v&#39;) distorted coordinates</span>
+
+
+<span class="sd">    # Convert to tensors if needed</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">sip_coeffs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span>
 
-    <span class="c1"># Convert to tensors if needed</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="c1"># Get the SIP orders</span>
+
     <span class="n">a_order</span> <span class="o">=</span> <span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;a_order&quot;</span><span class="p">]</span>
+    <span class="n">a_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">b_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="c1"># Convert coefficient matrices to tensors</span>
-    <span class="n">a_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-    <span class="n">b_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="c1"># Precompute powers of u and v</span>
+    <span class="c1"># Save memory by computing and using only needed powers</span>
+    <span class="n">u_powers</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">u</span><span class="p">)]</span>
+    <span class="n">v_powers</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
 
-    <span class="c1"># Initialize correction terms</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">a_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">u_powers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u_powers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="p">)</span>
+        <span class="n">v_powers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v_powers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="c1"># Apply polynomial distortion</span>
     <span class="n">f_u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
     <span class="n">f_v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-    <span class="c1"># For array inputs, reshape to make computation easier</span>
-    <span class="n">orig_shape</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">u_flat</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">u</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">v_flat</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">f_u_flat</span> <span class="o">=</span> <span class="n">f_u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">f_u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">f_u</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">f_v_flat</span> <span class="o">=</span> <span class="n">f_v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">f_v</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">f_v</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="c1"># Apply the polynomial distortion</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a_order</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">continue</span>  <span class="c1"># Skip the 0,0 term</span>
+                <span class="k">continue</span>  <span class="c1"># Skip the (0,0) term</span>
 
-            <span class="c1"># Compute u^i * v^j for all points</span>
-            <span class="n">pow_term</span> <span class="o">=</span> <span class="p">(</span><span class="n">u_flat</span><span class="o">**</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">v_flat</span><span class="o">**</span><span class="n">j</span><span class="p">)</span>
+            <span class="n">term</span> <span class="o">=</span> <span class="n">u_powers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">v_powers</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">f_u</span> <span class="o">=</span> <span class="n">f_u</span> <span class="o">+</span> <span class="n">a_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">term</span>
+            <span class="n">f_v</span> <span class="o">=</span> <span class="n">f_v</span> <span class="o">+</span> <span class="n">b_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">term</span>
 
-            <span class="c1"># Apply coefficient</span>
-            <span class="n">f_u_flat</span> <span class="o">+=</span> <span class="n">a_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">pow_term</span>
-            <span class="n">f_v_flat</span> <span class="o">+=</span> <span class="n">b_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">pow_term</span>
-
-    <span class="c1"># Reshape back to original shape if needed</span>
-    <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">f_u</span> <span class="o">=</span> <span class="n">f_u_flat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">orig_shape</span><span class="p">)</span>
-        <span class="n">f_v</span> <span class="o">=</span> <span class="n">f_v_flat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">orig_shape</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">f_u</span> <span class="o">=</span> <span class="n">f_u_flat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">f_v</span> <span class="o">=</span> <span class="n">f_v_flat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="c1"># Add the distortion terms to get the corrected coordinates</span>
-    <span class="n">u_corrected</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">f_u</span>
-    <span class="n">v_corrected</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">f_v</span>
-
-    <span class="k">return</span> <span class="n">u_corrected</span><span class="p">,</span> <span class="n">v_corrected</span></div>
+    <span class="c1"># Return corrected coordinates</span>
+    <span class="k">return</span> <span class="n">u</span> <span class="o">+</span> <span class="n">f_u</span><span class="p">,</span> <span class="n">v</span> <span class="o">+</span> <span class="n">f_v</span></div>
 
 
 
@@ -231,61 +219,45 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">sip_coeffs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span>
-
-    <span class="c1"># Check if inverse coefficients are available</span>
-    <span class="k">if</span> <span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;ap_order&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;bp_order&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># Use iterative method if inverse coefficients aren&#39;t available</span>
-        <span class="k">return</span> <span class="n">iterative_inverse_sip</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sip_coeffs</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
-
     <span class="c1"># Convert to tensors if needed</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="c1"># Get the SIP orders</span>
+
+        <span class="c1"># Use iterative method if inverse SIP coefficients are not defined</span>
+    <span class="k">if</span> <span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;ap_order&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;bp_order&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">iterative_inverse_sip</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sip_coeffs</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Ensure inputs are tensors on correct device and dtype</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
     <span class="n">ap_order</span> <span class="o">=</span> <span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;ap_order&quot;</span><span class="p">]</span>
 
-    <span class="c1"># Convert coefficient matrices to tensors</span>
-    <span class="n">ap_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;ap&quot;</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-    <span class="n">bp_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;bp&quot;</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">ap_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;ap&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">bp_matrix</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sip_coeffs</span><span class="p">[</span><span class="s2">&quot;bp&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">sip_coeffs</span>
+    <span class="c1"># Precompute powers of u and v to avoid repeated allocation</span>
+    <span class="n">u_powers</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">u</span><span class="p">)]</span>
+    <span class="n">v_powers</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ap_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">u_powers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u_powers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="p">)</span>
+        <span class="n">v_powers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v_powers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">)</span>
 
     <span class="c1"># Initialize correction terms</span>
     <span class="n">f_u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
     <span class="n">f_v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-    <span class="c1"># For array inputs, reshape to make computation easier</span>
-    <span class="n">orig_shape</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">u_flat</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">u</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">v_flat</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">f_u_flat</span> <span class="o">=</span> <span class="n">f_u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">f_u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">f_u</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">f_v_flat</span> <span class="o">=</span> <span class="n">f_v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">f_v</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">f_v</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="c1"># Apply the polynomial correction</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ap_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ap_order</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">continue</span>  <span class="c1"># Skip the 0,0 term</span>
-
-            <span class="c1"># Compute u^i * v^j for all points</span>
-            <span class="n">pow_term</span> <span class="o">=</span> <span class="p">(</span><span class="n">u_flat</span><span class="o">**</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">v_flat</span><span class="o">**</span><span class="n">j</span><span class="p">)</span>
-
-            <span class="c1"># Apply coefficient</span>
-            <span class="n">f_u_flat</span> <span class="o">+=</span> <span class="n">ap_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">pow_term</span>
-            <span class="n">f_v_flat</span> <span class="o">+=</span> <span class="n">bp_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">pow_term</span>
-
-    <span class="c1"># Reshape back to original shape if needed</span>
-    <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">f_u</span> <span class="o">=</span> <span class="n">f_u_flat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">orig_shape</span><span class="p">)</span>
-        <span class="n">f_v</span> <span class="o">=</span> <span class="n">f_v_flat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">orig_shape</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">f_u</span> <span class="o">=</span> <span class="n">f_u_flat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">f_v</span> <span class="o">=</span> <span class="n">f_v_flat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="c1"># Add the correction terms to get the undistorted coordinates</span>
-    <span class="n">u_corrected</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">f_u</span>
-    <span class="n">v_corrected</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">f_v</span>
-
-    <span class="k">return</span> <span class="n">u_corrected</span><span class="p">,</span> <span class="n">v_corrected</span></div>
+                <span class="k">continue</span>
+            <span class="n">term</span> <span class="o">=</span> <span class="n">u_powers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">v_powers</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">f_u</span> <span class="o">=</span> <span class="n">f_u</span> <span class="o">+</span> <span class="n">ap_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">term</span>
+            <span class="n">f_v</span> <span class="o">=</span> <span class="n">f_v</span> <span class="o">+</span> <span class="n">bp_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">term</span>
+    <span class="k">del</span> <span class="n">u_powers</span><span class="p">,</span> <span class="n">v_powers</span><span class="p">,</span> <span class="n">ap_matrix</span><span class="p">,</span> <span class="n">bp_matrix</span>
+    <span class="k">return</span> <span class="n">u</span> <span class="o">+</span> <span class="n">f_u</span><span class="p">,</span> <span class="n">v</span> <span class="o">+</span> <span class="n">f_v</span></div>
 
 
 

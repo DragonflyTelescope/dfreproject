@@ -52,6 +52,10 @@ Module Contents
        (u', v') distorted coordinates
 
 
+   # Convert to tensors if needed
+
+
+
 .. py:function:: apply_inverse_sip_distortion(u: torch.Tensor, v: torch.Tensor, sip_coeffs: Tuple, device: str = 'cpu')
 
    Apply inverse SIP distortion to go from distorted to intermediate coordinates.
