@@ -126,6 +126,14 @@ If you have need for this package to work with another projection geometry, plea
 </div>
 <p>If you use this package, please cite our Zenodo DOI:</p>
 <p><a class="reference external" href="https://doi.org/10.5281/zenodo.15170605">https://doi.org/10.5281/zenodo.15170605</a></p>
+</section>
+<section id="performance-tips">
+<h1>Performance Tips<a class="headerlink" href="#performance-tips" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>If you are running this for several frames, you can pass them as a batched pytorch tensor.</p></li>
+<li><p>If you have access to a GPU set <cite>device=’cuda’</cite>.</p></li>
+<li><p>The ‘bilinear’ option for the interpolation algorithm is typically more than sufficient.</p></li>
+</ul>
 <p>Note: Claude.ai was used in preparing the docstrings for the functions.</p>
 </section>
 <section id="indices-and-tables">

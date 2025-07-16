@@ -62,7 +62,11 @@ If you use this package, please cite our Zenodo DOI:
 
 https://doi.org/10.5281/zenodo.15170605
 
-
+Performance Tips
+================
+- If you are running this for several frames, you can pass them as a batched pytorch tensor.
+- If you have access to a GPU set `device='cuda'`.
+- The 'bilinear' option for the interpolation algorithm is typically more than sufficient.
 
 Note: Claude.ai was used in preparing the docstrings for the functions.
 
