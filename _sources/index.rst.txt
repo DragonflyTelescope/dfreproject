@@ -1,6 +1,6 @@
 .. AstroReproject documentation master file
 
-Welcome to reprojection's documentation!
+Welcome to dfreproject's documentation!
 ========================================
 
 .. image:: https://codecov.io/gh/DragonflyTelescope/dfreproject/graph/badge.svg?token=409E407TN5
@@ -13,7 +13,7 @@ Welcome to reprojection's documentation!
     :target: https://dfreproject.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-Reprojection is a Python package for reprojecting astronomical images. The code runs using torch in order to speed up calculations.
+dfreproject is a Python package for reprojecting astronomical images. The code runs using torch in order to speed up calculations.
 
 The idea behind this package was to make a stripped down version of the `reproject` package affiliated with astropy in order to reduce computational time.
 We achieve approximately 20X faster computations with this package using the GPU and 10X using the CPU for images taken by the Dragonfly Telephoto Array. Take a look at the demos for an example.
@@ -37,7 +37,7 @@ You can quickly run `dfreproject` with the following:
 
     from astropy.io import fits
     from astropy.wcs import WCS
-    from reprojection import calculate_reprojection
+    from dfreproject import calculate_reprojection
 
     # Load source and target images
     source_hdu = fits.open('source_image.fits')[0]
@@ -58,7 +58,7 @@ You can quickly run `dfreproject` with the following:
 
 
 
-If you use this pacakge, please cite our Zenodo DOI:
+If you use this package, please cite our Zenodo DOI:
 
 https://doi.org/10.5281/zenodo.15170605
 

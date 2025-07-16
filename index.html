@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to reprojection’s documentation! &mdash; dfreproject  documentation</title>
+  <title>Welcome to dfreproject’s documentation! &mdash; dfreproject  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
@@ -69,7 +69,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to reprojection’s documentation!</li>
+      <li class="breadcrumb-item active">Welcome to dfreproject’s documentation!</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -79,15 +79,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-reprojection-s-documentation">
-<h1>Welcome to reprojection’s documentation!<a class="headerlink" href="#welcome-to-reprojection-s-documentation" title="Link to this heading"></a></h1>
+  <section id="welcome-to-dfreproject-s-documentation">
+<h1>Welcome to dfreproject’s documentation!<a class="headerlink" href="#welcome-to-dfreproject-s-documentation" title="Link to this heading"></a></h1>
 <a class="reference external image-reference" href="https://codecov.io/gh/DragonflyTelescope/dfreproject"><img alt="https://codecov.io/gh/DragonflyTelescope/dfreproject/graph/badge.svg?token=409E407TN5" src="https://codecov.io/gh/DragonflyTelescope/dfreproject/graph/badge.svg?token=409E407TN5" />
 </a>
 <a class="reference external image-reference" href="https://doi.org/10.5281/zenodo.15170605"><img alt="https://zenodo.org/badge/936088731.svg" src="https://zenodo.org/badge/936088731.svg" />
 </a>
 <a class="reference external image-reference" href="https://dfreproject.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/dfreproject/badge/?version=latest" />
 </a>
-<p>Reprojection is a Python package for reprojecting astronomical images. The code runs using torch in order to speed up calculations.</p>
+<p>dfreproject is a Python package for reprojecting astronomical images. The code runs using torch in order to speed up calculations.</p>
 <p>The idea behind this package was to make a stripped down version of the <cite>reproject</cite> package affiliated with astropy in order to reduce computational time.
 We achieve approximately 20X faster computations with this package using the GPU and 10X using the CPU for images taken by the Dragonfly Telephoto Array. Take a look at the demos for an example.
 We note that the only projection we currently support is the Tangential Gnomonic projection which is the most popular in optical astronomy.
@@ -104,7 +104,7 @@ If you have need for this package to work with another projection geometry, plea
 <p>You can quickly run <cite>dfreproject</cite> with the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">fits</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">reprojection</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_reprojection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dfreproject</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_reprojection</span>
 
 <span class="c1"># Load source and target images</span>
 <span class="n">source_hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;source_image.fits&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -124,7 +124,7 @@ If you have need for this package to work with another projection geometry, plea
 <span class="n">output_hdu</span><span class="o">.</span><span class="n">writeto</span><span class="p">(</span><span class="s1">&#39;reprojected_image.fits&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>If you use this pacakge, please cite our Zenodo DOI:</p>
+<p>If you use this package, please cite our Zenodo DOI:</p>
 <p><a class="reference external" href="https://doi.org/10.5281/zenodo.15170605">https://doi.org/10.5281/zenodo.15170605</a></p>
 <p>Note: Claude.ai was used in preparing the docstrings for the functions.</p>
 </section>
