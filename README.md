@@ -83,7 +83,8 @@ output_hdu.writeto('reprojected_image.fits', overwrite=True)
 
 The arguments for `calculate_reprojection` are the same as for the standard reprojection options in the reproject package such as `reproject_interp`, `reproject_adaptive`, or `reproject_exact`.
 Therefore, it can be directly swapped for one of these by simply importing it with `from dfreproject import calculate_reprojection` and then using `calculate_reproject` instead of `reproject_interp`. 
-This comes with the caveat that the flux calculation most closely mimics that to `reproject_interp`.
+The default flux conservation includes changes in pixel's shape and most closely resembles `reproject_adapt` in `reproject`. By setting `conserve_flux=False`, the flux calculations most closely mimics those of `reproject_interp`.
+
 
 
 
