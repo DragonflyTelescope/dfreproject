@@ -27,9 +27,9 @@ Module Contents
 
 .. py:function:: get_device()
 
-   Utility function to get the currently available PyTorch device
+   Utility function to get the currently available PyTorch device.
 
-   :returns: Available torch device (either cuda or cpu)
+   :returns: Available torch device (either cuda or cpu).
    :rtype: torch.device
 
 

@@ -25,12 +25,12 @@ Module Contents
    Parameters:
    -----------
    wcs : astropy.wcs.WCS
-       WCS object potentially containing SIP distortion
+       WCS object potentially containing SIP distortion.
 
    Returns:
    --------
    dict:
-       Dictionary containing SIP coefficient matrices A, B, AP, BP and orders
+       Dictionary containing SIP coefficient matrices A, B, AP, BP and orders.
 
 
 .. py:function:: apply_sip_distortion(u: torch.Tensor, v: torch.Tensor, sip_coeffs: Tuple, device: str = 'cpu')
@@ -40,16 +40,16 @@ Module Contents
    Parameters:
    -----------
    u, v : torch.Tensor
-       Intermediate pixel coordinates (before distortion)
+       Intermediate pixel coordinates (before distortion).
    sip_coeffs : Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
-       SIP coefficient matrices
+       SIP coefficient matrices.
    device : torch.device, optional
-       Device to place tensors on
+       Device to place tensors on.
 
    Returns:
    --------
    tuple:
-       (u', v') distorted coordinates
+       (u', v') distorted coordinates.
 
 
    # Convert to tensors if needed
@@ -63,16 +63,16 @@ Module Contents
    Parameters:
    -----------
    u, v : torch.Tensor
-       Distorted coordinates
+       Distorted coordinates.
    sip_coeffs : Tuple
-       SIP coefficient matrices
+       SIP coefficient matrices.
    device : torch.device, optional
-       Device to place tensors on
+       Device to place tensors on.
 
    Returns:
    --------
    tuple:
-       (u', v') undistorted coordinates
+       (u', v') undistorted coordinates.
 
 
 .. py:function:: iterative_inverse_sip(u: torch.Tensor, v: torch.Tensor, sip_coeffs: Tuple, device: str = 'cpu', max_iter: int = 20, tol: float = 1e-08)
@@ -83,19 +83,19 @@ Module Contents
    Parameters:
    -----------
    u, v : torch.Tensor
-       Distorted coordinates
+       Distorted coordinates.
    sip_coeffs : Tuple
-       SIP coefficient matrices
+       SIP coefficient matrices.
    device : torch.device, optional
-       Device to place tensors on
+       Device to place tensors on.
    max_iter : int, optional
-       Maximum number of iterations
+       Maximum number of iterations.
    tol : float, optional
-       Convergence tolerance
+       Convergence tolerance.
 
    Returns:
    --------
    tuple:
-       (u', v') undistorted coordinates
+       (u', v') undistorted coordinates.
 
 

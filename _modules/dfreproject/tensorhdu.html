@@ -104,7 +104,7 @@
 <span class="sd">            The data in the HDU.</span>
 
 <span class="sd">        header : `~astropy.io.fits.Header`, optional</span>
-<span class="sd">            The header to be used (as a template).  If ``header`` is `None`, a</span>
+<span class="sd">            The header to be used (as a template). If ``header`` is `None`, a</span>
 <span class="sd">            minimal header will be provided.</span>
 
 <span class="sd">        do_not_scale_image_data : bool, optional</span>
@@ -152,11 +152,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the image data as a torch.Tensor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tensor&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
-    
+
     <span class="nd">@tensor</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="c1"># Accept torch.Tensor or numpy array, but always store as torch.Tensor</span>
@@ -173,7 +173,7 @@
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
-                
+
 
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;tensor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span></div>
 

@@ -122,14 +122,14 @@
 <section id="parameters">
 <h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt>wcs<span class="classifier">astropy.wcs.WCS</span></dt><dd><p>WCS object potentially containing SIP distortion</p>
+<dt>wcs<span class="classifier">astropy.wcs.WCS</span></dt><dd><p>WCS object potentially containing SIP distortion.</p>
 </dd>
 </dl>
 </section>
 <section id="returns">
 <h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt>dict:</dt><dd><p>Dictionary containing SIP coefficient matrices A, B, AP, BP and orders</p>
+<dt>dict:</dt><dd><p>Dictionary containing SIP coefficient matrices A, B, AP, BP and orders.</p>
 </dd>
 </dl>
 </section>
@@ -142,18 +142,18 @@
 <section id="id1">
 <h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Intermediate pixel coordinates (before distortion)</p>
+<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Intermediate pixel coordinates (before distortion).</p>
 </dd>
-<dt>sip_coeffs<span class="classifier">Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]</span></dt><dd><p>SIP coefficient matrices</p>
+<dt>sip_coeffs<span class="classifier">Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]</span></dt><dd><p>SIP coefficient matrices.</p>
 </dd>
-<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on</p>
+<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on.</p>
 </dd>
 </dl>
 </section>
 <section id="id2">
 <h3>Returns:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt>tuple:</dt><dd><p>(u’, v’) distorted coordinates</p>
+<dt>tuple:</dt><dd><p>(u’, v’) distorted coordinates.</p>
 </dd>
 </dl>
 <p># Convert to tensors if needed</p>
@@ -167,18 +167,18 @@
 <section id="id3">
 <h3>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Distorted coordinates</p>
+<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Distorted coordinates.</p>
 </dd>
-<dt>sip_coeffs<span class="classifier">Tuple</span></dt><dd><p>SIP coefficient matrices</p>
+<dt>sip_coeffs<span class="classifier">Tuple</span></dt><dd><p>SIP coefficient matrices.</p>
 </dd>
-<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on</p>
+<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on.</p>
 </dd>
 </dl>
 </section>
 <section id="id4">
 <h3>Returns:<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt>tuple:</dt><dd><p>(u’, v’) undistorted coordinates</p>
+<dt>tuple:</dt><dd><p>(u’, v’) undistorted coordinates.</p>
 </dd>
 </dl>
 </section>
@@ -192,22 +192,22 @@ are not available.</p>
 <section id="id5">
 <h3>Parameters:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Distorted coordinates</p>
+<dt>u, v<span class="classifier">torch.Tensor</span></dt><dd><p>Distorted coordinates.</p>
 </dd>
-<dt>sip_coeffs<span class="classifier">Tuple</span></dt><dd><p>SIP coefficient matrices</p>
+<dt>sip_coeffs<span class="classifier">Tuple</span></dt><dd><p>SIP coefficient matrices.</p>
 </dd>
-<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on</p>
+<dt>device<span class="classifier">torch.device, optional</span></dt><dd><p>Device to place tensors on.</p>
 </dd>
-<dt>max_iter<span class="classifier">int, optional</span></dt><dd><p>Maximum number of iterations</p>
+<dt>max_iter<span class="classifier">int, optional</span></dt><dd><p>Maximum number of iterations.</p>
 </dd>
-<dt>tol<span class="classifier">float, optional</span></dt><dd><p>Convergence tolerance</p>
+<dt>tol<span class="classifier">float, optional</span></dt><dd><p>Convergence tolerance.</p>
 </dd>
 </dl>
 </section>
 <section id="id6">
 <h3>Returns:<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt>tuple:</dt><dd><p>(u’, v’) undistorted coordinates</p>
+<dt>tuple:</dt><dd><p>(u’, v’) undistorted coordinates.</p>
 </dd>
 </dl>
 </section>
