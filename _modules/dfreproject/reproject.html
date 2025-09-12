@@ -86,7 +86,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.sip</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_inverse_sip_distortion</span><span class="p">,</span> <span class="n">apply_sip_distortion</span><span class="p">,</span> <span class="n">get_sip_coeffs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tensorhdu</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorHDU</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device</span><span class="p">,</span> <span class="n">gradient2d</span>
 
 <div class="viewcode-block" id="logger">
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.logger">[docs]</a>
@@ -692,74 +692,6 @@
         <span class="k">return</span> <span class="n">batch_x_pixel</span><span class="p">,</span> <span class="n">batch_y_pixel</span></div>
 
 
-<div class="viewcode-block" id="Reproject.compute_sip_jacobian">
-<a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.Reproject.compute_sip_jacobian">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_sip_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wcs</span><span class="p">:</span> <span class="n">WCS</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the Jacobian matrix of a SIP-corrected WCS at given pixel coordinates.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        wcs : astropy.wcs.WCS</span>
-<span class="sd">            The WCS object (must have .sip set)</span>
-<span class="sd">        x, y : torch.Tensor</span>
-<span class="sd">            Pixel coordinates (in image frame)</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        jacobian : torch.Tensor</span>
-<span class="sd">            Tensor of shape (..., 2, 2) with Jacobians at each point.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">wcs</span><span class="o">.</span><span class="n">sip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-
-        <span class="c1"># Shift to CRPIX</span>
-        <span class="n">dx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">wcs</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">crpix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">dy</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">wcs</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">crpix</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-        <span class="c1"># Ensure dx, dy have same shape</span>
-        <span class="n">dx</span> <span class="o">=</span> <span class="n">dx</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-        <span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-
-        <span class="n">shape</span> <span class="o">=</span> <span class="n">dx</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">d_dx_dx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span>
-        <span class="n">d_dx_dy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span>
-        <span class="n">d_dy_dx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span>
-        <span class="n">d_dy_dy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">coeff</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndenumerate</span><span class="p">(</span><span class="n">wcs</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">a</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">d_dx_dx</span> <span class="o">+=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">coeff</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx</span> <span class="o">**</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">dy</span> <span class="o">**</span> <span class="n">j</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">d_dx_dy</span> <span class="o">+=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">coeff</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx</span> <span class="o">**</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dy</span> <span class="o">**</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-
-        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">coeff</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndenumerate</span><span class="p">(</span><span class="n">wcs</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">b</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">d_dy_dx</span> <span class="o">+=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">coeff</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx</span> <span class="o">**</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">dy</span> <span class="o">**</span> <span class="n">j</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">d_dy_dy</span> <span class="o">+=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">coeff</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx</span> <span class="o">**</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dy</span> <span class="o">**</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
-
-        <span class="c1"># Add identity to model &quot;1 + dD/dx&quot;</span>
-        <span class="n">J_sip_00</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">d_dx_dx</span>
-        <span class="n">J_sip_01</span> <span class="o">=</span> <span class="n">d_dx_dy</span>
-        <span class="n">J_sip_10</span> <span class="o">=</span> <span class="n">d_dy_dx</span>
-        <span class="n">J_sip_11</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">d_dy_dy</span>
-
-        <span class="c1"># Stack into Jacobian matrix (..., 2, 2)</span>
-        <span class="n">J_sip</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">J_sip_00</span><span class="p">,</span> <span class="n">J_sip_01</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">J_sip_10</span><span class="p">,</span> <span class="n">J_sip_11</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
-
-        <span class="c1"># PC matrix</span>
-        <span class="n">PC</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">wcs</span><span class="o">.</span><span class="n">wcs</span><span class="o">.</span><span class="n">get_pc</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-
-        <span class="c1"># Broadcast and apply linear transformation: J_total = PC @ J_sip</span>
-        <span class="n">J_total</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">PC</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">J_sip</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-        <span class="n">J_total</span> <span class="o">=</span> <span class="n">J_total</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">detJ</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">J_total</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">detJ</span></div>
-
-
 
 <div class="viewcode-block" id="Reproject.interpolate_source_image">
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.Reproject.interpolate_source_image">[docs]</a>
@@ -829,6 +761,7 @@
         <span class="c1"># Apply footprint correction only where footprint is significant</span>
         <span class="n">valid_pixels</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">EPSILON</span>
         <span class="c1"># Apply footprint correction only where footprint is significant</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conserve_flux</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_jacobian</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">valid_pixels</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conserve_flux</span><span class="p">:</span>
             <span class="c1"># Normalize by the footprint where valid</span>
@@ -837,9 +770,17 @@
                     <span class="o">/</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()[</span><span class="n">valid_pixels</span><span class="p">]</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_jacobian</span><span class="p">:</span>  <span class="c1"># Include Jacobian determinant computation</span>
-                    <span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_grid</span>
-                    <span class="n">jacobian_det</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_sip_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_wcs</span><span class="p">,</span> <span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span><span class="p">)</span>
-                    <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">*</span> <span class="n">jacobian_det</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span>
+                    <span class="n">dy_x</span><span class="p">,</span> <span class="n">dx_x</span> <span class="o">=</span> <span class="n">gradient2d</span><span class="p">(</span><span class="n">x_source</span><span class="p">)</span>  <span class="c1"># dx_x = ∂x_in/∂x_out, dy_x = ∂x_in/∂y_out</span>
+                    <span class="n">dy_y</span><span class="p">,</span> <span class="n">dx_y</span> <span class="o">=</span> <span class="n">gradient2d</span><span class="p">(</span><span class="n">y_source</span><span class="p">)</span>  <span class="c1"># dx_y = ∂y_in/∂x_out, dy_y = ∂y_in/∂y_out</span>
+                    <span class="c1"># Build Jacobian components</span>
+                    <span class="n">Jxx</span> <span class="o">=</span> <span class="n">dx_x</span>  <span class="c1"># ∂x_in / ∂x_out</span>
+                    <span class="n">Jyx</span> <span class="o">=</span> <span class="n">dx_y</span>  <span class="c1"># ∂y_in / ∂x_out</span>
+                    <span class="n">Jxy</span> <span class="o">=</span> <span class="n">dy_x</span>  <span class="c1"># ∂x_in / ∂y_out</span>
+                    <span class="n">Jyy</span> <span class="o">=</span> <span class="n">dy_y</span>  <span class="c1"># ∂y_in / ∂y_out</span>
+                    <span class="c1"># Determinant</span>
+                    <span class="n">jacobian_det</span> <span class="o">=</span> <span class="n">Jxx</span> <span class="o">*</span> <span class="n">Jyy</span> <span class="o">-</span> <span class="n">Jxy</span> <span class="o">*</span> <span class="n">Jyx</span>
+                    <span class="c1"># Apply scaling</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">valid_pixels</span><span class="p">,</span> <span class="n">result</span> <span class="o">*</span> <span class="n">jacobian_det</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">result</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># Do not apply flux conservation</span>
                 <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()[</span><span class="n">valid_pixels</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>

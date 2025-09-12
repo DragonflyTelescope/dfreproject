@@ -165,22 +165,6 @@ Module Contents
 
 
 
-   .. py:method:: compute_sip_jacobian(wcs: astropy.wcs.WCS, x: torch.Tensor, y: torch.Tensor) -> torch.Tensor
-
-      Compute the Jacobian matrix of a SIP-corrected WCS at given pixel coordinates.
-
-      :param wcs: The WCS object (must have .sip set)
-      :type wcs: astropy.wcs.WCS
-      :param x: Pixel coordinates (in image frame)
-      :type x: torch.Tensor
-      :param y: Pixel coordinates (in image frame)
-      :type y: torch.Tensor
-
-      :returns: **jacobian** -- Tensor of shape (..., 2, 2) with Jacobians at each point.
-      :rtype: torch.Tensor
-
-
-
    .. py:method:: interpolate_source_image(interpolation_mode='bilinear') -> torch.Tensor
 
       Interpolate the source image at the calculated source coordinates with flux conservation.

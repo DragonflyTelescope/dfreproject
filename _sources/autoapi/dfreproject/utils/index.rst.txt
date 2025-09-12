@@ -18,6 +18,7 @@ Functions
 .. autoapisummary::
 
    dfreproject.utils.get_device
+   dfreproject.utils.gradient2d
 
 
 Module Contents
@@ -31,5 +32,10 @@ Module Contents
 
    :returns: Available torch device (either cuda or cpu).
    :rtype: torch.device
+
+
+.. py:function:: gradient2d(tensor)
+
+   Compute gradients (dy, dx) of a 2D tensor using centered differences.
 
 

@@ -319,27 +319,6 @@ except in the opposite order and with the source coordinate wcs.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dfreproject.reproject.Reproject.compute_sip_jacobian">
-<span class="sig-name descname"><span class="pre">compute_sip_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wcs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.wcs.WCS.html#astropy.wcs.WCS" title="(in Astropy v7.1)"><span class="pre">astropy.wcs.WCS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="../../../_modules/dfreproject/reproject.html#Reproject.compute_sip_jacobian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.reproject.Reproject.compute_sip_jacobian" title="Link to this definition"></a></dt>
-<dd><p>Compute the Jacobian matrix of a SIP-corrected WCS at given pixel coordinates.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>wcs</strong> (<a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.wcs.WCS.html#astropy.wcs.WCS" title="(in Astropy v7.1)"><em>astropy.wcs.WCS</em></a>) – The WCS object (must have .sip set)</p></li>
-<li><p><strong>x</strong> (<em>torch.Tensor</em>) – Pixel coordinates (in image frame)</p></li>
-<li><p><strong>y</strong> (<em>torch.Tensor</em>) – Pixel coordinates (in image frame)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>jacobian</strong> – Tensor of shape (…, 2, 2) with Jacobians at each point.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>torch.Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dfreproject.reproject.Reproject.interpolate_source_image">
 <span class="sig-name descname"><span class="pre">interpolate_source_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolation_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bilinear'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="../../../_modules/dfreproject/reproject.html#Reproject.interpolate_source_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.reproject.Reproject.interpolate_source_image" title="Link to this definition"></a></dt>
 <dd><p>Interpolate the source image at the calculated source coordinates with flux conservation.</p>
