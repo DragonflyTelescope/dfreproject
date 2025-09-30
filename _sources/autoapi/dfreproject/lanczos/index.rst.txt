@@ -1,0 +1,40 @@
+dfreproject.lanczos
+===================
+
+.. py:module:: dfreproject.lanczos
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   dfreproject.lanczos.lanczos_kernel
+   dfreproject.lanczos.lanczos_grid_sample
+
+
+Module Contents
+---------------
+
+.. py:function:: lanczos_kernel(x, a=3)
+
+   Lanczos kernel function with parameter a (number of lobes).
+
+   :param x: Distance from center
+   :param a: Number of lobes (typically 3 for Lanczos-3)
+
+   :returns: Kernel weights
+
+
+.. py:function:: lanczos_grid_sample(source_image, grid, padding_mode='zeros', chunk_size=1024)
+
+   Memory-efficient vectorized LANCZOS-3 interpolation for large astronomical images.
+
+   :param source_image: Input tensor of shape (N, C, H, W)
+   :param grid: Grid tensor of shape (N, H_out, W_out, 2) with values in [-1, 1]
+   :param padding_mode: Only "zeros" supported for now
+   :param chunk_size: Size of chunks to process at once (for memory management)
+
+   :returns: Interpolated tensor of shape (N, C, H_out, W_out)
+
+

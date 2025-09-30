@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dfreproject.lanczos &mdash; dfreproject  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            dfreproject
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../methodology.html">Astronomical Coordinate Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">dfreproject</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dfreproject.lanczos</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dfreproject.lanczos</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<div class="viewcode-block" id="lanczos_kernel">
+<a class="viewcode-back" href="../../autoapi/dfreproject/lanczos/index.html#dfreproject.lanczos.lanczos_kernel">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">lanczos_kernel</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lanczos kernel function with parameter a (number of lobes).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x: Distance from center</span>
+<span class="sd">        a: Number of lobes (typically 3 for Lanczos-3)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Kernel weights</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Lanczos kernel: sinc(x) * sinc(x/a) for |x| &lt; a, 0 otherwise</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">a</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Avoid division by zero</span>
+    <span class="n">x_nonzero</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">x_nonzero</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x_nonzero</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">),</span> <span class="n">x_nonzero</span><span class="p">)</span>
+
+    <span class="c1"># sinc(x) = sin(π*x) / (π*x)</span>
+    <span class="n">sinc_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_nonzero</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_nonzero</span><span class="p">)</span>
+    <span class="n">sinc_x_a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_nonzero</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_nonzero</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
+
+    <span class="n">result</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">sinc_x</span> <span class="o">*</span> <span class="n">sinc_x_a</span>
+
+    <span class="c1"># Handle x=0 case (sinc(0) = 1)</span>
+    <span class="n">result</span><span class="p">[</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_chunk_vectorized</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">target_x</span><span class="p">,</span> <span class="n">target_y</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vectorized processing of a chunk of output pixels.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        img: Source image tensor (H, W)</span>
+<span class="sd">        target_x: Target x coordinates (chunk_h, chunk_w)</span>
+<span class="sd">        target_y: Target y coordinates (chunk_h, chunk_w)</span>
+<span class="sd">        radius: Lanczos radius</span>
+<span class="sd">        dtype: Data type</span>
+<span class="sd">        device: Device</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Interpolated chunk (chunk_h, chunk_w)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">chunk_h</span><span class="p">,</span> <span class="n">chunk_w</span> <span class="o">=</span> <span class="n">target_x</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># Initialize accumulators</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">target_x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">total_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">target_x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="c1"># For each source pixel offset within the kernel support</span>
+    <span class="k">for</span> <span class="n">dy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">radius</span><span class="p">,</span> <span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">dx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">radius</span><span class="p">,</span> <span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># Source pixel coordinates for entire chunk - THIS IS THE KEY FIX</span>
+            <span class="c1"># We need to use floor of target coordinates as the base, not round</span>
+            <span class="n">src_y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">target_y</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span> <span class="o">+</span> <span class="n">dy</span>  <span class="c1"># (chunk_h, chunk_w)</span>
+            <span class="n">src_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">target_x</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span> <span class="o">+</span> <span class="n">dx</span>  <span class="c1"># (chunk_h, chunk_w)</span>
+
+            <span class="c1"># Create bounds mask</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">src_y</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">src_y</span> <span class="o">&lt;</span> <span class="n">H</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">src_x</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">src_x</span> <span class="o">&lt;</span> <span class="n">W</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">continue</span>  <span class="c1"># No valid pixels for this offset</span>
+
+            <span class="c1"># Calculate Lanczos weights for this offset</span>
+            <span class="c1"># Use actual source pixel coordinates vs target coordinates</span>
+            <span class="n">weight_x</span> <span class="o">=</span> <span class="n">lanczos_kernel</span><span class="p">(</span><span class="n">src_x</span><span class="o">.</span><span class="n">float</span><span class="p">()</span> <span class="o">-</span> <span class="n">target_x</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">weight_y</span> <span class="o">=</span> <span class="n">lanczos_kernel</span><span class="p">(</span><span class="n">src_y</span><span class="o">.</span><span class="n">float</span><span class="p">()</span> <span class="o">-</span> <span class="n">target_y</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">weight_x</span> <span class="o">*</span> <span class="n">weight_y</span>
+
+            <span class="c1"># Apply bounds mask</span>
+            <span class="n">weight_masked</span> <span class="o">=</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">mask</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+
+            <span class="c1"># Gather source pixel values (only where mask is True)</span>
+            <span class="n">valid_indices</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">as_tuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Get values at valid locations</span>
+                <span class="n">src_y_valid</span> <span class="o">=</span> <span class="n">src_y</span><span class="p">[</span><span class="n">valid_indices</span><span class="p">]</span>
+                <span class="n">src_x_valid</span> <span class="o">=</span> <span class="n">src_x</span><span class="p">[</span><span class="n">valid_indices</span><span class="p">]</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="n">src_y_valid</span><span class="p">,</span> <span class="n">src_x_valid</span><span class="p">]</span>
+
+                <span class="c1"># Create full values tensor</span>
+                <span class="n">values_full</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="n">values_full</span><span class="p">[</span><span class="n">valid_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+
+                <span class="c1"># Accumulate weighted contribution</span>
+                <span class="n">result</span> <span class="o">+=</span> <span class="n">weight_masked</span> <span class="o">*</span> <span class="n">values_full</span>
+                <span class="n">total_weights</span> <span class="o">+=</span> <span class="n">weight_masked</span>
+
+    <span class="c1"># Normalize by total weights (avoid division by zero)</span>
+    <span class="n">mask_nonzero</span> <span class="o">=</span> <span class="n">total_weights</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">result</span><span class="p">[</span><span class="n">mask_nonzero</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">mask_nonzero</span><span class="p">]</span> <span class="o">/</span> <span class="n">total_weights</span><span class="p">[</span><span class="n">mask_nonzero</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<div class="viewcode-block" id="lanczos_grid_sample">
+<a class="viewcode-back" href="../../autoapi/dfreproject/lanczos/index.html#dfreproject.lanczos.lanczos_grid_sample">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">lanczos_grid_sample</span><span class="p">(</span><span class="n">source_image</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">padding_mode</span><span class="o">=</span><span class="s2">&quot;zeros&quot;</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Memory-efficient vectorized LANCZOS-3 interpolation for large astronomical images.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        source_image: Input tensor of shape (N, C, H, W)</span>
+<span class="sd">        grid: Grid tensor of shape (N, H_out, W_out, 2) with values in [-1, 1]</span>
+<span class="sd">        padding_mode: Only &quot;zeros&quot; supported for now</span>
+<span class="sd">        chunk_size: Size of chunks to process at once (for memory management)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Interpolated tensor of shape (N, C, H_out, W_out)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">source_image</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">H_out</span><span class="p">,</span> <span class="n">W_out</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">device</span> <span class="o">=</span> <span class="n">source_image</span><span class="o">.</span><span class="n">device</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">source_image</span><span class="o">.</span><span class="n">dtype</span>
+
+    <span class="c1"># Convert grid from [-1, 1] to pixel coordinates</span>
+    <span class="n">grid_x</span> <span class="o">=</span> <span class="p">((</span><span class="n">grid</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">W</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Shape: (N, H_out, W_out)</span>
+    <span class="n">grid_y</span> <span class="o">=</span> <span class="p">((</span><span class="n">grid</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Shape: (N, H_out, W_out)</span>
+
+    <span class="c1"># Initialize output</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">H_out</span><span class="p">,</span> <span class="n">W_out</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="n">radius</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="c1"># Process each batch and channel</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">C</span><span class="p">):</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">source_image</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>  <span class="c1"># Shape: (H, W)</span>
+
+            <span class="c1"># Process output in chunks to manage memory</span>
+            <span class="k">for</span> <span class="n">i_start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">H_out</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+                <span class="n">i_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">i_start</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">H_out</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">j_start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">W_out</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+                    <span class="n">j_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">j_start</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">W_out</span><span class="p">)</span>
+
+                    <span class="c1"># Get chunk coordinates</span>
+                    <span class="n">chunk_x</span> <span class="o">=</span> <span class="n">grid_x</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">i_start</span><span class="p">:</span><span class="n">i_end</span><span class="p">,</span> <span class="n">j_start</span><span class="p">:</span><span class="n">j_end</span><span class="p">]</span>  <span class="c1"># (chunk_h, chunk_w)</span>
+                    <span class="n">chunk_y</span> <span class="o">=</span> <span class="n">grid_y</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">i_start</span><span class="p">:</span><span class="n">i_end</span><span class="p">,</span> <span class="n">j_start</span><span class="p">:</span><span class="n">j_end</span><span class="p">]</span>  <span class="c1"># (chunk_h, chunk_w)</span>
+
+                    <span class="n">chunk_h</span><span class="p">,</span> <span class="n">chunk_w</span> <span class="o">=</span> <span class="n">chunk_x</span><span class="o">.</span><span class="n">shape</span>
+
+                    <span class="c1"># Vectorized processing for this chunk</span>
+                    <span class="n">chunk_result</span> <span class="o">=</span> <span class="n">_process_chunk_vectorized</span><span class="p">(</span>
+                        <span class="n">img</span><span class="p">,</span> <span class="n">chunk_x</span><span class="p">,</span> <span class="n">chunk_y</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">device</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># Store result</span>
+                    <span class="n">output</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">i_start</span><span class="p">:</span><span class="n">i_end</span><span class="p">,</span> <span class="n">j_start</span><span class="p">:</span><span class="n">j_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">chunk_result</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Carter Rhea.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -44,7 +44,7 @@ Module Contents
 
 
 .. py:data:: VALID_ORDERS
-   :value: ['bicubic', 'bilinear', 'nearest', 'nearest-neighbors']
+   :value: ['bicubic', 'bilinear', 'nearest', 'nearest-neighbors', 'lanczos']
 
 
 .. py:function:: validate_interpolation_order(order: str) -> str
@@ -89,14 +89,18 @@ Module Contents
 
 .. py:function:: interpolate_image(source_image: torch.Tensor, grid: torch.Tensor, interpolation_mode: str) -> torch.Tensor
 
-   JIT-compiled image interpolation using grid_sample.
+   Image interpolation using grid_sample with LANCZOS support.
 
    :param source_image: Source image to interpolate.
    :type source_image: torch.Tensor
    :param grid: Grid on which to interpolate.
    :type grid: torch.Tensor
-   :param interpolation_mode: Interpolation mode to use.
+   :param interpolation_mode: Interpolation mode to use. Supports PyTorch's built-in modes
+                              ('bilinear', 'bicubic', 'nearest') plus 'lanczos' for LANCZOS-3.
    :type interpolation_mode: str
+
+   :returns: Interpolated image.
+   :rtype: torch.Tensor
 
 
 .. py:class:: Reproject(source_hdus: List[astropy.io.fits.PrimaryHDU], target_wcs: astropy.wcs.WCS, shape_out: Tuple[int, int], device: str = None, num_threads: int = None, requires_grad: bool = False, conserve_flux: bool = True, compute_jacobian: bool = True)
@@ -181,6 +185,7 @@ Module Contents
                                  - 'nearest' : Nearest neighbor interpolation (no interpolation)
                                  - 'bilinear' : Bilinear interpolation (default)
                                  - 'bicubic' : Bicubic interpolation
+                                 - 'lanczos' : Lanczos interpolation
 
                                  These correspond to the modes available in torch.nn.functional.grid_sample.
       :type interpolation_mode: str, default 'bilinear'
@@ -233,7 +238,8 @@ Module Contents
                  Options:
                  - 'nearest' : Nearest neighbor interpolation (fastest, default)
                  - 'bilinear' : Bilinear interpolation (good balance of speed/quality)
-                 - 'bicubic' : Bicubic interpolation (highest quality, slowest)
+                 - 'bicubic' : Bicubic interpolation (high quality, slow)
+                 - 'lanczos' : Lanczos 3-lobe interpolation (highest quality, slowest)
    :type order: str, default 'nearest'
    :param device: Device to use for computations. Defaults to GPU if available, otherwise uses CPU.
    :type device: str, optional

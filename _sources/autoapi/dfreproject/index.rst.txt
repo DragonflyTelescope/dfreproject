@@ -10,6 +10,7 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/dfreproject/lanczos/index
    /autoapi/dfreproject/reproject/index
    /autoapi/dfreproject/sip/index
    /autoapi/dfreproject/tensorhdu/index

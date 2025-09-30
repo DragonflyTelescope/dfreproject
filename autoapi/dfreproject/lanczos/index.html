@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dfreproject.utils &mdash; dfreproject  documentation</title>
+  <title>dfreproject.lanczos &mdash; dfreproject  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
@@ -24,7 +24,8 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="prev" title="dfreproject.tensorhdu" href="../tensorhdu/index.html" /> 
+    <link rel="next" title="dfreproject.reproject" href="../reproject/index.html" />
+    <link rel="prev" title="dfreproject" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -53,11 +54,11 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">dfreproject</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../lanczos/index.html">dfreproject.lanczos</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dfreproject.lanczos</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reproject/index.html">dfreproject.reproject</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../sip/index.html">dfreproject.sip</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../tensorhdu/index.html">dfreproject.tensorhdu</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">dfreproject.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">dfreproject.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -82,9 +83,9 @@
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../index.html">dfreproject</a></li>
-      <li class="breadcrumb-item active">dfreproject.utils</li>
+      <li class="breadcrumb-item active">dfreproject.lanczos</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../_sources/autoapi/dfreproject/utils/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../_sources/autoapi/dfreproject/lanczos/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -92,56 +93,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-dfreproject.utils">
-<span id="dfreproject-utils"></span><h1>dfreproject.utils<a class="headerlink" href="#module-dfreproject.utils" title="Link to this heading"></a></h1>
-<section id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.utils.logger" title="dfreproject.utils.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</section>
+  <section id="module-dfreproject.lanczos">
+<span id="dfreproject-lanczos"></span><h1>dfreproject.lanczos<a class="headerlink" href="#module-dfreproject.lanczos" title="Link to this heading"></a></h1>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.utils.get_device" title="dfreproject.utils.get_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_device</span></code></a>()</p></td>
-<td><p>Utility function to get the currently available PyTorch device.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dfreproject.lanczos.lanczos_kernel" title="dfreproject.lanczos.lanczos_kernel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lanczos_kernel</span></code></a>(x[, a])</p></td>
+<td><p>Lanczos kernel function with parameter a (number of lobes).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dfreproject.utils.gradient2d" title="dfreproject.utils.gradient2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient2d</span></code></a>(tensor)</p></td>
-<td><p>Compute gradients (dy, dx) of a 2D tensor using centered differences.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dfreproject.lanczos.lanczos_grid_sample" title="dfreproject.lanczos.lanczos_grid_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lanczos_grid_sample</span></code></a>(source_image, grid[, ...])</p></td>
+<td><p>Memory-efficient vectorized LANCZOS-3 interpolation for large astronomical images.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
-<dl class="py data">
-<dt class="sig sig-object py" id="dfreproject.utils.logger">
-<span class="sig-prename descclassname"><span class="pre">dfreproject.utils.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="reference internal" href="../../../_modules/dfreproject/utils.html#logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.utils.logger" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py function">
-<dt class="sig sig-object py" id="dfreproject.utils.get_device">
-<span class="sig-prename descclassname"><span class="pre">dfreproject.utils.</span></span><span class="sig-name descname"><span class="pre">get_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dfreproject/utils.html#get_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.utils.get_device" title="Link to this definition"></a></dt>
-<dd><p>Utility function to get the currently available PyTorch device.</p>
+<dt class="sig sig-object py" id="dfreproject.lanczos.lanczos_kernel">
+<span class="sig-prename descclassname"><span class="pre">dfreproject.lanczos.</span></span><span class="sig-name descname"><span class="pre">lanczos_kernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dfreproject/lanczos.html#lanczos_kernel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.lanczos.lanczos_kernel" title="Link to this definition"></a></dt>
+<dd><p>Lanczos kernel function with parameter a (number of lobes).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Available torch device (either cuda or cpu).</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – Distance from center</p></li>
+<li><p><strong>a</strong> – Number of lobes (typically 3 for Lanczos-3)</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>torch.device</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Kernel weights</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="dfreproject.utils.gradient2d">
-<span class="sig-prename descclassname"><span class="pre">dfreproject.utils.</span></span><span class="sig-name descname"><span class="pre">gradient2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dfreproject/utils.html#gradient2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.utils.gradient2d" title="Link to this definition"></a></dt>
-<dd><p>Compute gradients (dy, dx) of a 2D tensor using centered differences.</p>
+<dt class="sig sig-object py" id="dfreproject.lanczos.lanczos_grid_sample">
+<span class="sig-prename descclassname"><span class="pre">dfreproject.lanczos.</span></span><span class="sig-name descname"><span class="pre">lanczos_grid_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zeros'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dfreproject/lanczos.html#lanczos_grid_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dfreproject.lanczos.lanczos_grid_sample" title="Link to this definition"></a></dt>
+<dd><p>Memory-efficient vectorized LANCZOS-3 interpolation for large astronomical images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_image</strong> – Input tensor of shape (N, C, H, W)</p></li>
+<li><p><strong>grid</strong> – Grid tensor of shape (N, H_out, W_out, 2) with values in [-1, 1]</p></li>
+<li><p><strong>padding_mode</strong> – Only “zeros” supported for now</p></li>
+<li><p><strong>chunk_size</strong> – Size of chunks to process at once (for memory management)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Interpolated tensor of shape (N, C, H_out, W_out)</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -151,7 +153,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../tensorhdu/index.html" class="btn btn-neutral float-left" title="dfreproject.tensorhdu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="dfreproject" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../reproject/index.html" class="btn btn-neutral float-right" title="dfreproject.reproject" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

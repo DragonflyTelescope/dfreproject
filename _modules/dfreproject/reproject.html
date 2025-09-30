@@ -84,6 +84,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io.fits</span><span class="w"> </span><span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">PrimaryHDU</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.wcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">WCS</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.lanczos</span><span class="w"> </span><span class="kn">import</span> <span class="n">lanczos_grid_sample</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.sip</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_inverse_sip_distortion</span><span class="p">,</span> <span class="n">apply_sip_distortion</span><span class="p">,</span> <span class="n">get_sip_coeffs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tensorhdu</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorHDU</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device</span><span class="p">,</span> <span class="n">gradient2d</span>
@@ -99,7 +100,7 @@
 
 <div class="viewcode-block" id="VALID_ORDERS">
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.VALID_ORDERS">[docs]</a>
-<span class="n">VALID_ORDERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bicubic&quot;</span><span class="p">,</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="s2">&quot;nearest-neighbors&quot;</span><span class="p">]</span></div>
+<span class="n">VALID_ORDERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bicubic&quot;</span><span class="p">,</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="s2">&quot;nearest-neighbors&quot;</span><span class="p">,</span> <span class="s1">&#39;lanczos&#39;</span><span class="p">]</span></div>
 
 
 
@@ -180,14 +181,13 @@
 
 
 
-<span class="nd">@torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span>
 <div class="viewcode-block" id="interpolate_image">
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.interpolate_image">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">interpolate_image</span><span class="p">(</span>
     <span class="n">source_image</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">interpolation_mode</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    JIT-compiled image interpolation using grid_sample.</span>
+<span class="sd">    Image interpolation using grid_sample with LANCZOS support.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -196,15 +196,24 @@
 <span class="sd">    grid : torch.Tensor</span>
 <span class="sd">        Grid on which to interpolate.</span>
 <span class="sd">    interpolation_mode: str</span>
-<span class="sd">        Interpolation mode to use.</span>
+<span class="sd">        Interpolation mode to use. Supports PyTorch&#39;s built-in modes</span>
+<span class="sd">        (&#39;bilinear&#39;, &#39;bicubic&#39;, &#39;nearest&#39;) plus &#39;lanczos&#39; for LANCZOS-3.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor</span>
+<span class="sd">        Interpolated image.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">grid_sample</span><span class="p">(</span>
-        <span class="n">source_image</span><span class="p">,</span>
-        <span class="n">grid</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="n">interpolation_mode</span><span class="p">,</span>
-        <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">padding_mode</span><span class="o">=</span><span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">interpolation_mode</span> <span class="o">==</span> <span class="s1">&#39;lanczos&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lanczos_grid_sample</span><span class="p">(</span><span class="n">source_image</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">padding_mode</span><span class="o">=</span><span class="s2">&quot;zeros&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">grid_sample</span><span class="p">(</span>
+            <span class="n">source_image</span><span class="p">,</span>
+            <span class="n">grid</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">interpolation_mode</span><span class="p">,</span>
+            <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">padding_mode</span><span class="o">=</span><span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 
@@ -714,6 +723,7 @@
 <span class="sd">            - &#39;nearest&#39; : Nearest neighbor interpolation (no interpolation)</span>
 <span class="sd">            - &#39;bilinear&#39; : Bilinear interpolation (default)</span>
 <span class="sd">            - &#39;bicubic&#39; : Bicubic interpolation</span>
+<span class="sd">            - &#39;lanczos&#39; : Lanczos interpolation</span>
 
 <span class="sd">            These correspond to the modes available in torch.nn.functional.grid_sample.</span>
 
@@ -761,7 +771,6 @@
         <span class="c1"># Apply footprint correction only where footprint is significant</span>
         <span class="n">valid_pixels</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">EPSILON</span>
         <span class="c1"># Apply footprint correction only where footprint is significant</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conserve_flux</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_jacobian</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">valid_pixels</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conserve_flux</span><span class="p">:</span>
             <span class="c1"># Normalize by the footprint where valid</span>
@@ -845,7 +854,8 @@
 <span class="sd">        Options:</span>
 <span class="sd">        - &#39;nearest&#39; : Nearest neighbor interpolation (fastest, default)</span>
 <span class="sd">        - &#39;bilinear&#39; : Bilinear interpolation (good balance of speed/quality)</span>
-<span class="sd">        - &#39;bicubic&#39; : Bicubic interpolation (highest quality, slowest)</span>
+<span class="sd">        - &#39;bicubic&#39; : Bicubic interpolation (high quality, slow)</span>
+<span class="sd">        - &#39;lanczos&#39; : Lanczos 3-lobe interpolation (highest quality, slowest)</span>
 
 <span class="sd">    device: str, optional</span>
 <span class="sd">        Device to use for computations. Defaults to GPU if available, otherwise uses CPU.</span>
