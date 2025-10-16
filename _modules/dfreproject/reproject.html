@@ -720,6 +720,8 @@
 <span class="sd">        1. Local flux density conservation: The image and a &quot;ones&quot; tensor are interpolated</span>
 <span class="sd">           together, and the interpolated image is divided by the interpolated ones</span>
 <span class="sd">           tensor (footprint) to correct for any flux density spreading during interpolation.</span>
+<span class="sd">           This is important when for pixels at the edge of the input image when mapped to the output</span>
+<span class="sd">           image in case the input image only partially fills the output pixel.</span>
 <span class="sd">        2. Jacobian correction for full flux conservation: Multiply the footprint-corrected flux</span>
 <span class="sd">           by the determinant of the Jacobian to handle changes in area during the reprojection</span>
 
@@ -727,7 +729,7 @@
 <span class="sd">        compute_jacobian=False. However, the default behavior is to include this.</span>
 
 <span class="sd">        Areas in the target image that map outside the source image boundaries</span>
-<span class="sd">        will be filled with zeros (using &#39;zeros&#39; padding_mode).</span>
+<span class="sd">        will be filled with NaNs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
     
         <span class="c1"># Get source coordinates</span>
@@ -756,7 +758,7 @@
         <span class="c1"># Create output array initialized with NaN</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">torch</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
         <span class="n">valid_pixels</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">EPSILON</span>
-        
+        <span class="c1"># Apply footprint correction only where footprint is significant</span>
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">valid_pixels</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conserve_flux</span><span class="p">:</span>
                 <span class="c1"># Normalize by the footprint where valid</span>
@@ -839,15 +841,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    source_hdus : Union[</span>
-<span class="sd">        PrimaryHDU,</span>
-<span class="sd">        TensorHDU,</span>
-<span class="sd">        Tuple[np.ndarray, Union[WCS, Header]],</span>
-<span class="sd">        Tuple[torch.Tensor, Union[WCS, Header]],</span>
-<span class="sd">        List[Union[PrimaryHDU, Tuple[np.ndarray, Union[WCS, Header]]]]</span>
-<span class="sd">    ]</span>
-<span class="sd">        The source image(s) to be reprojected, which can be a PrimaryHDU, TensorHDU,</span>
-<span class="sd">        a tuple of (data, WCS/Header), or a list of such items.</span>
+
+<span class="sd">    source_hdus : PrimaryHDU, TensorHDU, tuple, or list</span>
+<span class="sd">        The source image(s) to be reprojected. Can be:</span>
+<span class="sd">            - A PrimaryHDU</span>
+<span class="sd">            - A TensorHDU</span>
+<span class="sd">            - A tuple of (np.ndarray or torch.Tensor, WCS or Header)</span>
+<span class="sd">            - A list of any of the above</span>
+
 
 <span class="sd">    target_wcs : Union[WCS, Header]</span>
 <span class="sd">        WCS information for the target. If a Header is passed it will be converted to WCS.</span>

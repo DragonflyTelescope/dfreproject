@@ -360,14 +360,16 @@ the WCS transformation with flux conservation preserved.</p>
 <ol class="arabic simple">
 <li><p>Local flux density conservation: The image and a “ones” tensor are interpolated
 together, and the interpolated image is divided by the interpolated ones
-tensor (footprint) to correct for any flux density spreading during interpolation.</p></li>
+tensor (footprint) to correct for any flux density spreading during interpolation.
+This is important when for pixels at the edge of the input image when mapped to the output
+image in case the input image only partially fills the output pixel.</p></li>
 <li><p>Jacobian correction for full flux conservation: Multiply the footprint-corrected flux
 by the determinant of the Jacobian to handle changes in area during the reprojection</p></li>
 </ol>
 <p>The Jacobian correction can be circumvented if you set
 compute_jacobian=False. However, the default behavior is to include this.</p>
 <p>Areas in the target image that map outside the source image boundaries
-will be filled with zeros (using ‘zeros’ padding_mode).</p>
+will be filled with NaNs.</p>
 </dd></dl>
 
 </dd></dl>
@@ -382,39 +384,52 @@ It converts FITS HDU objects to the internal representation, performs the reproj
 and returns the resulting image as a NumPy array or PyTorch tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>source_hdus</strong> (<em>Union</em><em>[</em>) – PrimaryHDU,
-TensorHDU,
-Tuple[np.ndarray, Union[WCS, Header]],
-Tuple[torch.Tensor, Union[WCS, Header]],
-List[Union[PrimaryHDU, Tuple[np.ndarray, Union[WCS, Header]]]]</p></li>
-<li><p><strong>]</strong> – The source image(s) to be reprojected, which can be a PrimaryHDU, TensorHDU,
-a tuple of (data, WCS/Header), or a list of such items.</p></li>
-<li><p><strong>target_wcs</strong> (<em>Union</em><em>[</em><em>WCS</em><em>, </em><em>Header</em><em>]</em>) – WCS information for the target. If a Header is passed it will be converted to WCS.</p></li>
-<li><p><strong>shape_out</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>]</em>) – Shape of the resampled array. If not provided, the output shape will match the input.</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>default 'nearest'</em>) – The interpolation method to use when resampling the source image.
+<dd class="field-odd"><p><strong>source_hdus</strong> (<em>PrimaryHDU</em><em>, </em><a class="reference internal" href="../tensorhdu/index.html#dfreproject.tensorhdu.TensorHDU" title="dfreproject.tensorhdu.TensorHDU"><em>TensorHDU</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a>) – <dl class="simple">
+<dt>The source image(s) to be reprojected. Can be:</dt><dd><ul class="simple">
+<li><p>A PrimaryHDU</p></li>
+<li><p>A TensorHDU</p></li>
+<li><p>A tuple of (np.ndarray or torch.Tensor, WCS or Header)</p></li>
+<li><p>A list of any of the above</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>target_wcs<span class="classifier">Union[WCS, Header]</span></dt><dd><p>WCS information for the target. If a Header is passed it will be converted to WCS.</p>
+</dd>
+<dt>shape_out: Optional[Tuple[int, int]]</dt><dd><p>Shape of the resampled array. If not provided, the output shape will match the input.</p>
+</dd>
+<dt>order<span class="classifier">str, default ‘nearest’</span></dt><dd><p>The interpolation method to use when resampling the source image.
 Options:
 - ‘nearest’ : Nearest neighbor interpolation (fastest, default)
 - ‘bilinear’ : Bilinear interpolation (good balance of speed/quality)
 - ‘bicubic’ : Bicubic interpolation (high quality, slow)
-- ‘lanczos’ : Lanczos 3-lobe interpolation (highest quality, slowest)</p></li>
-<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Device to use for computations. Defaults to GPU if available, otherwise uses CPU.</p></li>
-<li><p><strong>num_threads</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of threads to use on CPU.</p></li>
-<li><p><strong>requires_grad</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, enables autograd for PyTorch tensors.</p></li>
-<li><p><strong>conserve_flux</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, enables flux conservation through footprint calculations.
-By default, this is set to True.</p></li>
-<li><p><strong>compute_jacobian</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, enables non-linear flux conservation through Jacobian calculation. Note
+- ‘lanczos’ : Lanczos 3-lobe interpolation (highest quality, slowest)</p>
+</dd>
+<dt>device: str, optional</dt><dd><p>Device to use for computations. Defaults to GPU if available, otherwise uses CPU.</p>
+</dd>
+<dt>num_threads: int, optional</dt><dd><p>Number of threads to use on CPU.</p>
+</dd>
+<dt>requires_grad: bool, optional</dt><dd><p>If True, enables autograd for PyTorch tensors.</p>
+</dd>
+<dt>conserve_flux: bool, optional</dt><dd><p>If True, enables flux conservation through footprint calculations.
+By default, this is set to True.</p>
+</dd>
+<dt>compute_jacobian: bool, optional</dt><dd><p>If True, enables non-linear flux conservation through Jacobian calculation. Note
 that this slightly increases RAM usage.
 By default, this is set to True.
-If there is no SIP distortion, users can set this to False.</p></li>
-</ul>
+If there is no SIP distortion, users can set this to False.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The reprojected image as a numpy ndarray (default) or PyTorch tensor if
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The reprojected image as a numpy ndarray (default) or PyTorch tensor if
 requires_grad=True.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)">numpy.ndarray</a> or torch.Tensor</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)">numpy.ndarray</a> or torch.Tensor</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
