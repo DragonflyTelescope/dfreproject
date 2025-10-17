@@ -215,7 +215,7 @@ Module Contents
 
 
 
-.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, dfreproject.tensorhdu.TensorHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]], Tuple[torch.Tensor, Union[astropy.wcs.WCS, astropy.io.fits.Header]], List[Union[astropy.io.fits.PrimaryHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]]]]], target_wcs: Union[astropy.wcs.WCS, astropy.io.fits.Header], shape_out: Optional[Tuple[int, int]] = None, order: str = 'nearest', device: str = None, num_threads: int = None, requires_grad: bool = False, conserve_flux: bool = True, compute_jacobian: bool = True)
+.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, dfreproject.tensorhdu.TensorHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]], Tuple[torch.Tensor, Union[astropy.wcs.WCS, astropy.io.fits.Header]], List[Union[astropy.io.fits.PrimaryHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]]]]], target_wcs: Union[astropy.wcs.WCS, astropy.io.fits.Header], shape_out: Optional[Tuple[int, int]] = None, order: str = 'nearest', device: str = None, num_threads: int = None, requires_grad: bool = False, conserve_flux: bool = True, compute_jacobian: bool = True, max_memory_mb: Optional[float] = None, chunk_safety_factor: float = 0.8, show_chunk_progress: bool = True)
 
    Reproject an astronomical image from a source WCS to a target WCS.
 
@@ -265,6 +265,19 @@ Module Contents
        By default, this is set to True.
        If there is no SIP distortion, users can set this to False.
 
+   max_memory_mb: Optional[float], optional
+       Maximum memory to use in megabytes for chunked processing. If None (default),
+       processes the entire image at once without chunking. Set this to enable
+       memory-limited chunked processing (e.g., 1000 for 1GB limit).
+
+   chunk_safety_factor: float, optional
+       Safety factor (0-1) for chunked processing. Default 0.8 means use 80% of
+       max_memory_mb for actual data, leaving 20% margin. Only used if max_memory_mb is set.
+
+   show_chunk_progress: bool, optional
+       Whether to log progress when using chunked processing. Default True.
+       Only used if max_memory_mb is set.
+
    :returns: The reprojected image as a numpy ndarray (default) or PyTorch tensor if
              requires_grad=True.
    :rtype: numpy.ndarray or torch.Tensor
@@ -276,6 +289,14 @@ Module Contents
    - Handles byte order conversion for tensor creation
    - Converts data to float64 for processing
    - Converts Header to WCS if needed
+   - Processes in memory-constrained chunks if max_memory_mb is specified
+
+   **Chunked Processing:**
+   When max_memory_mb is set, the reprojection is computed in blocks to stay within
+   the specified memory limit. This is useful for:
+   - Very large output images
+   - Limited GPU memory
+   - Batch processing multiple images
 
    To save the result as a FITS file, convert the tensor back to a NumPy array
    and create a new FITS HDU with the target WCS header.
@@ -297,6 +318,15 @@ Module Contents
    ...     target_wcs=target_wcs,
    ...     shape_out=target_hdu.data.shape,
    ...     order='bilinear'
+   ... )
+   >>>
+   >>> # Perform chunked reprojection with 2GB memory limit
+   >>> reprojected = calculate_reprojection(
+   ...     source_hdus=source_hdu,
+   ...     target_wcs=target_wcs,
+   ...     shape_out=(8000, 8000),
+   ...     order='bilinear',
+   ...     max_memory_mb=2000
    ... )
    >>> # Save as FITS
    >>> output_hdu = fits.PrimaryHDU(data=reprojected, header=target_hdu.header)
