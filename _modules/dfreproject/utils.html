@@ -109,49 +109,50 @@
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span></div>
 
 
+
 <div class="viewcode-block" id="gradient2d">
 <a class="viewcode-back" href="../../autoapi/dfreproject/utils/index.html#dfreproject.utils.gradient2d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">gradient2d</span><span class="p">(</span><span class="n">tensor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute gradients (dy, dx) of a 2D tensor using centered differences.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.0</span>
-    <span class="n">dy</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=-</span><span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
 
     <span class="c1"># fix edges with forward/backward differences</span>
-    <span class="n">dx</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="o">=</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="o">-</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">dx</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
     <span class="n">dx</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">dy</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>  <span class="o">=</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>  <span class="o">-</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">dy</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">dy</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">tensor</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
 
     <span class="k">return</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span></div>
 
 
 
-
 <div class="viewcode-block" id="estimate_memory_per_pixel">
 <a class="viewcode-back" href="../../autoapi/dfreproject/utils/index.html#dfreproject.utils.estimate_memory_per_pixel">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">estimate_memory_per_pixel</span><span class="p">(</span>
-    <span class="n">reproject_instance</span><span class="p">,</span>
-    <span class="n">interpolation_mode</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_memory_per_pixel</span><span class="p">(</span><span class="n">reproject_instance</span><span class="p">,</span> <span class="n">interpolation_mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Estimate memory usage per output pixel in bytes.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    reproject_instance : Reproject</span>
 <span class="sd">        An initialized Reproject instance.</span>
 <span class="sd">    interpolation_mode : str</span>
 <span class="sd">        Interpolation mode being used.</span>
-<span class="sd">        </span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
 <span class="sd">        Estimated bytes per pixel.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">B</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reproject_instance</span><span class="o">.</span><span class="n">batch_source_images</span><span class="p">)</span>
-    
+
     <span class="c1"># Base memory for coordinates and intermediate tensors</span>
     <span class="c1"># Each pixel needs:</span>
     <span class="c1"># - x_source, y_source: 2 * 8 bytes (float64)</span>
@@ -160,18 +161,18 @@
     <span class="c1"># - result: 8 bytes</span>
     <span class="c1"># - valid_pixels mask: 1 byte</span>
     <span class="n">base_per_pixel</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span>
-    
+
     <span class="c1"># Add memory for Jacobian if needed</span>
     <span class="k">if</span> <span class="n">reproject_instance</span><span class="o">.</span><span class="n">compute_jacobian</span> <span class="ow">and</span> <span class="n">reproject_instance</span><span class="o">.</span><span class="n">conserve_flux</span><span class="p">:</span>
         <span class="c1"># 4 gradient tensors: dx_x, dy_x, dx_y, dy_y</span>
         <span class="n">base_per_pixel</span> <span class="o">+=</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">8</span>
-    
+
     <span class="c1"># Multiply by batch size</span>
     <span class="n">total_per_pixel</span> <span class="o">=</span> <span class="n">base_per_pixel</span> <span class="o">*</span> <span class="n">B</span>
-    
+
     <span class="c1"># Add overhead for intermediate operations (20% extra)</span>
     <span class="n">total_per_pixel</span> <span class="o">*=</span> <span class="mf">1.2</span>
-    
+
     <span class="k">return</span> <span class="n">total_per_pixel</span></div>
 
 
@@ -183,11 +184,11 @@
     <span class="n">output_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
     <span class="n">max_memory_mb</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">safety_factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-    <span class="n">interpolation_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bilinear&quot;</span>
+    <span class="n">interpolation_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate optimal chunk size based on memory constraints.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    reproject_instance : Reproject</span>
@@ -200,23 +201,23 @@
 <span class="sd">        Safety factor (0-1) for memory calculation.</span>
 <span class="sd">    interpolation_mode : str</span>
 <span class="sd">        Interpolation mode to use.</span>
-<span class="sd">        </span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    Tuple[int, int]</span>
 <span class="sd">        Chunk size (chunk_height, chunk_width).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">output_shape</span>
-    
+
     <span class="c1"># Available memory in bytes</span>
     <span class="n">available_bytes</span> <span class="o">=</span> <span class="n">max_memory_mb</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="n">safety_factor</span>
-    
+
     <span class="c1"># Memory per pixel</span>
     <span class="n">bytes_per_pixel</span> <span class="o">=</span> <span class="n">estimate_memory_per_pixel</span><span class="p">(</span><span class="n">reproject_instance</span><span class="p">,</span> <span class="n">interpolation_mode</span><span class="p">)</span>
-    
+
     <span class="c1"># Maximum pixels per chunk</span>
     <span class="n">max_pixels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">available_bytes</span> <span class="o">/</span> <span class="n">bytes_per_pixel</span><span class="p">)</span>
-    
+
     <span class="c1"># Ensure at least 1 row can be processed</span>
     <span class="k">if</span> <span class="n">max_pixels</span> <span class="o">&lt;</span> <span class="n">W</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -224,21 +225,16 @@
             <span class="sa">f</span><span class="s2">&quot;Consider increasing max_memory_mb (currently </span><span class="si">{</span><span class="n">max_memory_mb</span><span class="si">}</span><span class="s2"> MB).&quot;</span>
         <span class="p">)</span>
         <span class="n">max_pixels</span> <span class="o">=</span> <span class="n">W</span>
-    
+
     <span class="c1"># Calculate chunk dimensions</span>
     <span class="c1"># Try to make chunks roughly square for better cache performance</span>
     <span class="n">chunk_height</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">max_pixels</span> <span class="o">*</span> <span class="n">H</span> <span class="o">/</span> <span class="n">W</span><span class="p">)))</span>
     <span class="n">chunk_height</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">chunk_height</span><span class="p">)</span>  <span class="c1"># At least 1 row</span>
-    
+
     <span class="c1"># Calculate corresponding width</span>
     <span class="n">chunk_width</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">max_pixels</span> <span class="o">//</span> <span class="n">chunk_height</span><span class="p">)</span>
     <span class="n">chunk_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">chunk_width</span><span class="p">)</span>
-    
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Chunk size: </span><span class="si">{</span><span class="n">chunk_height</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">chunk_width</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;(~</span><span class="si">{</span><span class="p">(</span><span class="n">chunk_height</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">chunk_width</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">bytes_per_pixel</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB per chunk)&quot;</span>
-    <span class="p">)</span>
-    
+
     <span class="k">return</span> <span class="n">chunk_height</span><span class="p">,</span> <span class="n">chunk_width</span></div>
 
 
@@ -251,11 +247,11 @@
     <span class="n">y_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">x_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">x_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">interpolation_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bilinear&quot;</span>
+    <span class="n">interpolation_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Process a single chunk of the reprojection.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    reproject_instance : Reproject</span>
@@ -266,7 +262,7 @@
 <span class="sd">        X-axis range for the chunk.</span>
 <span class="sd">    interpolation_mode : str</span>
 <span class="sd">        Interpolation mode.</span>
-<span class="sd">        </span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    torch.Tensor</span>
@@ -276,19 +272,27 @@
     <span class="n">B</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reproject_instance</span><span class="o">.</span><span class="n">batch_source_images</span><span class="p">)</span>
     <span class="n">chunk_h</span> <span class="o">=</span> <span class="n">y_end</span> <span class="o">-</span> <span class="n">y_start</span>
     <span class="n">chunk_w</span> <span class="o">=</span> <span class="n">x_end</span> <span class="o">-</span> <span class="n">x_start</span>
-    
-    <span class="n">y_chunk</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-        <span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">reproject_instance</span><span class="o">.</span><span class="n">device</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">chunk_h</span><span class="p">,</span> <span class="n">chunk_w</span><span class="p">)</span>
-    
-    <span class="n">x_chunk</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-        <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">reproject_instance</span><span class="o">.</span><span class="n">device</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">chunk_h</span><span class="p">,</span> <span class="n">chunk_w</span><span class="p">)</span>
-    
+
+    <span class="n">y_chunk</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">reproject_instance</span><span class="o">.</span><span class="n">device</span>
+        <span class="p">)</span>
+        <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">chunk_h</span><span class="p">,</span> <span class="n">chunk_w</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">x_chunk</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">reproject_instance</span><span class="o">.</span><span class="n">device</span>
+        <span class="p">)</span>
+        <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">chunk_h</span><span class="p">,</span> <span class="n">chunk_w</span><span class="p">)</span>
+    <span class="p">)</span>
+
     <span class="c1"># Temporarily override the target grid</span>
     <span class="n">original_grid</span> <span class="o">=</span> <span class="n">reproject_instance</span><span class="o">.</span><span class="n">target_grid</span>
     <span class="n">reproject_instance</span><span class="o">.</span><span class="n">target_grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_chunk</span><span class="p">,</span> <span class="n">x_chunk</span><span class="p">)</span>
-    
+
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Process this chunk</span>
         <span class="n">chunk_result</span> <span class="o">=</span> <span class="n">reproject_instance</span><span class="o">.</span><span class="n">interpolate_source_image</span><span class="p">(</span>
@@ -297,11 +301,11 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="c1"># Restore original grid</span>
         <span class="n">reproject_instance</span><span class="o">.</span><span class="n">target_grid</span> <span class="o">=</span> <span class="n">original_grid</span>
-    
+
     <span class="c1"># Clear cache</span>
-    <span class="k">if</span> <span class="n">reproject_instance</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;cuda&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">reproject_instance</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span><span class="p">:</span>
         <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">empty_cache</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="n">chunk_result</span></div>
 
 
@@ -313,11 +317,11 @@
     <span class="n">max_memory_mb</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">safety_factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">interpolation_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">,</span>
-    <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform chunked reprojection.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    reproject_instance : Reproject</span>
@@ -330,7 +334,7 @@
 <span class="sd">        Interpolation mode to use.</span>
 <span class="sd">    show_progress : bool</span>
 <span class="sd">        Whether to log progress information.</span>
-<span class="sd">        </span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    torch.Tensor</span>
@@ -338,51 +342,43 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">y_grid</span><span class="p">,</span> <span class="n">x_grid</span> <span class="o">=</span> <span class="n">reproject_instance</span><span class="o">.</span><span class="n">target_grid</span>
     <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">y_grid</span><span class="o">.</span><span class="n">shape</span>
-    
+
     <span class="c1"># Calculate chunk size</span>
     <span class="n">chunk_h</span><span class="p">,</span> <span class="n">chunk_w</span> <span class="o">=</span> <span class="n">calculate_chunk_size</span><span class="p">(</span>
         <span class="n">reproject_instance</span><span class="p">,</span> <span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">W</span><span class="p">),</span> <span class="n">max_memory_mb</span><span class="p">,</span> <span class="n">safety_factor</span><span class="p">,</span> <span class="n">interpolation_mode</span>
     <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">chunk_h</span><span class="p">,</span> <span class="n">chunk_w</span><span class="p">)</span>
-    
+
     <span class="c1"># Calculate number of chunks</span>
     <span class="n">n_chunks_y</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">H</span> <span class="o">/</span> <span class="n">chunk_h</span><span class="p">)</span>
     <span class="n">n_chunks_x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">W</span> <span class="o">/</span> <span class="n">chunk_w</span><span class="p">)</span>
     <span class="n">total_chunks</span> <span class="o">=</span> <span class="n">n_chunks_y</span> <span class="o">*</span> <span class="n">n_chunks_x</span>
-    
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing </span><span class="si">{</span><span class="n">total_chunks</span><span class="si">}</span><span class="s2"> chunks (</span><span class="si">{</span><span class="n">n_chunks_y</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">n_chunks_x</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-    
+
     <span class="c1"># Initialize output</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
         <span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">reproject_instance</span><span class="o">.</span><span class="n">device</span>
     <span class="p">)</span>
-    
+
     <span class="c1"># Process chunks</span>
     <span class="n">chunk_idx</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_chunks_y</span><span class="p">):</span>
         <span class="n">y_start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">chunk_h</span>
         <span class="n">y_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_h</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_chunks_x</span><span class="p">):</span>
             <span class="n">x_start</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">chunk_w</span>
             <span class="n">x_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_w</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
-            
+
             <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
                 <span class="n">chunk_idx</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Processing chunk </span><span class="si">{</span><span class="n">chunk_idx</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_chunks</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;[y: </span><span class="si">{</span><span class="n">y_start</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">y_end</span><span class="si">}</span><span class="s2">, x: </span><span class="si">{</span><span class="n">x_start</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">x_end</span><span class="si">}</span><span class="s2">]&quot;</span>
-                <span class="p">)</span>
-            
+
             <span class="c1"># Process chunk</span>
             <span class="n">chunk_result</span> <span class="o">=</span> <span class="n">process_chunk</span><span class="p">(</span>
                 <span class="n">reproject_instance</span><span class="p">,</span> <span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span><span class="p">,</span> <span class="n">interpolation_mode</span>
             <span class="p">)</span>
-            
+
             <span class="c1"># Insert into result</span>
             <span class="n">result</span><span class="p">[:,</span> <span class="n">y_start</span><span class="p">:</span><span class="n">y_end</span><span class="p">,</span> <span class="n">x_start</span><span class="p">:</span><span class="n">x_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">chunk_result</span>
-    
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Chunked reprojection complete!&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">result</span></div>
 
 </pre></div>

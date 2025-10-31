@@ -983,7 +983,6 @@
 
     <span class="c1"># Choose between chunked and non-chunked processing</span>
     <span class="k">if</span> <span class="n">max_memory_mb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using chunked processing with </span><span class="si">{</span><span class="n">max_memory_mb</span><span class="si">}</span><span class="s2"> MB memory limit&quot;</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">reproject_chunked</span><span class="p">(</span>
             <span class="n">reprojection</span><span class="p">,</span>
             <span class="n">max_memory_mb</span><span class="o">=</span><span class="n">max_memory_mb</span><span class="p">,</span>
