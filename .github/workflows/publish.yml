@@ -2,8 +2,10 @@ name: Publish to PyPI
 
 on:
   push:
+    branches:
+      - master
     tags:
-      - "v*" # Only run when pushing a tag like v1.0.0
+      - "v*" # Only run when a tag like v1.0.0 is pushed to master
 
 jobs:
   build-and-publish:
@@ -12,6 +14,9 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+
+        with:
+          fetch-depth: 0 # Important: needed to fetch tags
 
       - name: Set up Python
         uses: actions/setup-python@v5

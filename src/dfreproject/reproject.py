@@ -846,7 +846,6 @@ def calculate_reprojection(
 
     # Choose between chunked and non-chunked processing
     if max_memory_mb is not None:
-        logger.info(f"Using chunked processing with {max_memory_mb} MB memory limit")
         result = reproject_chunked(
             reprojection,
             max_memory_mb=max_memory_mb,
