@@ -123,7 +123,7 @@ For both solutions, we use a bilinear interpolation scheme. In the noisy regions
 There are slight differences in the solutions at the locations of the Gaussians which is attributable to small differences in the normalization.
 In this demo, we used the GPU by setting `device='gpu'` in the argument of `calculate_reprojection()`.
 
-![\label{fig:demo}](demo/comparison.png)
+![\label{fig:demo} Comparison between `dfreproject` and `reproject`.](demo/comparison.png)
 
 To compare the execution times, we created a benchmarking script (which can be found in the demos/benchmarking directory under `benchmark-script.py`; the figures are constructed with `benchmark-plotter.py`).
 This test is run between `dfreproject` and `reproject`.
@@ -131,7 +131,7 @@ We benchmark the three interpolation schemes with and without SIP distortion for
 \autoref{fig:gpu-comparison} shows the results of this benchmarking when `dfreproject` is run using a GPU (NVIDIA GeForce RTX 4060).
 
 
-![\label{fig:gpu-comparison}](demo/benchmarking/sip_comparison_line_gpu.png)
+![\label{fig:gpu-comparison} Benchmarking results for `dfreproject` on a GPU.](demo/benchmarking/sip_comparison_line_gpu.png)
 
 
 As evidenced by this figure, `dfreproject` has a significant speed advantage over `reproject` for larger images regardless of the type of interpolation scheme.
@@ -141,7 +141,7 @@ In \autoref{fig:cpu-comparison}, we display the same results except we used a CP
 For this experiment, we used a single thread.
 
 
-![\label{fig:cpu-comparison}](demo/benchmarking/sip_comparison_line_cpu.png)
+![\label{fig:cpu-comparison} Benchmarking results for `dfreproject` on a CPU.](demo/benchmarking/sip_comparison_line_cpu.png)
 
 
 Although the speedup on the CPU is not as impressive as on the GPU, it is still considerable.
