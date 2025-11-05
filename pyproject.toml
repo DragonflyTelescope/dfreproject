@@ -44,7 +44,8 @@ docs = [
   "nbsphinx>=0.8.9",
   "ipykernel>=6.0.0",
   "matplotlib>=3.4.0",
-  "sphinx-copybutton==0.5.2"
+  "sphinx-copybutton==0.5.2",
+  "sphinx-nefertiti==0.8.10",
 ]
 
 [project.urls]

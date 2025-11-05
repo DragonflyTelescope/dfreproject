@@ -29,12 +29,12 @@ extensions = [
     "sphinx.ext.intersphinx",
     "autoapi.extension",
     "nbsphinx",
-    'sphinx_copybutton',
+    "sphinx_copybutton",
 ]
 nbsphinx_execute = "auto"  # Execute notebooks automatically
 nbsphinx_allow_errors = False  # Don't build if notebooks have errors
 # Theme settings
-html_theme = "sphinx_rtd_theme"
+html_theme = "sphinx_nefertiti"
 html_theme_options = {
     "navigation_depth": 4,
     "logo_only": False,
