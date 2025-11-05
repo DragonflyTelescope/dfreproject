@@ -5,9 +5,13 @@ A high-performance Python package for reprojecting astronomical images between d
 [![Documentation Status](https://readthedocs.org/projects/dfreproject/badge/?version=latest)](https://dfreproject.readthedocs.io/en/latest/?badge=latest)
 [![Tests](https://github.com/DragonflyTelescope/dfreproject/actions/workflows/tests.yml/badge.svg)](https://github.com/DragonflyTelescope/dfreproject/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/DragonflyTelescope/dfreproject/graph/badge.svg?token=409E407TN5)](https://codecov.io/gh/DragonflyTelescope/dfreproject)
+
+
 [![DOI](https://zenodo.org/badge/936088731.svg)](https://doi.org/10.5281/zenodo.15170605)
- [![status](https://joss.theoj.org/papers/7f22d1073d87a3e78820f37cf7d726f6/status.svg)](https://joss.theoj.org/papers/7f22d1073d87a3e78820f37cf7d726f6)
- [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/DragonflyTelescope/dfreproject/badge)](https://scorecard.dev/viewer/?uri=github.com/DragonflyTelescope/dfreproject)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08525/status.svg)](https://doi.org/10.21105/joss.08525)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/DragonflyTelescope/dfreproject/badge)](https://scorecard.dev/viewer/?uri=github.com/DragonflyTelescope/dfreproject)
+[![License](https://img.shields.io/github/license/DragonflyTelescope/dfreproject)](https://github.com/DragonflyTelescope/dfreproject/blob/main/LICENSE)
+
 The idea behind this package was to make a stripped down version of the `reproject` package affiliated with astropy in order to reduce computational time.
 We achieve approximately 20X faster computations with this package using the GPU and 10X using the CPU for images taken by the Dragonfly Telephoto Array. Take a look at the demos for an example.
 We note that the only projection we currently support is the Tangential Gnomonic projection which is the most popular in optical astronomy.
