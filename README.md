@@ -8,8 +8,11 @@ A high-performance Python package for reprojecting astronomical images between d
 
 
 [![DOI](https://zenodo.org/badge/936088731.svg)](https://doi.org/10.5281/zenodo.15170605)
+
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.08525/status.svg)](https://doi.org/10.21105/joss.08525)
+
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/DragonflyTelescope/dfreproject/badge)](https://scorecard.dev/viewer/?uri=github.com/DragonflyTelescope/dfreproject)
+
 [![License](https://img.shields.io/github/license/DragonflyTelescope/dfreproject)](https://github.com/DragonflyTelescope/dfreproject/blob/main/LICENSE)
 
 The idea behind this package was to make a stripped down version of the `reproject` package affiliated with astropy in order to reduce computational time.
