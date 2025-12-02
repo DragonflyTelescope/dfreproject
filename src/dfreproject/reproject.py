@@ -106,7 +106,7 @@ def interpolate_image(
     torch.Tensor
         Interpolated image.
     """
-    if interpolation_mode == 'lanczos':
+    if interpolation_mode == "lanczos":
         return lanczos_grid_sample(source_image, grid, padding_mode="zeros")
     else:
         return torch.nn.functional.grid_sample(
@@ -382,7 +382,9 @@ class Reproject:
         pixel_offsets = torch.stack([u.reshape(B, -1), v.reshape(B, -1)], dim=-1)
         del u, v  # Free immediately
 
-        transformed = torch.bmm(pixel_offsets, CD_matrix.T.unsqueeze(0).expand(B, -1, -1))
+        transformed = torch.bmm(
+            pixel_offsets, CD_matrix.T.unsqueeze(0).expand(B, -1, -1)
+        )
         del pixel_offsets, CD_matrix
 
         x_scaled = transformed[:, :, 0].reshape(B, H, W)
@@ -396,13 +398,17 @@ class Reproject:
         # Compute phi efficiently
         phi = torch.zeros_like(r)
         non_zero_r = r > 0  # Avoid creating unnecessary boolean tensor
-        phi[non_zero_r] = torch.rad2deg(torch.atan2(-x_scaled[non_zero_r], y_scaled[non_zero_r]))
+        phi[non_zero_r] = torch.rad2deg(
+            torch.atan2(-x_scaled[non_zero_r], y_scaled[non_zero_r])
+        )
         del x_scaled, y_scaled, non_zero_r
 
         phi_rad = torch.deg2rad(phi)
         del phi
 
-        theta_rad = torch.atan2(r0, r)  # Direct computation without intermediate conversions
+        theta_rad = torch.atan2(
+            r0, r
+        )  # Direct computation without intermediate conversions
         del r
 
         # Pre-compute trig values
@@ -425,8 +431,7 @@ class Reproject:
 
         # Compute ra (reuse tensors where possible)
         ra_rad = ra0_rad + torch.atan2(
-            -cos_theta * sin_phi,
-            sin_theta * cos_dec0 - cos_theta * sin_dec0 * cos_phi
+            -cos_theta * sin_phi, sin_theta * cos_dec0 - cos_theta * sin_dec0 * cos_phi
         )
         del sin_theta, cos_theta, sin_phi, cos_phi, sin_dec0, cos_dec0
 
@@ -460,15 +465,17 @@ class Reproject:
 
         # Process each source image's coordinates
         for b in range(B):
-
             # Calculate sky coords for just this batch element
             # Extract single batch element from grid
-            x_grid_b = x_grid[b:b+1]  # Keep batch dimension
-            y_grid_b = y_grid[b:b+1]
+            x_grid_b = x_grid[b : b + 1]  # Keep batch dimension
+            y_grid_b = y_grid[b : b + 1]
 
             ra, dec = self.calculate_skyCoords(x_grid_b, y_grid_b)
             ra = ra.squeeze(0)  # Remove batch dimension
             dec = dec.squeeze(0)
+
+            # Free grid slices immediately
+            del x_grid_b, y_grid_b
 
             # Get WCS parameters for this specific source image
             source_wcs_params = self.batch_source_wcs_params[b]
@@ -486,22 +493,32 @@ class Reproject:
 
             # Convert from world to native spherical coordinates
             y_phi = -torch.cos(dec_rad) * torch.sin(ra_rad - ra0_rad)
-            x_phi = torch.sin(dec_rad) * torch.cos(dec0_rad) - torch.cos(dec_rad) * torch.sin(dec0_rad) * torch.cos(ra_rad - ra0_rad)
+            x_phi = torch.sin(dec_rad) * torch.cos(dec0_rad) - torch.cos(
+                dec_rad
+            ) * torch.sin(dec0_rad) * torch.cos(ra_rad - ra0_rad)
             phi = torch.rad2deg(torch.atan2(y_phi, x_phi))
             del x_phi, y_phi
 
             theta = torch.rad2deg(
                 torch.arcsin(
                     torch.sin(dec_rad) * torch.sin(dec0_rad)
-                    + torch.cos(dec_rad) * torch.cos(dec0_rad) * torch.cos(ra_rad - ra0_rad)
+                    + torch.cos(dec_rad)
+                    * torch.cos(dec0_rad)
+                    * torch.cos(ra_rad - ra0_rad)
                 )
             )
             del ra_rad, dec_rad, ra, dec
 
             # Apply TAN projection
-            sin_phi, cos_phi = torch.sin(torch.deg2rad(phi)), torch.cos(torch.deg2rad(phi))
+            sin_phi, cos_phi = (
+                torch.sin(torch.deg2rad(phi)),
+                torch.cos(torch.deg2rad(phi)),
+            )
             del phi
-            sin_theta, cos_theta = torch.sin(torch.deg2rad(theta)), torch.cos(torch.deg2rad(theta))
+            sin_theta, cos_theta = (
+                torch.sin(torch.deg2rad(theta)),
+                torch.cos(torch.deg2rad(theta)),
+            )
             del theta
 
             # Check for singularity
@@ -541,7 +558,10 @@ class Reproject:
             # Add reference pixel
             batch_x_pixel[b] = u + (crpix[0] - 1)
             batch_y_pixel[b] = v + (crpix[1] - 1)
-            del u, v, crpix, crval, pc_matrix, cdelt
+            del u, v
+
+            # Clear references to WCS parameters to aid garbage collection
+            del crpix, crval, pc_matrix, cdelt, sip_coeffs, source_wcs_params
 
         return batch_x_pixel, batch_y_pixel
 
@@ -672,6 +692,7 @@ def calculate_reprojection(
     max_memory_mb: Optional[float] = None,
     chunk_safety_factor: float = 0.8,
     show_chunk_progress: bool = True,
+    show_log: bool = False,
 ):
     """
     Reproject an astronomical image from a source WCS to a target WCS.
@@ -737,6 +758,9 @@ def calculate_reprojection(
     show_chunk_progress: bool, optional
         Whether to log progress when using chunked processing. Default True.
         Only used if max_memory_mb is set.
+
+    show_log: bool, optional
+        Whether to log progress. Default True.
 
     Returns
     -------
@@ -851,7 +875,7 @@ def calculate_reprojection(
             max_memory_mb=max_memory_mb,
             safety_factor=chunk_safety_factor,
             interpolation_mode=order,
-            show_progress=show_chunk_progress
+            show_progress=show_chunk_progress,
         ).squeeze(0)
     else:
         result = reprojection.interpolate_source_image(interpolation_mode=order)
