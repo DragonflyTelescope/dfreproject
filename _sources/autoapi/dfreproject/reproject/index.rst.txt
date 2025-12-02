@@ -215,7 +215,7 @@ Module Contents
 
 
 
-.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, dfreproject.tensorhdu.TensorHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]], Tuple[torch.Tensor, Union[astropy.wcs.WCS, astropy.io.fits.Header]], List[Union[astropy.io.fits.PrimaryHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]]]]], target_wcs: Union[astropy.wcs.WCS, astropy.io.fits.Header], shape_out: Optional[Tuple[int, int]] = None, order: str = 'nearest', device: str = None, num_threads: int = None, requires_grad: bool = False, conserve_flux: bool = True, compute_jacobian: bool = True, max_memory_mb: Optional[float] = None, chunk_safety_factor: float = 0.8, show_chunk_progress: bool = True)
+.. py:function:: calculate_reprojection(source_hdus: Union[astropy.io.fits.PrimaryHDU, dfreproject.tensorhdu.TensorHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]], Tuple[torch.Tensor, Union[astropy.wcs.WCS, astropy.io.fits.Header]], List[Union[astropy.io.fits.PrimaryHDU, Tuple[numpy.ndarray, Union[astropy.wcs.WCS, astropy.io.fits.Header]]]]], target_wcs: Union[astropy.wcs.WCS, astropy.io.fits.Header], shape_out: Optional[Tuple[int, int]] = None, order: str = 'nearest', device: str = None, num_threads: int = None, requires_grad: bool = False, conserve_flux: bool = True, compute_jacobian: bool = True, max_memory_mb: Optional[float] = None, chunk_safety_factor: float = 0.8, show_chunk_progress: bool = True, show_log: bool = False)
 
    Reproject an astronomical image from a source WCS to a target WCS.
 
@@ -277,6 +277,9 @@ Module Contents
    show_chunk_progress: bool, optional
        Whether to log progress when using chunked processing. Default True.
        Only used if max_memory_mb is set.
+
+   show_log: bool, optional
+       Whether to log progress. Default True.
 
    :returns: The reprojected image as a numpy ndarray (default) or PyTorch tensor if
              requires_grad=True.
