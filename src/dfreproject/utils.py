@@ -1,6 +1,7 @@
 import logging
 import math
 from typing import Tuple
+
 import torch
 
 logger = logging.getLogger(__name__)
@@ -184,6 +185,7 @@ def process_chunk(
         )
         .view(1, -1, 1)
         .expand(B, chunk_h, chunk_w)
+        .clone()  # Force a copy to avoid hidden reference issues
     )
 
     x_chunk = (
@@ -192,6 +194,7 @@ def process_chunk(
         )
         .view(1, 1, -1)
         .expand(B, chunk_h, chunk_w)
+        .clone()  # Force a copy to avoid hidden reference issues
     )
 
     # Temporarily override the target grid
@@ -207,7 +210,10 @@ def process_chunk(
         # Restore original grid
         reproject_instance.target_grid = original_grid
 
-    # Clear cache
+        # Explicitly delete chunk tensors to free memory
+        del y_chunk, x_chunk
+
+    # Clear cache for both CPU and CUDA
     if reproject_instance.device.type == "cuda":
         torch.cuda.empty_cache()
 
@@ -270,8 +276,10 @@ def reproject_chunked(
             x_start = j * chunk_w
             x_end = min((j + 1) * chunk_w, W)
 
+            chunk_idx += 1
+
             if show_progress:
-                chunk_idx += 1
+                logger.info(f"Processing chunk {chunk_idx}/{total_chunks}")
 
             # Process chunk
             chunk_result = process_chunk(
@@ -280,5 +288,17 @@ def reproject_chunked(
 
             # Insert into result
             result[:, y_start:y_end, x_start:x_end] = chunk_result
+
+            # Explicitly delete chunk result to free memory immediately
+            del chunk_result
+
+            # Periodic cache clearing every 10 chunks to prevent accumulation
+            if chunk_idx % 10 == 0:
+                if reproject_instance.device.type == "cuda":
+                    torch.cuda.empty_cache()
+
+    # Final cache clear
+    if reproject_instance.device.type == "cuda":
+        torch.cuda.empty_cache()
 
     return result
