@@ -169,9 +169,53 @@ Module Contents
 
 
 
+   .. py:method:: compute_pixel_map()
+
+      Compute and return source-space pixel coordinates for reprojection.
+
+      This method exposes the pixel mapping step used by
+      :meth:`interpolate_source_image`, allowing callers to inspect, cache,
+      or reuse the coordinate transform without immediately interpolating
+      image values.
+
+      :returns: ``(x_source, y_source)`` pixel coordinates in source-image index
+                space (unnormalized; not in ``grid_sample`` [-1, 1] coordinates).
+      :rtype: Tuple[torch.Tensor, torch.Tensor]
+
+
+
+   .. py:method:: apply_pixel_map(pixel_map: Tuple[torch.Tensor, torch.Tensor], interpolation_mode: str = 'bilinear') -> torch.Tensor
+
+      Interpolate the source image using a precomputed pixel map.
+
+      Use this method with a map returned by :meth:`compute_pixel_map` when
+      you want to reuse the same coordinate transform across repeated
+      interpolation calls.
+
+      :param pixel_map: ``(x_source, y_source)`` coordinates from
+                        :meth:`compute_pixel_map`.
+      :type pixel_map: Tuple[torch.Tensor, torch.Tensor]
+      :param interpolation_mode: Interpolation algorithm. Options: ``'nearest'``, ``'bilinear'``,
+                                 ``'bicubic'``, ``'lanczos'``.
+      :type interpolation_mode: str, default 'bilinear'
+
+      :returns: Reprojected image on the target grid.
+      :rtype: torch.Tensor
+
+
+
    .. py:method:: interpolate_source_image(interpolation_mode='bilinear') -> torch.Tensor
 
       Interpolate the source image at the calculated source coordinates with flux conservation.
+
+      This is a convenience wrapper around:
+
+      1. :meth:`compute_pixel_map`
+      2. :meth:`apply_pixel_map`
+
+      If you need access to the pixel map itself, call
+      :meth:`compute_pixel_map` directly and pass it to
+      :meth:`apply_pixel_map`.
 
       This method performs the actual pixel resampling needed for dfreproject
       while preserving the total flux (photometric accuracy) by using a footprint correction and the Jacobian of the transformation.

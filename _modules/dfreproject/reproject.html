@@ -850,11 +850,118 @@
         <span class="k">return</span> <span class="n">batch_x_pixel</span><span class="p">,</span> <span class="n">batch_y_pixel</span></div>
 
 
+<div class="viewcode-block" id="Reproject.compute_pixel_map">
+<a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.Reproject.compute_pixel_map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_pixel_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute and return source-space pixel coordinates for reprojection.</span>
+
+<span class="sd">        This method exposes the pixel mapping step used by</span>
+<span class="sd">        :meth:`interpolate_source_image`, allowing callers to inspect, cache,</span>
+<span class="sd">        or reuse the coordinate transform without immediately interpolating</span>
+<span class="sd">        image values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tuple[torch.Tensor, torch.Tensor]</span>
+<span class="sd">            ``(x_source, y_source)`` pixel coordinates in source-image index</span>
+<span class="sd">            space (unnormalized; not in ``grid_sample`` [-1, 1] coordinates).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_sourceCoords</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Reproject.apply_pixel_map">
+<a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.Reproject.apply_pixel_map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_pixel_map</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pixel_map</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+        <span class="n">interpolation_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interpolate the source image using a precomputed pixel map.</span>
+
+<span class="sd">        Use this method with a map returned by :meth:`compute_pixel_map` when</span>
+<span class="sd">        you want to reuse the same coordinate transform across repeated</span>
+<span class="sd">        interpolation calls.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pixel_map : Tuple[torch.Tensor, torch.Tensor]</span>
+<span class="sd">            ``(x_source, y_source)`` coordinates from</span>
+<span class="sd">            :meth:`compute_pixel_map`.</span>
+<span class="sd">        interpolation_mode : str, default &#39;bilinear&#39;</span>
+<span class="sd">            Interpolation algorithm. Options: ``&#39;nearest&#39;``, ``&#39;bilinear&#39;``,</span>
+<span class="sd">            ``&#39;bicubic&#39;``, ``&#39;lanczos&#39;``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            Reprojected image on the target grid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x_source</span><span class="p">,</span> <span class="n">y_source</span> <span class="o">=</span> <span class="n">pixel_map</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="n">x_normalized</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_source</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
+        <span class="n">y_normalized</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">y_source</span> <span class="o">/</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
+
+        <span class="n">source_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">source_images</span><span class="p">)</span>
+
+        <span class="n">combined_result</span> <span class="o">=</span> <span class="n">interpolate_image</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">source_images</span><span class="p">,</span> <span class="n">ones</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x_normalized</span><span class="p">,</span> <span class="n">y_normalized</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">interpolation_mode</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">del</span> <span class="n">source_images</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">x_normalized</span><span class="p">,</span> <span class="n">y_normalized</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">torch</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">valid_pixels</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">EPSILON</span>
+
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">valid_pixels</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conserve_flux</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()[</span><span class="n">valid_pixels</span><span class="p">]</span>
+                    <span class="o">/</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()[</span><span class="n">valid_pixels</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="k">del</span> <span class="n">combined_result</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_jacobian</span><span class="p">:</span>
+                    <span class="n">dy_x</span><span class="p">,</span> <span class="n">dx_x</span> <span class="o">=</span> <span class="n">gradient2d</span><span class="p">(</span><span class="n">x_source</span><span class="p">)</span>
+                    <span class="n">dy_y</span><span class="p">,</span> <span class="n">dx_y</span> <span class="o">=</span> <span class="n">gradient2d</span><span class="p">(</span><span class="n">y_source</span><span class="p">)</span>
+                    <span class="n">jacobian_det</span> <span class="o">=</span> <span class="n">dx_x</span> <span class="o">*</span> <span class="n">dy_y</span>
+                    <span class="k">del</span> <span class="n">dy_y</span>
+                    <span class="n">jacobian_det</span> <span class="o">-=</span> <span class="n">dy_x</span> <span class="o">*</span> <span class="n">dx_y</span>
+                    <span class="k">del</span> <span class="n">dx_x</span><span class="p">,</span> <span class="n">dy_x</span><span class="p">,</span> <span class="n">dx_y</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">*=</span> <span class="n">jacobian_det</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">valid_pixels</span><span class="p">]</span>
+                    <span class="k">del</span> <span class="n">jacobian_det</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()[</span><span class="n">valid_pixels</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">combined_result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="o">/</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="k">del</span> <span class="n">combined_result</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;No valid pixels found in footprint! Using raw interpolated values&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">del</span> <span class="n">valid_pixels</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
 <div class="viewcode-block" id="Reproject.interpolate_source_image">
 <a class="viewcode-back" href="../../autoapi/dfreproject/reproject/index.html#dfreproject.reproject.Reproject.interpolate_source_image">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate_source_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interpolation_mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Interpolate the source image at the calculated source coordinates with flux conservation.</span>
+
+<span class="sd">        This is a convenience wrapper around:</span>
+
+<span class="sd">        1. :meth:`compute_pixel_map`</span>
+<span class="sd">        2. :meth:`apply_pixel_map`</span>
+
+<span class="sd">        If you need access to the pixel map itself, call</span>
+<span class="sd">        :meth:`compute_pixel_map` directly and pass it to</span>
+<span class="sd">        :meth:`apply_pixel_map`.</span>
 
 <span class="sd">        This method performs the actual pixel resampling needed for dfreproject</span>
 <span class="sd">        while preserving the total flux (photometric accuracy) by using a footprint correction and the Jacobian of the transformation.</span>
@@ -900,63 +1007,11 @@
 <span class="sd">        Areas in the target image that map outside the source image boundaries</span>
 <span class="sd">        will be filled with NaNs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Get source coordinates</span>
-        <span class="n">x_source</span><span class="p">,</span> <span class="n">y_source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_sourceCoords</span><span class="p">()</span>
-        <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span><span class="o">.</span><span class="n">shape</span>
-
-        <span class="c1"># Normalize coordinates</span>
-        <span class="n">x_normalized</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_source</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
-        <span class="n">y_normalized</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">y_source</span> <span class="o">/</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
-
-        <span class="c1"># Prepare images and grid for grid_sample</span>
-        <span class="n">source_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_source_images</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># [B, 1, H, W]</span>
-        <span class="n">ones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">source_images</span><span class="p">)</span>
-
-        <span class="c1"># Combine images with ones for footprint calculation</span>
-        <span class="n">combined_result</span> <span class="o">=</span> <span class="n">interpolate_image</span><span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">source_images</span><span class="p">,</span> <span class="n">ones</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x_normalized</span><span class="p">,</span> <span class="n">y_normalized</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
-            <span class="n">interpolation_mode</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">del</span> <span class="n">source_images</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">x_normalized</span><span class="p">,</span> <span class="n">y_normalized</span>
-
-        <span class="c1"># Create output array initialized with NaN</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">torch</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="n">valid_pixels</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">EPSILON</span>
-        <span class="c1"># Apply footprint correction only where footprint is significant</span>
-        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">valid_pixels</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conserve_flux</span><span class="p">:</span>
-                <span class="c1"># Normalize by the footprint where valid</span>
-                <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()[</span><span class="n">valid_pixels</span><span class="p">]</span>
-                    <span class="o">/</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()[</span><span class="n">valid_pixels</span><span class="p">]</span>
-                <span class="p">)</span>
-
-                <span class="c1"># Free combined_result immediately</span>
-                <span class="k">del</span> <span class="n">combined_result</span>
-
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_jacobian</span><span class="p">:</span>
-                    <span class="c1"># Get gradients</span>
-                    <span class="n">dy_x</span><span class="p">,</span> <span class="n">dx_x</span> <span class="o">=</span> <span class="n">gradient2d</span><span class="p">(</span><span class="n">x_source</span><span class="p">)</span>  <span class="c1"># ∂x_in/∂y_out, ∂x_in/∂x_out</span>
-                    <span class="n">dy_y</span><span class="p">,</span> <span class="n">dx_y</span> <span class="o">=</span> <span class="n">gradient2d</span><span class="p">(</span><span class="n">y_source</span><span class="p">)</span>  <span class="c1"># ∂y_in/∂y_out, ∂y_in/∂x_out</span>
-                    <span class="n">jacobian_det</span> <span class="o">=</span> <span class="n">dx_x</span> <span class="o">*</span> <span class="n">dy_y</span>
-                    <span class="k">del</span> <span class="n">dy_y</span>
-                    <span class="n">jacobian_det</span> <span class="o">-=</span> <span class="n">dy_x</span> <span class="o">*</span> <span class="n">dx_y</span>
-                    <span class="k">del</span> <span class="n">dx_x</span><span class="p">,</span> <span class="n">dy_x</span><span class="p">,</span> <span class="n">dx_y</span>
-                    <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">*=</span> <span class="n">jacobian_det</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">valid_pixels</span><span class="p">]</span>
-                    <span class="k">del</span> <span class="n">jacobian_det</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span><span class="p">[</span><span class="n">valid_pixels</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()[</span><span class="n">valid_pixels</span><span class="p">]</span>
-                <span class="k">del</span> <span class="n">combined_result</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="o">/</span> <span class="n">combined_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-            <span class="k">del</span> <span class="n">combined_result</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;No valid pixels found in footprint! Using raw interpolated values&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">del</span> <span class="n">valid_pixels</span><span class="p">,</span> <span class="n">x_source</span><span class="p">,</span> <span class="n">y_source</span>
-
+        <span class="c1"># Convenience path: compute + apply in one call.</span>
+        <span class="n">pixel_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_pixel_map</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_pixel_map</span><span class="p">(</span><span class="n">pixel_map</span><span class="p">,</span> <span class="n">interpolation_mode</span><span class="p">)</span>
+        <span class="n">x_source</span><span class="p">,</span> <span class="n">y_source</span> <span class="o">=</span> <span class="n">pixel_map</span>
+        <span class="k">del</span> <span class="n">x_source</span><span class="p">,</span> <span class="n">y_source</span>
         <span class="k">return</span> <span class="n">result</span></div>
 </div>
 
